@@ -1,0 +1,6 @@
+&domain_nl
+ dtype = "datm"
+ f_fracdata = '/home/zdr/models/clm_trunk/inputdata/lnd/clm2/griddata/fracdata_1x1pt_genericTowerSite.nc'
+ f_griddata = '/home/zdr/models/clm_trunk/inputdata/lnd/clm2/griddata/griddata_1x1pt_genericTowerSite.nc'
+ f_domain   = 'domain.lnd.1x1pt-genericTowerSite_navy.nc'
+/

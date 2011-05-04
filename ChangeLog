@@ -1,0 +1,115 @@
+================================================================================
+This file describes changes made to the PTCLM tool
+================================================================================        
+Originator: erik
+Date: May/04/2011
+Tag: PTCLM1_110504
+cesm_baseline: clm4_0_28 / scripts4_110428a
+One-line: Move PTCLM to own external, and fix cnvrt script so can take year-range
+          allow it to use older versions of Python
+Bugs-fixed: 
+    1279 (Latest version of PTCLM requires python2.5)
+    1248 (PTCLM can only run until 2005)
+Known Bugs: (See KnownBugs file for details)
+    1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
+Testing:
+  bluefire testing: All PASS
+  jaguar testing: All PASS
+  edinburgh testing: All PASS except
+4 PTCLM.8696_US-UMB_I_1850.PTCLM      FAIL 0
+5 PTCLM.8696_US-UMB_I20TR.PTCLM	    FAIL 0
+6 PTCLM.8696_US-UMB_I20TRCN.PTCLM     FAIL 0
+7 PTCLM.8696_US-UMB_ICN.PTCLM	  FAIL 0
+8 PTCLM.8696_US-UMB_I1850CN.PTCLM     FAIL 0
+9 PTCLM.8696_US-UMB_IRCP85CN.PTCLM	FAIL 0
+10 PTCLM.8696_US-UMB_I.PTCLM	  FAIL 0
+11 PTCLM.8696_US-UMB_I_QIAN.PTCLM     FAIL 0
+12 PTCLM.8696_US-UMB_I.PTCLM	  FAIL 0
+14 PTCLM.8696_US-UMB_ICN_exit_spinup.PTCLM	FAIL 0
+15 PTCLM.8696_US-UMB_ICN_final_spinup.PTCLM	FAIL 0
+  yong/intel testing: All PASS
+
+  Send a year range to the convert script and have years that start at the beginning
+  of the year range and go to the end of it.
+  Add a DEBUG option to testcases.csh so can just run tests quickly to debug test script.
+
+  M  PTCLM.py
+  M  PTCLM_sitedata/cnvrt_trnsyrs2_pftdyntxtfile.pl
+  M  testcases.csh
+  M  KnownBugs
+
+  M  PTCLM_sitedata/EXAMPLE_sitedata.txt - Remove all but US-UMB
+  M  PTCLM_sitedata/EXAMPLE_soildata.txt - Remove all but US-UMB
+  M  PTCLM_sitedata/EXAMPLE_pftdata.txt -- Remove all but US-UMB
+
+================================================================================        
+Originator: erik
+Date: Feb/03/2011
+Tag: clm4_0_23 / scripts4_110111
+One-line: Fix --list and --cesm_root options, add --scratchroot, fix bugs
+          update use-cases and compset names, add CESM_ROOT/CLM_SOFF to testcases.csh
+Bugs-fixed: 
+    1256 (fix PTCLM testcases.csh test script on jaguar to use netcdf/3.6.2)
+    1254 (pft-physiology copy doesn't have .nc extension/can't handle new files)
+    1250 (add ability to set scratchroot)
+    1224 (Fix -aerdepgrid/ndepgrid options in PTCLM.py)
+Known Bugs: (See KnownBugs file for details)
+    1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
+    1248 (PTCLM can only run until 2005)
+Testing:
+  bluefire testing: All PASS
+  edinburgh testing: All Fail (Python is too old 2.4 when needs 2.5)
+  yong/intel testing: All PASS except...
+myPTCLMtests_US-Ha1_I_1850.PTCLM    FAIL 0
+myPTCLMtests_US-Ha1_I20TR.PTCLM	  FAIL 0
+
+M PTCLM.py ------- Fix bugs, get --list and --cesm_root options working, add
+                    --scratchroot, update CLM use-cases and how queried
+                   add ability to add directory to caseprefix
+M testcases.csh -- Add ability to use env vars CESM_ROOT and CLM_SOFF
+                   set scratchroot for generic machines. Put case directories
+                   under the PTCLM directory, so can delete it easier
+M KnownBugs
+
+================================================================================        
+Originator: erik
+Date: Jan/12/2011
+Tag: clm4_0_21 / scripts4_110108
+One-line: Create ChangeLog file for PTCLM
+Testing:
+  bluefire testing: All PASS
+  edinburgh testing: All PASS up to ...
+myPTCLMtests_US-Ha1_I_1850.PTCLM    FAIL 0
+  yong/intel testing: All PASS up to...
+myPTCLMtests_US-Ha1_I_QIAN.PTCLM    PASS
+
+================================================================================        
+Originator:  erik
+Date: Dec/06/2010
+Tag: scripts4_101206
+One-line: Add some documentation files
+
+M       ccsm_utils/Tools/lnd/clm/PTCLM/testcases.csh  Add USER_CC setting to yong
+M       ccsm_utils/Tools/lnd/clm/PTCLM/README ------- Add note about aerdepgrid/ndepgrid
+A       ccsm_utils/Tools/lnd/clm/PTCLM/KnownBugs ---- Add file with list of bugs
+
+================================================================================        
+Originator:  erik
+Date: Dec/02/2010
+Tag: scripts4_101202
+One-line: Updates for script changes
+
+>>>>>>>>>>>> Get PTCLM working with changes
+>>>>>>>>>>>> PTCLM updates from mpiserial branch
+>>>>>>>>>>>> Add PTCLM tests for yong (Mac OS-X laptop)
+  M   ccsm_utils/Tools/lnd/clm/PTCLM/PTCLM.py
+  M   ccsm_utils/Tools/lnd/clm/PTCLM/testcases.csh
+  M   ccsm_utils/Tools/lnd/clm/PTCLM/README
+
+================================================================================        
+Originator: erik
+Date: Aug/30/2010
+Tag: scripts4_100830
+One-line: Bring PTCLM branch to scripts trunk
+
+================================================================================        
