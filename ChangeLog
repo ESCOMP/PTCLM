@@ -2,6 +2,33 @@
 This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
+Date: Jul/26/2011
+Tag: PTCLM1_110726
+cesm_baseline: clm4_0_33 / scripts4_110724
+One-line: Test if should use skip_rundb option or not, fix transient problem
+Bugs-fixed: 
+    1368 (PTCLM for US-UMB spins up with zero GPP)
+    1361 (Problem with transient compsets for PTCLM)
+Known Bugs: (See KnownBugs file for details)
+    1379 (All of the spinup tests fail for PTCLM)
+    1364 (Problem running US-UMB case on Macintosh)
+    1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
+Testing: All tests pass up to the spinup tests where they all fail
+  bluefire testing: 
+     PTCLM.*_US-UMB_ICN_exit_spinup.PTCLM
+  jaguar testing: 
+     PTCLM._US_US-UMB_ICN_exit_spinup.PTCLM
+  edinburgh testing: 
+     PTCLM.*_US-UMB_ICN_exit_spinup.PTCLM
+  yong/intel testing: 
+     PTCLM.*_US-UMB_ICN_exit_spinup.PTCLM
+
+  M   PTCLM.py ------ Add check for finidat file, check if should use -skip_rundb option, fix transient issue
+  M   testcases.csh - Change order of arguments for spinup tests, so more likely to die on an error with finidat file
+  M   KnownBugs ----- Update list of bugs
+
+================================================================================        
+Originator: erik
 Date: May/04/2011
 Tag: PTCLM1_110504
 cesm_baseline: clm4_0_28 / scripts4_110428a

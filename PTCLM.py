@@ -34,7 +34,7 @@
 #
 #########################################################################################
 description = 'Python script to create cases to run single point simulations with tower site data.'
-import os, csv, time, re, sys
+import os, csv, time, re, sys, shlex, subprocess
 from   xml.sax.handler import ContentHandler
 from   xml.sax         import make_parser 
 
@@ -387,6 +387,8 @@ finidat    = options.finidat
 if (finidat == " "):
     if plev>0: print "Finidat file:\t\t\t\t\t\t<none>"
 else:
+    if ( not os.path.isfile(finidat) ):
+        error( "The input finidat file: "+finidat+" does NOT exist" )
     if plev>0: print "Finidat file:\t\t\t\t\t\t"+finidat
 if plev>0:     print "Sites group name:\t\t\t\t\t"+SitesGroup
 
@@ -482,6 +484,16 @@ os.chdir(ptclm_dir)
 if plev>0: print "Creating new case\n"
 
 os.chdir(abs_base_cesm+"/scripts")
+
+# Check if skip_rundb should be used
+args = [ "./create_newcase", "-skip_rundb" ];
+p = subprocess.Popen( args, stdout=subprocess.PIPE, stderr=subprocess.PIPE ) 
+stderr = p.stderr.read()
+if ( re.search( "Unknown option[:\s]+skip_rundb", stderr, re.IGNORECASE ) == None ):
+    useskiprundb = True;
+else:
+    useskiprundb = False;
+
 if ( mymachine.find( "generic" ) == 0 ):
     if ( options.scratchroot == defmyscratch ): options.scratchroot = abs_base_cesm+"/run"
     opt = " -scratchroot "+options.scratchroot+" -max_tasks_per_node 1 " \
@@ -493,8 +505,11 @@ else:
 
 if ( options.rmold ): system( "/bin/rm -rf "+mycase )
 
+if ( useskiprundb ):
+     opt += " -skip_rundb"
+
 cmd = "./create_newcase -case "+mycase+" -mach "+mymachine+" -compset "+mycompset \
-      +" -res "+myres+" -skip_rundb "+opt
+	+" -res "+myres+opt
 system( cmd )
 
 clmnmlusecase    = Get_envconf_Value( "CLM_NML_USE_CASE" )
@@ -717,9 +732,10 @@ if makeptfiles:
                if plev>0: print "Transition PFT file exists, so using it for changes in PFT"
                # Convert the file from transition years format to mksurfdata pftdyn format
                cnv = ptclm_dir + \
-                     "/PTCLM_sitedata/cnvrt_trnsyrs2_pftdyntxtfile.pl "+sim_year_range
+                     "/PTCLM_sitedata/cnvrt_trnsyrs2_pftdyntxtfile.pl " + \
+                     pftdyn_site_filename+" "+sim_year_range
                pftdynoutfile = mycase+"/pftdyn_"+mycasename+".txt"
-               system( cnv+pftdyn_site_filename+" > "+pftdynoutfile )
+               system( cnv+" > "+pftdynoutfile )
                dynpftopts = " -dynpft "+pftdynoutfile
             else:
                if plev>0: print "Transition PFT file did NOT exist, so proceeding with constant PFT"

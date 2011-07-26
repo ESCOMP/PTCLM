@@ -1,3 +1,27 @@
+scripts/ccsm_utils/Tools/lnd/clm/PTCLM/KnownBugs                   Jul/26/2011
+
+====================================================================================
+Bug number: 1379 
+all spinup tests fail for PTCLM testcases.csh
+
+All of the spinup tests fail for PTCLM on: jaguar, edinburgh, bluefire, and
+yong.
+
+====================================================================================
+Bug number: 1364 
+Problem running US-UMB case on Macintosh
+
+I run into a floating point exception running the US-UMB site on Macintosh...
+
+./PTCLM.py -m generic_darwin_intel -s US-UMB -d /fs/cgd/csm/inputdata --pftgrid
+--soilgrid --scratchroot /Users/erik --run_n 2 --run_units nmonths --rmold
+--nopointdata 
+
+After having configured, built, and run for time-step 124...
+
+
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+
 ====================================================================================
 Bug number: 1278 
 Add ability to run testcases.csh in same directory on different machines 

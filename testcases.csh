@@ -275,7 +275,7 @@ foreach spinup ( ad_spinup exit_spinup final_spinup )
   echo -n "$msg" >> $statuslog
   @ casenum = $casenum + 1
   set echo
-  ./PTCLM.py -d $mycsmdata -m $machine -s $mysite -c $compset --rmold $opt --nopointdata
+  ./PTCLM.py -d $mycsmdata -m $machine -s $mysite -c $compset --rmold --nopointdata $opt
   unset echo
   if ( $status != 0 )then
       echo "FAIL $status" >> $statuslog
