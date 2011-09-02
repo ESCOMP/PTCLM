@@ -2,6 +2,32 @@
 This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
+Date: Sep/02/2011
+Tag: PTCLM1_110902
+cesm_baseline: clm4_0_35 / scripts4_110902
+One-line:  Change name of mksurfdata to mksurfdata_map, fix soil texture of US-UMB
+Bugs-fixed: 
+    1392 (US-UMB site has some incorrect data)
+Known Bugs: (See KnownBugs file for details)
+    1379 (All of the spinup tests fail for PTCLM)
+    1364 (Problem running US-UMB case on Macintosh)
+    1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
+Testing: Limited testing
+  bluefire testing:  All PASS
+
+Get basic script working with non2D grid version of clm. mksurfdata directory
+was changed to mksurfdata_map, and tools directories now have a "src" subdirectory
+to build the code in them.
+
+Also fix soil texture for US-UMB site (bug 1392).
+
+M       PTCLM.py
+M       testcases.csh
+M       PTCLM_sitedata/EXAMPLE_soildata.txt
+M       PTCLM_sitedata/AmeriFlux_soildata.txt
+
+================================================================================        
+Originator: erik
 Date: Jul/26/2011
 Tag: PTCLM1_110726
 cesm_baseline: clm4_0_33 / scripts4_110724
@@ -10,6 +36,7 @@ Bugs-fixed:
     1368 (PTCLM for US-UMB spins up with zero GPP)
     1361 (Problem with transient compsets for PTCLM)
 Known Bugs: (See KnownBugs file for details)
+    1392 (US-UMB site has some incorrect data)
     1379 (All of the spinup tests fail for PTCLM)
     1364 (Problem running US-UMB case on Macintosh)
     1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
@@ -38,6 +65,7 @@ Bugs-fixed:
     1279 (Latest version of PTCLM requires python2.5)
     1248 (PTCLM can only run until 2005)
 Known Bugs: (See KnownBugs file for details)
+    1392 (US-UMB site has some incorrect data)
     1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
 Testing:
   bluefire testing: All PASS
@@ -81,6 +109,7 @@ Bugs-fixed:
     1250 (add ability to set scratchroot)
     1224 (Fix -aerdepgrid/ndepgrid options in PTCLM.py)
 Known Bugs: (See KnownBugs file for details)
+    1392 (US-UMB site has some incorrect data)
     1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
     1248 (PTCLM can only run until 2005)
 Testing:

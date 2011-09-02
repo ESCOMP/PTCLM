@@ -114,21 +114,21 @@ if ( $status != 0 ) exit -1
 # Build the tools
 #
 echo "Build the tools"
-cd $CESM_ROOT/models/lnd/clm/tools/mksurfdata
-if ( $CLM_RETAIN_FILES == FALSE || (! -x mksurfdata) )then
+cd $CESM_ROOT/models/lnd/clm/tools/mksurfdata_map/src
+if ( $CLM_RETAIN_FILES == FALSE || (! -x mksurfdata) )then_map
    gmake clean
    gmake OPT=TRUE SMP=TRUE -j $parcmp $toolsmake
    if ( $status != 0 ) exit -1
    gmake clean
 endif
-cd ../mkgriddata
+cd ../../mkgriddata/src
 if ( $CLM_RETAIN_FILES == FALSE || (! -x mkgriddata) )then
    gmake clean
    gmake OPT=TRUE -j $parcmp $toolsmake
    if ( $status != 0 ) exit -1
    gmake clean
 endif
-cd ../mkdatadomain
+cd ../../mkdatadomain/src
 if ( $CLM_RETAIN_FILES == FALSE || (! -x mkdatadomain) )then
    gmake clean
    gmake OPT=TRUE -j $parcmp $toolsmake

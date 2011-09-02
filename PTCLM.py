@@ -28,7 +28,7 @@
 #  python, UNIX shell, NCL (NCAR Command Language)
 #  To create tools: GNU make, Fortran compiler, C compiler
 #
-# NOTE:  mkgriddata mksurfdata,surf mkdatadomain must be compiled!
+# NOTE:  mkgriddata, mksurfdata_map, and mkdatadomain must be compiled!
 #           You should only have to compile them once.
 #           you must also have ncl installed.
 #
@@ -658,7 +658,7 @@ if makeptfiles:
         else:
            mksrfyears = sim_year_range
 
-        # --- use site-level data for mksurfdata when available ----
+        # --- use site-level data for mksurfdata_map when available ----
         #PFT information for the site
         if (options.pftgrid == False):
             if plev>0: print "Replacing PFT information in surface data file"
@@ -730,7 +730,7 @@ if makeptfiles:
             # only set dynpft file if the file exists
             if ( os.path.exists( pftdyn_site_filename ) ):
                if plev>0: print "Transition PFT file exists, so using it for changes in PFT"
-               # Convert the file from transition years format to mksurfdata pftdyn format
+               # Convert the file from transition years format to mksurfdata_map pftdyn format
                cnv = ptclm_dir + \
                      "/PTCLM_sitedata/cnvrt_trnsyrs2_pftdyntxtfile.pl " + \
                      pftdyn_site_filename+" "+sim_year_range
@@ -744,11 +744,11 @@ if makeptfiles:
         else: 
             dynpftopts = ""
 
-        # Now run mksurfdata  ###########################################################
-        mksurfopts = "-nomv -res "+clmres+clmusrdat+ \
+        # Now run mksurfdata_map  ###########################################################
+        mksurfopts = "-res "+clmres+clmusrdat+ \
                      " -dinlc "+ccsm_input+" -y "+mksrfyears+" -rcp "+rcp+\
                      soilopts+pftopts+dynpftopts
-        system(clm_tools+"/mksurfdata/mksurfdata.pl "+mksurfopts+" > mksurfdata.log")
+        system(clm_tools+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > mksurfdata.log")
 
         #move surface data and pftdyn file to correct location
         system("/bin/mv -f ./surfdata_"+clmres+"_*_c*.nc  "+surffile )
