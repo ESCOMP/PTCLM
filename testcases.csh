@@ -47,19 +47,21 @@ endif
 #
 unset SCRATCH
 if (      $host =~ be* )then
+  source /contrib/Modules/3.2.6/init/csh
+  module load netcdf/4.1.3_seq
   set parcmp=64
   set machine="bluefire"
-  set csmdata=/fis/cgd/cseg/csm/inputdata
+  set csmdata=/glade/proj3/cseg/inputdata
   set rundata="/ptmp/$USER"
-  set netcdf=/contrib/netcdf-3.6.2
+  set netcdf=$NETCDF
   set toolsmake=""
 else if ( $host =~ mirage*  || $host =~ storm* )then
   set parcmp=8
   set machine="generic_linux_intel"
-  set csmdata=/fis/cgd/cseg/csm/inputdata
+  set csmdata=/glade/proj3/cseg/inputdata
   set rundata="/ptmp/$USER"
   set SCRATCH=$rundata
-  set netcdf=/contrib/netcdf-3.6.2/intel
+  set netcdf=/contrib/netcdf-4.1.3-beta1
   set toolsmake="USER_FC=ifort USER_LINKER=ifort "
   setenv NETCDF_PATH $netcdf
 else if ( $host =~ edinburgh* )then
@@ -71,13 +73,13 @@ else if ( $host =~ edinburgh* )then
   set toolsmake=""
   setenv PATH "${PATH}:/usr/bin"
 else if ( $host =~ lynx* )then
-  alias modulecmd /opt/modules/3.1.6.5/bin/modulecmd
+  source /opt/modules/default/init/csh
+  module load netcdf/4.0.1.3
+  set netcdf="$CRAY_NETCDF_DIR/netcdf-pgi"
   set parcmp=12
   set machine="lynx_pgi"
   set csmdata=/glade/proj3/cseg/inputdata
   set rundata="/ptmp/$USER"
-  modulecmd csh load netcdf
-  set netcdf="$CRAY_NETCDF_DIR/netcdf-pgi"
   set toolsmake="USER_FC=ftn USER_CC=cc "
 else if ( $host =~ yong* )then
   set parcmp=12
@@ -89,14 +91,20 @@ else if ( $host =~ yong* )then
   set toolsmake="USER_FC=ifort USER_LINKER=ifort USER_CC=icc "
   setenv NETCDF_PATH $netcdf
 else if ( $host =~ jaguar* )then
+  source /opt/modules/default/init/csh
+  module switch pgi       pgi/11.7.0         #  11.0.0 tested for bfb on 2011-mar
+  module switch xt-mpt    xt-mpt/3.5.1      #  3.5.1 tested for bfb on 2010-mar-12
+  module switch xt-libsci xt-libsci/10.4.1  # 10.4.1 tested for bfb on 2010-mar-12
+  module swap xt-asyncpe xt-asyncpe/3.7
+  module load szip/2.1
+  module load hdf5/1.8.7
+  module remove netcdf
+  module load netcdf/4.1.3
+  set netcdf=$NETCDF_DIR
   set parcmp=9
   set machine="jaguar"
   set csmdata=/tmp/proj/ccsm/inputdata
   set rundata="/tmp/work/$USER"
-  module remove netcdf
-  module load netcdf/3.6.2
-  #set netcdf=$CRAY_NETCDF_DIR/netcdf-pgi   # for netcdf/4
-  set netcdf=$NETCDF_DIR
   set toolsmake="USER_FC=ftn USER_CC=cc "
 else
   echo "Bad host to run on: know about bluefire, scd data machines, edinburgh, lynx, yong, and jaguar"
