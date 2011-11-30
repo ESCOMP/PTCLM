@@ -2,6 +2,24 @@
 This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
+Date: Nov/29/2011
+Tag: PTCLM1_111129
+cesm_baseline: clm4_0_39 / scripts4_111129
+One-line:  Use CLM_USRDAT for resolution or supported single-point res name
+           so will work with latest scripts version
+Bugs-fixed:  
+Known Bugs: (See KnownBugs file for details)
+    1379 (All of the spinup tests fail for PTCLM)
+    1364 (Problem running US-UMB case on Macintosh)
+    1251 (Test case aborts on Macintosh with seq-fault in US-Ha1 I_QIAN case)
+Testing: Limited testing
+  bluefire testing:  All PASS
+
+M       PTCLM.py -- Set res in create_newcase to either supported 1pt name
+                    or to CLM_USRDAT.
+
+================================================================================        
+Originator: erik
 Date: Nov/14/2011
 Tag: PTCLM1_111114
 cesm_baseline: clm4_0_38 / scripts4_111108

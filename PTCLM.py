@@ -49,7 +49,6 @@ def error( desc ):
 ######  SET SOME VARIABLES ##############################################################
 
 #configure case options          
-myres="pt1_pt1"           #single-point mode (don't change)
 #run time defaults
 defmyrun_units="default"  #default time units to run
 defmyrun_n=-999           #default number of time to run
@@ -441,7 +440,7 @@ if ( mysite == "list" ):
   resList = queryFilename( " -res list", "none" )
   resols = resList.split(" ");
   for i, res in enumerate(resols):
-     if ( res.startswith( "1x1_" ) ):
+     if ( res.find( "_" ) != -1 ):
         print " site = %9s " % ( res );
 
 # Exit early for list options
@@ -469,12 +468,14 @@ if ( suprtclm1pt ):
    clmres           = mysite
    pft_phys_out     = ""
    clmusrdat        = ""
+   myres            = mysite
 else:
    clmusrdatname    = "1x1pt_"+mysite
    clmusrdat        = " -usrname "+clmusrdatname
    clmres           = clmusrdatname
    pft_phys_file    = queryFilename( " ", "fpftcon" )
    pft_phys_out     = re.search( "(.+)\.nc$", pft_phys_file ).group(1)+"."+mysite+".nc"
+   myres            = "CLM_USRDAT"  #single-point mode (don't change)
 
 if plev>0: print "----------------------------------------------------------------\n"
 
@@ -845,7 +846,6 @@ else:
 #####  ENV XML CHANGES ##################################################################
 os.chdir(mycase)
 
-xmlchange_envconf_value( "CLM_PT1_NAME",    clmres )
 if ( clmusrdatname != "" ):
    xmlchange_envconf_value( "CLM_USRDAT_NAME", clmusrdatname )
 
