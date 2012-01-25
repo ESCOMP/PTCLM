@@ -1,6 +1,16 @@
 ================================================================================
 This file describes changes made to the PTCLM tool
 ================================================================================        
+Originator: mvertens
+	
+Date: Jan/25/2012
+Tag: PTCLM1_120125
+cesm_baseline:  scripts4_120125
+One-line:  Remove USE_MPISERIAL replace with MPILIB
+
+
+================================================================================        
+	
 Originator: erik
 Date: Nov/29/2011
 Tag: PTCLM1_111129

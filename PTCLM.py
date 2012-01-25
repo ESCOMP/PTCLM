@@ -239,6 +239,11 @@ def xmlchange_envrun_value( var, value ):
      cmd = "./xmlchange -file env_run.xml -id "+var+" -val "+value
      system( cmd )
 
+def xmlchange_envbuild_value( var, value ):
+     'Function to set the value of a variable in the env_conf.xml file'
+     cmd = "./xmlchange -file env_buildf.xml -id "+var+" -val "+value
+     system( cmd )
+
 if sys.version_info < (2, 5):
    def rpartition( string, sep ):
        'Reverse order of dividing string by seperator'
@@ -864,9 +869,7 @@ else:
 
 xmlchange_envconf_value( "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
 
-# If MPISERIAL support is available use it
-if ( Get_envconf_Value( "MPISERIAL_SUPPORT" ) == "TRUE" ):
-   xmlchange_envconf_value( "USE_MPISERIAL", "TRUE"   )
+xmlchange_envbuild_value( "MPILIB", "mpi-serial" )
 
 ###### SET Spinup and ENV_RUN.XML VALUES ################################################
    
