@@ -3,10 +3,10 @@ CA-Ca1,"British Columbia- Campbell River - Mature Forest Site",CAN,-125.3336,49.
 CA-Ca2,"British Columbia- Campbell River - Clearcut Site",CAN,-125.2909,49.8705,180,2001,2006,1851
 CA-Ca3,"British Columbia- Campbell River - Young Plantation Site",CAN,-124.9004,49.5346,165,2002,2006,1851
 CA-Gro,"Ontario- Groundhog River-Mat. Boreal Mixed Wood",CAN,-82.1556,48.2167,300,2004,2006,1851
-CA-Let,"Lethbridge",CAN,-112,9402,49.7093,960,1998,2007,1851
-CA-Man,"BOREAS NSA - Old Black Spruce",CAN,-98.4808,55.8796,259,1994,2006,1851
+CA-Let,"Lethbridge",CAN,-112.9402,49.7093,960,1998,2007,1851
+CA-Man,"BOREAS NSA - Old Black Spruce",CAN,-98.4808,55.8796,259,1994,2003,1851
 CA-Mer,"Eastern Peatland- Mer Bleue",CAN,-75.5200,45.4094,70,1999,2006,1851
-CA-Oas,"Sask.- SSA Old Aspen",CAN,-106.1978,53.6289,530,1997,2006,1851
+CA-Oas,"Sask.- SSA Old Aspen",CAN,-106.19779,53.6289,530,1997,2006,1851
 CA-Obs,"Sask.- SSA Old Black Spruce",CAN,-105.1178,53.9872,629,2000,2006,1851
 CA-Ojp,"Sask.- SSA Old Jack Pine",CAN,-104.6920,53.9163,579,2000,2006,1851
 CA-Qfo,"Quebec Mature Boreal Forest Site",CAN,-74.3421,49.6925,382,2004,2006,1851

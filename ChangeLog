@@ -1,8 +1,30 @@
 ================================================================================
 This file describes changes made to the PTCLM tool
 ================================================================================        
-Originator: mvertens
+Originator: erik
+Date: Jan/11/2013
+Tag: PTCLM1_130111
+cesm_baseline:  scripts4_120125
+One-line:  Add some new sitedata from Keith Oleson
+
+A       PTCLM_sitedata/LBA_pftdata.txt
+M       PTCLM_sitedata/Fluxnet-Canada_sitedata.txt
+M       PTCLM_sitedata/EXAMPLE_sitedata.txt
+A       PTCLM_sitedata/CarboEurope_pftdata.txt
+M       PTCLM_sitedata/AmeriFlux_sitedata.txt
+M       PTCLM_sitedata/Fluxnet-Canada_soildata.txt
+M       PTCLM_sitedata/EXAMPLE_soildata.txt
+M       PTCLM_sitedata/AmeriFlux_soildata.txt
+A       PTCLM_sitedata/LBA_sitedata.txt
+A       PTCLM_sitedata/LBA_soildata.txt
+A       PTCLM_sitedata/CarboEurope_sitedata.txt
+A       PTCLM_sitedata/CarboEurope_soildata.txt
+M       PTCLM_sitedata/Fluxnet-Canada_pftdata.txt
+M       PTCLM_sitedata/EXAMPLE_pftdata.txt
+M       PTCLM_sitedata/AmeriFlux_pftdata.txt
 	
+================================================================================        
+Originator: mvertens
 Date: Jan/25/2012
 Tag: PTCLM1_120125
 cesm_baseline:  scripts4_120125
