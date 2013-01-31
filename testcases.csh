@@ -51,25 +51,27 @@ if (      $host =~ be* )then
   module load netcdf/4.1.3_seq
   set parcmp=64
   set machine="bluefire"
+  set compiler="ibm"
   set csmdata=/glade/proj3/cseg/inputdata
   set rundata="/ptmp/$USER"
   set netcdf=$NETCDF
   set toolsmake=""
-else if ( $host =~ mirage*  || $host =~ storm* )then
-  set parcmp=8
-  set machine="generic_linux_intel"
-  set csmdata=/glade/proj3/cseg/inputdata
-  set rundata="/ptmp/$USER"
-  set SCRATCH=$rundata
-  set netcdf=/contrib/netcdf-4.1.3-beta1
-  set toolsmake="USER_FC=ifort USER_LINKER=ifort "
-  setenv NETCDF_PATH $netcdf
-else if ( $host =~ edinburgh* )then
+else if (  $host =~ yellowstone* )then
+  module load netcdf
+  set parcmp=32
+  set machine="yellowstone"
+  set compiler="intel"
+  set csmdata=/glade/p/cesm/cseg/inputdata
+  set rundata="/glade/scratch/$USER"
+  set netcdf=$NETCDF
+  set toolsmake=""
+else if ( $host =~ frankfurt* )then
   set parcmp=2
-  set machine="edinburgh_pgi"
+  set machine="frankfurt"
+  set compiler="pgi"
   set csmdata=/fs/cgd/csm/inputdata
   set rundata="/scratch/cluster/$USER"
-  set netcdf=/usr/local/netcdf-3.6.3-pgi-hpf-cc-7.2-5
+  set netcdf=/usr/local/netcdf-pgi
   set toolsmake=""
   setenv PATH "${PATH}:/usr/bin"
 else if ( $host =~ lynx* )then
@@ -77,37 +79,43 @@ else if ( $host =~ lynx* )then
   module load netcdf/4.0.1.3
   set netcdf="$CRAY_NETCDF_DIR/netcdf-pgi"
   set parcmp=12
-  set machine="lynx_pgi"
+  set machine="lynx"
+  set compiler="pgi"
   set csmdata=/glade/proj3/cseg/inputdata
-  set rundata="/ptmp/$USER"
+  set rundata="/glade/scratch/$USER"
   set toolsmake="USER_FC=ftn USER_CC=cc "
-else if ( $host =~ yong* )then
+else if ( $host =~ yongi* || $host =~ vpn* )then
   set parcmp=12
-  set machine="generic_darwin_intel"
+  set machine="userdefined"
+  set compiler="intel"
   set csmdata=/fs/cgd/csm/inputdata
   set rundata="/ptmp/$USER"
   set SCRATCH=$rundata
-  set netcdf="/usr/local/netcdf-3.6.3-intel-11.1"
+  set netcdf="/opt/local"
   set toolsmake="USER_FC=ifort USER_LINKER=ifort USER_CC=icc "
   setenv NETCDF_PATH $netcdf
-else if ( $host =~ jaguar* )then
+else if ( $host =~ titan* )then
+
   source /opt/modules/default/init/csh
-  module switch pgi       pgi/11.7.0         #  11.0.0 tested for bfb on 2011-mar
-  module switch xt-mpt    xt-mpt/3.5.1      #  3.5.1 tested for bfb on 2010-mar-12
-  module switch xt-libsci xt-libsci/10.4.1  # 10.4.1 tested for bfb on 2010-mar-12
-  module swap xt-asyncpe xt-asyncpe/3.7
+  module switch pgi       pgi/12.4.0
+  module switch xt-mpich2    xt-mpich2/5.4.5
+  module switch xt-libsci xt-libsci/11.0.06
+  module swap xt-asyncpe xt-asyncpe/5.10
   module load szip/2.1
   module load hdf5/1.8.7
-  module remove netcdf
   module load netcdf/4.1.3
-  set netcdf=$NETCDF_DIR
+  module load parallel-netcdf/1.2.0
+  module load esmf/5.2.0rp1
+  module load subversion
+  set netcdf=$NETCDF_PATH
   set parcmp=9
-  set machine="jaguar"
+  set machine="titan"
+  set compiler="pgi"
   set csmdata=/tmp/proj/ccsm/inputdata
   set rundata="/tmp/work/$USER"
   set toolsmake="USER_FC=ftn USER_CC=cc "
 else
-  echo "Bad host to run on: know about bluefire, scd data machines, edinburgh, lynx, yong, and jaguar"
+  echo "Bad host to run on: know about bluefire, yellowstone, frankfurt, lynx, yong, and titan"
   exit -3
 endif
 setenv INC_NETCDF ${netcdf}/include
@@ -122,22 +130,16 @@ if ( $status != 0 ) exit -1
 # Build the tools
 #
 echo "Build the tools"
-cd $CESM_ROOT/models/lnd/clm/tools/mksurfdata_map/src
-if ( $CLM_RETAIN_FILES == FALSE || (! -x mksurfdata) )then_map
+cd $CESM_ROOT/models/lnd/clm/tools/clm4_5/mksurfdata_map/src
+if ( $CLM_RETAIN_FILES == FALSE || (! -x mksurfdata_map) )then
    gmake clean
    gmake OPT=TRUE SMP=TRUE -j $parcmp $toolsmake
    if ( $status != 0 ) exit -1
    gmake clean
 endif
-cd ../../mkgriddata/src
-if ( $CLM_RETAIN_FILES == FALSE || (! -x mkgriddata) )then
-   gmake clean
-   gmake OPT=TRUE -j $parcmp $toolsmake
-   if ( $status != 0 ) exit -1
-   gmake clean
-endif
-cd ../../mkdatadomain/src
-if ( $CLM_RETAIN_FILES == FALSE || (! -x mkdatadomain) )then
+cd $CESM_ROOT/mapping/gen_domain_files/src
+if ( $CLM_RETAIN_FILES == FALSE || (! -x gen_domain) )then
+   ../../scripts/ccsm_utils/Machines/configure -mach $machine -compiler $compiler
    gmake clean
    gmake OPT=TRUE -j $parcmp $toolsmake
    if ( $status != 0 ) exit -1
@@ -165,28 +167,25 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
   else
      set suprted=FALSE
   endif
-  if ( "$suprted" == "TRUE" ) set compsets = ( ICN I I )
+  if ( "$suprted" == "TRUE" ) set compsets = ( ICLM45CN ICLM45 ICLM45 )
   if ( "$suprted" != "TRUE" ) then
      if ( $mysite == "US-UMB" ) then
-        set compsets = ( I_1850 I20TR I20TRCN ICN I1850CN IRCP85CN I I I )
+        set compsets = ( I_1850_CLM45 I20TRCLM45 I20TRCLM45CN ICLM45CN I1850CLM45CN IRCP85CLM45CN ICLM45CN ICLM45CN ICLM45CN )
      else
-        set compsets = ( I I I )
+        set compsets = ( ICLM45 ICLM45 ICLM45 )
      endif
   endif
   set n=0
   foreach compset ( $compsets )
-    if ( $compset == I ) @ n = $n + 1
+    if ( $compset == ICLM45 ) @ n = $n + 1
     set opt="--caseidprefix=$casedir/$caseprefix"
     set opt="$opt --cesm_root $CESM_ROOT"
-    if ( $?SCRATCH   )then
-        set opt="$opt --scratchroot $SCRATCH"
-    endif
     if ( "$suprted" == "TRUE" ) then
-      set opt="$opt --nopointdata --ndepgrid --stdurbpt --quiet"
+      set opt="$opt --nopointdata --stdurbpt --quiet"
     else
-      set opt="$opt --owritesrfaer --run_units=ndays --run_n=5 --aerdepgrid --ndepgrid"
+      set opt="$opt --owritesrf --run_units=ndays --run_n=5"
     endif
-    if ( $compset == I20TR || $compset == I20TRCN || $compset == IRCP85CN ) set opt="$opt --coldstart"
+    if ( $compset == I20TRCLM45 || $compset == I20TRCLM45CN || $compset == IRCP85CLM45CN ) set opt="$opt --coldstart"
     set casename="${caseprefix}_${mysite}_${compset}"
     # Use QIAN forcing on second "I" compset
     if ( $n == 2 ) then
@@ -205,7 +204,7 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
     echo -n "$msg" >> $statuslog
     @ casenum = $casenum + 1
     set echo
-    ./PTCLM.py -d $mycsmdata -m $machine -s $mysite -c $compset --rmold $opt
+    ./PTCLM.py -d $mycsmdata -m ${machine}_${compiler} -s $mysite -c $compset --rmold $opt
     unset echo
     if ( $status != 0 )then
        echo "FAIL $status" 		>> $statuslog
@@ -214,12 +213,12 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
        echo "PASS"         		>> $statuslog
     endif
     cd $case
-    ./xmlchange -file env_run.xml -id DOUT_S -val FALSE
+    ./xmlchange DOUT_S=FALSE
     if ( $status != 0 ) exit -1
     set msg="$casenum $casename.config\t\t\t"
     echo    "$msg"
     echo -n "$msg" >> $statuslog
-    ./configure -case
+    ./cesm_setup
     if ( $status != 0 )then
        echo "FAIL $status" 		>> $statuslog
        if ( "$CLM_SOFF" == "TRUE" ) exit -1
@@ -230,7 +229,7 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
     echo    "$msg"
     echo -n "$msg" >> $statuslog
     if ( $DEBUG != "TRUE" )then
-       ./$casename.$machine.build
+       ./$casename.build
     else
        set status=1
     endif
@@ -244,7 +243,7 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
     echo    "$msg"
     echo -n "$msg" >> $statuslog
     if ( $DEBUG != "TRUE" )then
-       ./$casename.$machine.run
+       ./$casename.run
     else
        set status=1
     endif
@@ -255,7 +254,7 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
        echo "PASS"         		>> $statuslog
     endif
     # Clean the build up
-    ./$casename.$machine.clean_build
+    ./$casename.clean_build
     if ( $compset != I && $n > 1 ) set n = 0
     cd $pwd
   end
@@ -271,11 +270,8 @@ foreach spinup ( ad_spinup exit_spinup final_spinup )
   set casename="${caseprefix}_${mysite}_${compset}_${spinup}"
   set case = "$casedir/$casename"
   set opt="--caseidprefix=$casedir/$caseprefix"
-  set opt="$opt --$spinup --verbose --aerdepgrid --ndepgrid"
+  set opt="$opt --$spinup --verbose"
   set opt="$opt --cesm_root $CESM_ROOT"
-  if ( $?SCRATCH   )then
-       set opt="$opt --scratchroot $SCRATCH"
-  endif
   if ( $finidat != "none" ) set opt="$opt --finidat $finidat"
   echo "Run PTCLM for $casename options = $opt"
   set msg="$casenum $casename.PTCLM\t\t\t"
@@ -283,7 +279,7 @@ foreach spinup ( ad_spinup exit_spinup final_spinup )
   echo -n "$msg" >> $statuslog
   @ casenum = $casenum + 1
   set echo
-  ./PTCLM.py -d $mycsmdata -m $machine -s $mysite -c $compset --rmold --nopointdata $opt
+  ./PTCLM.py -d $mycsmdata -m ${machine}_${compiler} -s $mysite -c $compset --rmold --nopointdata $opt
   unset echo
   if ( $status != 0 )then
       echo "FAIL $status" >> $statuslog
@@ -292,23 +288,21 @@ foreach spinup ( ad_spinup exit_spinup final_spinup )
       echo "PASS"         >> $statuslog
   endif
   cd $case
-  ./xmlchange -file env_run.xml -id DOUT_S -val FALSE
+  ./xmlchange DOUT_S=FALSE
   if ( $status != 0 ) exit -1
   if ( $spinup == "ad_spinup" || $spinup == "final_spinup" ) then
      set nyrs=2
-     ./xmlchange -file env_run.xml -id STOP_N -val $nyrs
-     if ( $status != 0 ) exit -1
-     ./xmlchange -file env_run.xml -id REST_N -val $nyrs
+     ./xmlchange STOP_N=$nyrs,REST_N=$nyrs
      if ( $status != 0 ) exit -1
   endif
   if ( $spinup == "exit_spinup" ) then
-     ./xmlchange -file env_conf.xml -id RUN_TYPE -val startup
+     ./xmlchange RUN_TYPE=startup
      if ( $status != 0 ) exit -1
   endif
   set msg="$casenum $casename.config\t\t\t"
   echo    "$msg"
   echo -n "$msg" >> $statuslog
-  ./configure -case
+  ./cesm_setup
   if ( $status != 0 )then
       echo "FAIL $status" >> $statuslog
       if ( "$CLM_SOFF" == "TRUE" ) exit -1
@@ -320,7 +314,7 @@ foreach spinup ( ad_spinup exit_spinup final_spinup )
   echo    "$msg"
   echo -n "$msg" >> $statuslog
   if ( $DEBUG != "TRUE" )then
-     ./$casename.$machine.build
+     ./$casename.build
   else
      set status=1
   endif
@@ -334,7 +328,7 @@ foreach spinup ( ad_spinup exit_spinup final_spinup )
   echo    "$msg"
   echo -n "$msg" >> $statuslog
   if ( $DEBUG != "TRUE" )then
-     ./$casename.$machine.run
+     ./$casename.run
   else
      set status=1
   endif
@@ -359,7 +353,7 @@ foreach spinup ( ad_spinup exit_spinup final_spinup )
       echo "PASS"         >> $statuslog
   endif
   # Clean the build up
-  ./$casename.$machine.clean_build
+  ./$casename.clean_build
   cd $pwd
 end
 set closemsg="Successfully ran all test cases for PTCLM"

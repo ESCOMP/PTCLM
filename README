@@ -1,6 +1,6 @@
-scripts/PTCLM/README                                            7/15/2010
+scripts/PTCLM/README                                           01/29/2013
 
-PTCLM is a python tool built on top of CESM1.0 for running CLM "I" cases
+PTCLM is a python tool built on top of CESM1.2 for running CLM "I" cases
 for supported single-point grids, and for data from Ameriflux Tower-sites,
 or other user-supplied single-point datasets.
 
@@ -26,20 +26,20 @@ General Directory structure:
         for each site Also different "groups" of site-data lists, and the script to
         convert the transient years pftdyn files into pftdyn text files that
         mksurfdata can use.
-  scripts/ccsm_utils/Tools/lnd/clm/PTCLM/usr_files ------- namelist template files
   scripts/ccsm_utils/Tools/lnd/clm/PTCLM/testcases.csh --- Test PTCLM script to run most
         configurations, input options, and compsets
 
 Quickstart:
 
 # ASSUMPTIONS:
-# For this example I'm running the default ICN case on bluefire using  
+# PTCLM.py -- is ONLY configured to work with clm4_5 physics!
+# For this example I'm running the default ICLM45CN case on yellowstone using  
 # CSMDATA in the standard location
 # For our case we will set MYCSMDATA=$HOME/inputdata (change as needed)
 # Finally we use the 6-digit AmeriFlux site code for the University of Mich. Biological
 # Station US-UMB (data for this station is checked into the inputdata repository).
 # I also assume you are using UNIX C-shell, and GNU make is called gmake
-setenv CSMDATA   /fis/cgd/cseg/csm/inputdata
+setenv CSMDATA   /glade/p/cesm/cseg/inputdata
 setenv MYCSMDATA $HOME/inputdata
 setenv SITE      US-UMB
 
@@ -48,14 +48,12 @@ cd scripts
 ./link_dirtree $CSMDATA $MYCSMDATA
 
 # Next build all of the clm tools you will need
-# NOTE: you do need to "gmake clean" between the mkgriddata and mksurfdata build
-cd ../models/lnd/clm/tools/mksurfdata
+# NOTE: you do need to "gmake clean" between the builds
+cd ../models/lnd/clm/tools/mksurfdata_map
 gmake
 gmake clean
-cd ../mkdatadomain
-gmake
-gmake clean
-cd ../mkgriddata
+cd ../../../../../../mapping/gen_domain_files/src
+../../../scripts/ccsm_utils/Machines/configure -mach yellowstone -compiler intel
 gmake
 gmake clean
 
@@ -74,13 +72,10 @@ mkdir 1x1pt_$SITE
 # next run PTCLM (NOTE -- MAKE SURE python IS IN YOUR PATH)
 cd ../../../../../scripts/ccsm_utils/Tools/lnd/clm/PTCLM
 setenv MYCASE "testPTCLM"
-./PTCLM.py -m bluefire --case=$MYCASE --site=$SITE --csmdata=$MYCSMDATA \
- --aerdepgrid --ndepgrid
-# NOTE: --aerdepgrid --ndepgrid currently are required so that you use the global
-# aerosol and Nitrogen deposition files rather than site-specific ones.
+./PTCLM.py -m yellowstone_intel --case=$MYCASE --site=$SITE --csmdata=$MYCSMDATA
 
 # Finally configure, build, and run the case as normal
 cd ../../../../../$MYCASE
 ./configure -case
-./$MYCASE.bluefire.build
-./$MYCASE.bluefire.submit (or use the $MYCASE.run script to run interactively)
+./$MYCASE.build
+./$MYCASE.submit (or use the $MYCASE.run script to run interactively)

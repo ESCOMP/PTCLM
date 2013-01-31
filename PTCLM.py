@@ -28,7 +28,7 @@
 #  python, UNIX shell, NCL (NCAR Command Language)
 #  To create tools: GNU make, Fortran compiler, C compiler
 #
-# NOTE:  mkgriddata, mksurfdata_map, and mkdatadomain must be compiled!
+# NOTE:  mksurfdata_map, and gen_domain  must be compiled!
 #           You should only have to compile them once.
 #           you must also have ncl installed.
 #
@@ -53,7 +53,6 @@ def error( desc ):
 defmyrun_units="default"  #default time units to run
 defmyrun_n=-999           #default number of time to run
 defSitesGroup = "EXAMPLE" #default site group name
-defmyscratch  = "defscr"  #default scratch root directory
 
 ccsm_input="default"
 
@@ -131,8 +130,6 @@ options.add_option("--run_n", dest="myrun_n", default=defmyrun_n, \
                   help="Number of time units to run simulation" )
 options.add_option("--run_units", dest="myrun_units", default=defmyrun_units, \
                   help="Time units to run simulation (steps,days,years, etc.)")
-options.add_option("--scratchroot", dest="scratchroot", default=defmyscratch, \
-                  help="Directory name of scratch space to build/run model in (can only be set if using a generic machine)")
 options.add_option("--quiet", action="store_true", \
                   dest="quiet", default=False, \
                   help="Print minimul information on what the script is doing")
@@ -152,29 +149,21 @@ parser.add_option_group(options)
 suprtclm1ptSettings="For supported CLM1PT single-point datasets, you MUST run with the "+ \
               "following settings:" + \
               " --nopointdata" + \
-              " --ndepgrid" + \
               " And you must NOT set any of these:" + \
               " --soilgrid" + \
               " --pftgrid"+ \
-              " --aerdepgrid"+ \
-              " --owritesrfaer"
+              " --owritesrf"
 indatgengroup = OptionGroup( parser, "Input data generation options", \
                   "These are options having to do with generation of input datasets.  " + \
                   "Note: When running for supported CLM1PT single-point datasets you can NOT generate new datasets.  "+ \
                   suprtclm1ptSettings )
 parser.add_option_group(indatgengroup)
-indatgengroup.add_option("--aerdepgrid", action="store_true", \
-                  dest="aerdepgrid", help="Do NOT regrid aerosol deposition data (use standard global grid data)", \
-                  default=False)
-indatgengroup.add_option("--ndepgrid", action="store_true", \
-                  dest="ndepgrid", help="Do NOT regrid Nitrogen deposition data (use standard global grid data)", \
-                  default=False)
 indatgengroup.add_option("--nopointdata", action="store_true", \
                   dest="nopointdata", help="Do NOT make point data (use data already created)", \
                   default=False)
-indatgengroup.add_option("--owritesrfaer", action="store_true", \
-                  dest="owritesrfaer", help=\
-                  "Overwrite the existing surface/aerosol datasets if they exist (normally do NOT recreate them)", \
+indatgengroup.add_option("--owritesrf", action="store_true", \
+                  dest="owritesrf", help=\
+                  "Overwrite the existing surface datasets if they exist (normally do NOT recreate them)", \
                   default=False)
 indatgengroup.add_option("--pftgrid", dest="pftgrid", help = \
                   "Use pft information from global gridded file (rather than site data)", \
@@ -220,28 +209,21 @@ def queryFilename( queryopts, filetype ):
        error( "Trouble finding file from XML database: "+filetype )
     return( filename.replace( "\n", "" ) )
 
-def Get_envconf_Value( var ):
-     'Function to get the value of a variable from the env_conf.xml file'
-     pwd = os.getcwd()
-     os.chdir( mycase)
-     env_val = re.search('value="([^"]*)"', os.popen("grep "+var+" env_conf.xml").read() ).group(1)
-     if ( env_val == None ): error( "Did NOT find envconf value for: "+var )
-     os.chdir(pwd)
+def Get_env_Value( var ):
+     'Function to get the value of a variable from one of the env_*.xml files'
+     query = "./xmlquery";
+     if ( not os.path.isfile(query) ):
+        error( query+" does NOT exist" );
+     cmd = query+" "+var
+     env_val = os.popen( cmd )
      return env_val
 
-def xmlchange_envconf_value( var, value ):
-     'Function to set the value of a variable in the env_conf.xml file'
-     cmd = "./xmlchange -file env_conf.xml -id "+var+" -val "+value
-     system( cmd )
-
-def xmlchange_envrun_value( var, value ):
-     'Function to set the value of a variable in the env_run.xml file'
-     cmd = "./xmlchange -file env_run.xml -id "+var+" -val "+value
-     system( cmd )
-
-def xmlchange_envbuild_value( var, value ):
-     'Function to set the value of a variable in the env_conf.xml file'
-     cmd = "./xmlchange -file env_buildf.xml -id "+var+" -val "+value
+def xmlchange_env_value( var, value ):
+     'Function to set the value of a variable in one of the env_*.xml files'
+     change = "./xmlchange"
+     if ( not os.path.isfile(change) ):
+        error( change+" does NOT exist" );
+     cmd = change+" "+var+"="+value
      system( cmd )
 
 if sys.version_info < (2, 5):
@@ -279,7 +261,7 @@ class ICompSetsList( ContentHandler ):
    def startElement(self, name, attrs):
      if name == 'compset':
        name = str( attrs.get('NAME',"") )
-       if ( name.startswith( "I" ) and not name.endswith( "_GLC" ) ): 
+       if ( name.startswith( "I" ) and not name.endswith( "_GLC" ) and "_CLM45" in name ): 
           nlen = len(self.list)
           if (   nlen == 0                 ): self.list.append( name )
           elif ( name != self.list[nlen-1] ): self.list.append( name )
@@ -409,12 +391,16 @@ else:
 if(mymachine == "list"):
     machXML = make_parser()
     machXML.setContentHandler(MachineList()) 
-    machXML.parse( abs_base_cesm+"/scripts/ccsm_utils/Machines/config_machines.xml" )
+    cfgmach = abs_base_cesm+"/scripts/ccsm_utils/Machines/config_machines.xml";
+    if ( not os.path.exists( cfgmach ) ): parser.error("File does NOT exist:"+cfgmach)
+    machXML.parse( cfgmach )
 
 if(mycompset == "list"):
     compXML = make_parser()
     compXML.setContentHandler(ICompSetsList()) 
-    compXML.parse( abs_base_cesm+"/scripts/ccsm_utils/Case.template/config_compsets.xml" )
+    cfgcomp = abs_base_cesm+"/scripts/ccsm_utils/Case.template/config_compsets.xml"
+    if ( not os.path.exists( cfgcomp ) ): parser.error("File does NOT exist:"+cfgcomp)
+    compXML.parse( cfgcomp )
 
 
 ###### END SET OPTIONS BASED ON INPUT FROM PARSER  ######################################
@@ -458,16 +444,19 @@ if ccsm_input == " ":
    parser.error( "inputdatadir is a required argument, set it to the directory where you have your inputdata"+infohelp )
 if plev>0: print "CCSM input data directory:\t\t\t\t"+ccsm_input
 #define data and utility directroies
-clm_tools  = abs_base_cesm+'/models/lnd/clm/tools'
-clm_input  = ccsm_input+'/lnd/clm2'
-datm_input = ccsm_input+'/atm/datm7'
+clm_tools   = abs_base_cesm+'/models/lnd/clm/tools/clm4_5'
+gen_dom_dir = abs_base_cesm+'/mapping'
+mkmapgrd_dir= clm_tools+'/mkmapdata'
+mkmapdat_dir= mkmapgrd_dir
+clm_input   = ccsm_input+'/lnd/clm2'
+datm_input  = ccsm_input+'/atm/datm7'
 
 mask = "navy"
 if ( suprtclm1pt ):
    if plev>0: print "Did NOT find input sitename:"+mysite+" in sitedata:"+sitedata
    if plev>0: print "Assuming that this is a supported CLM1PT single-point dataset"
    if ( not options.nopointdata or options.soilgrid or options.pftgrid or \
-        not options.ndepgrid or options.aerdepgrid or options.owritesrfaer ):
+        options.owritesrf ):
       error( suprtclm1ptSettings )
    clmusrdatname    = ""
    clmres           = mysite
@@ -491,40 +480,26 @@ if plev>0: print "Creating new case\n"
 
 os.chdir(abs_base_cesm+"/scripts")
 
-# Check if skip_rundb should be used
-args = [ "./create_newcase", "-skip_rundb" ];
-p = subprocess.Popen( args, stdout=subprocess.PIPE, stderr=subprocess.PIPE ) 
-stderr = p.stderr.read()
-if ( re.search( "Unknown option[:\s]+skip_rundb", stderr, re.IGNORECASE ) == None ):
-    useskiprundb = True;
-else:
-    useskiprundb = False;
-
-if ( mymachine.find( "generic" ) == 0 ):
-    if ( options.scratchroot == defmyscratch ): options.scratchroot = abs_base_cesm+"/run"
-    opt = " -scratchroot "+options.scratchroot+" -max_tasks_per_node 1 " \
-         +" -din_loc_root_csmdata "+ccsm_input
-else:
-    opt = " "
-    if ( mymachine == "none" ): parser.error( "machine is a required argument, set it to a valid value"+infohelp )
-    if ( options.scratchroot != defmyscratch ): parser.error( "scratchroot can only be set for a generic machine"+infohelp )
+opt = " "
+if ( mymachine == "none" ): parser.error( "machine is a required argument, set it to a valid value"+infohelp )
 
 if ( options.rmold ): system( "/bin/rm -rf "+mycase )
-
-if ( useskiprundb ):
-     opt += " -skip_rundb"
 
 cmd = "./create_newcase -case "+mycase+" -mach "+mymachine+" -compset "+mycompset \
 	+" -res "+myres+opt
 system( cmd )
+os.chdir(mycase)
 
-clmnmlusecase    = Get_envconf_Value( "CLM_NML_USE_CASE" )
+clmnmlusecase    = Get_env_Value( "CLM_NML_USE_CASE" )
 
 # Get any options already set in CLM_CONFIG_OPTS and check for consistency ##############
-clmconfigopts    = Get_envconf_Value( "CLM_CONFIG_OPTS" )
-datmpresaero     = Get_envconf_Value( "DATM_PRESAERO" )
+clmconfigopts    = Get_env_Value( "CLM_CONFIG_OPTS" )
+datmpresaero     = Get_env_Value( "DATM_PRESAERO" )
 
-bgctypeCN = re.search('-bgc (cn[a-z]*)', clmconfigopts )
+if ( "-bgc" in clmconfigopts ):
+   bgctypeCN = re.search('-bgc (cn[a-z]*)', clmconfigopts )
+else:
+   bgctypeCN = None;
 
 if ( bgctypeCN == None ):
    if (ad_spinup):  parser.error( "ad_spinup only works with CN compsets"+infohelp   )
@@ -570,12 +545,12 @@ elif ( clmnmlusecase.endswith("_pd") or clmnmlusecase == "UNSET" ):
 else:
           error( "Can not parse use-case name:, does not follow conventions"+clmnmlusecase )
 
-qoptionsbase   = " -options mask="+mask+",rcp="+rcp+",datm_presaero="+datmpresaero
+qoptionsbase   = " -options mask="+mask+",rcp="+rcp
    
 if ( ad_spinup    ): 
-   qoptionsbase += ",bgc=cn,ad_spinup=on"
+   qoptionsbase += ",bgc=cn,spinup=AD"
 if ( exit_spinup  ): 
-   qoptionsbase += ",bgc=cn,exit_spinup=on"
+   qoptionsbase += ",bgc=cn,spinup=exit"
 if ( final_spinup ): 
    qoptionsbase += ",final_spinup=on"
 
@@ -586,8 +561,8 @@ queryOptsNavy  = " -res 0.33x0.33 "+qoptions
 
 if ( suprtclm1pt ):
     supqryOpts = queryOptsNousr+" -namelist default_settings"
-    startyear  = queryFilename( supqryOpts, "datm_cycle_beg_year" )
-    endyear    = queryFilename( supqryOpts, "datm_cycle_end_year" )
+    startyear  = Get_env_Value( "DATM_CLMNCEP_YR_START" )
+    endyear    = Get_env_Value( "DATM_CLMNCEP_YR_END"   )
     alignyear  = startyear
 
 ####### ANY OTHER LAST SETTINGS BEFORE CREATING DATASETS ################################
@@ -596,11 +571,10 @@ myrun_n     = options.myrun_n
 myrun_units = options.myrun_units
 
 #default simulation length for different types of runs
-qryOpts  = queryOptsNousr + " -namelist seq_timemgr_inparm"
 if (  myrun_units == defmyrun_units ):
-   myrun_units = queryFilename( qryOpts, "stop_option" )
+   myrun_units = Get_env_Value( "STOP_OPTION" )
 if (  myrun_n == defmyrun_n ):
-   myrun_n     = queryFilename( qryOpts, "stop_n"      )
+   myrun_n     = Get_env_Value( "STOP_N"      )
 
 if plev>0: print "Number of simulation "+myrun_units+" to run:\t\t\t\t"+str(myrun_n)
 ############# BEGIN CREATE POINT DATASETS ###############################################
@@ -609,51 +583,35 @@ if plev>0: print "Number of simulation "+myrun_units+" to run:\t\t\t\t"+str(myru
 if makeptfiles:
     if plev>0: print("Making input files for the point (this may take a while if creating transient datasets)")
 
-    gridfile   = queryFilename( queryOpts, "fatmgrid"   )
-    fracfile   = queryFilename( queryOpts, "fatmlndfrc" )
     surffile   = queryFilename( queryOpts, "fsurdat"    )
     domainfile = queryFilename( queryOpts+" -namelist shr_strdata_nml", "domainfile" )
+    ocndomfile = queryFilename( queryOpts+" -namelist shr_strdata_nml", "ocndomainfile" )
 
     mksrf_fnavyoro  = queryFilename( queryOptsNavy+" -namelist clmexp", "mksrf_fnavyoro" )
 
     os.chdir(ptclm_dir)
-    #make and move grid and frac files ##################################################
-    if plev>0: print "Creating grid data"
-    #write mkgriddata namelist with site lat/lon and correct input
-    input  = open("usr_files/mkgriddata.TEMPLATE")
-    output = open(clm_tools+"/mkgriddata/namelist",'w')
-    line=0
-    for s in input:
-        line +=1
-        if line == 1:
-            output.write(s)
-        if line == 2:
-            output.write(" mksrf_fnavyoro = '"+ mksrf_fnavyoro+"'\n")
-        if line == 3 or line == 4:
-            output.write(s)
-        if line == 5:
-            output.write(s.replace("SITEE",str(lon+0.05)))
-        if line == 6:
-            output.write(s.replace("SITEW",str(lon-0.05)))
-        if line == 7:
-            output.write(s.replace("SITES",str(lat-0.05)))
-        if line == 8:
-            output.write(s.replace("SITEN",str(lat+0.05)))
-        if line > 8:
-            output.write(s)
-    output.close()
-    input.close()
-    if plev>1: os.system( "cat "+clm_tools+"/mkgriddata/namelist" )
-    system(clm_tools+"/mkgriddata/mkgriddata < "+clm_tools+"/mkgriddata/namelist > mkgriddata.log")
-    system("/bin/mv -f ./fracdata_0001x0001.nc "+fracfile )
-    system("/bin/mv -f ./griddata_0001x0001.nc "+gridfile )
+    #make map grid file and atm to ocean map ############################################
+    if plev>0: print "Creating map file for a point with no ocean"
+    ocean = "noocean";
+    system(mkmapdat_dir+"/mknoocnmap.pl -p "+lat+","+lon+" -name "+clmres+" > mknoocnmap.log")
+    mapfile       = os.popen( "ls -1t1 "+mkmapdat_dir+"/map_"+clmres+"_nomask_to_"+clmres+"_"+ocean+"_aave_da_c*.nc" );
+    scripgridfile = os.popen( "ls -1t1 "+mkmapgrd_dir+"/SCRIPgrid__"+clmres+"_nomask_c*.nc" );
+    #make mapping files needed for mksurfdata_map #######################################
+    sdate = os.popen( "date +%y%m%d" );
+    cmd = mkmapdat_dir+"/mkmapdata.sh -f "+scripgridfile+" -res ";
+    cmd += clmres+" -t regional > mkmapdata.log";
+    system(cmd);
 
+    #make domain file needed by datm ####################################################
+    cmd = gen_dom_dir+"/gen_dom -m "+mapipgridfile+" -res ";
+    cmd += clmres+" -t regional > mkmapdata.log";
+    system(cmd);
+    #make surface data and dynpft #######################################################
     if (sim_year_range != "constant"):
        pftdynfile = queryFilename( queryOpts, "fpftdyn" )
     else:
        pftdynfile = None
-    #make surface data and dynpft #######################################################
-    if ( (not options.owritesrfaer) and os.path.exists( surffile) and \
+    if ( (not options.owritesrf) and os.path.exists( surffile) and \
          ((pftdynfile == None) or os.path.exists( pftdynfile ) ) ):
         print "\n\nWARNING: Use existing surface file rather than re-creating it:\t"+surffile
     else:
@@ -751,10 +709,10 @@ if makeptfiles:
             dynpftopts = ""
 
         # Now run mksurfdata_map  ###########################################################
-        mksurfopts = "-res "+clmres+clmusrdat+ \
-                     " -dinlc "+ccsm_input+" -y "+mksrfyears+" -rcp "+rcp+\
+        mksurfopts = "-res usrspec -usr_gname "+clmres+"-usr_gdate "+sdate+ \
+                     " -dinlc "+ccsm_input+" -y "+mksrfyears+" -rcp "+rcp+ \
                      soilopts+pftopts+dynpftopts
-        system(clm_tools+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > mksurfdata.log")
+        system(clm_tools+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > mksurfdata_map.log")
 
         #move surface data and pftdyn file to correct location
         system("/bin/mv -f ./surfdata_"+clmres+"_*_c*.nc  "+surffile )
@@ -764,76 +722,10 @@ if makeptfiles:
 
     #make data domain file ##############################################################
     if plev>0: print "Creating data domain"
-    #write mkdatadomain namelist with correct inputs
-    input  = open("usr_files/mkdatadomain.TEMPLATE")
-    output = open(clm_tools+"/mkdatadomain/namelist",'w')
-    line=0
-    for s in input:
-        line +=1
-        if line < 3:
-            output.write(s)
-        if line == 3:
-            output.write(" f_fracdata = '"+fracfile+"'\n")
-        if line == 4:
-            output.write(" f_griddata = '"+gridfile+"'\n")
-        if line == 5:
-            output.write(" f_domain = '"+domainfile+"'\n")
-        if line > 5:
-            output.write(s)
-    output.close()
-    input.close()
+    #write gen_domain namelist with correct inputs
 
-    if plev>1: os.system( "cat "+clm_tools+"/mkdatadomain/namelist" )
-    system(clm_tools+"/mkdatadomain/mkdatadomain < "+clm_tools+"/mkdatadomain/namelist > mkdatadomain.log")
+    system(gen_dom_dir+"/gen_domain  -m "+mapfile+" -o "+ocndomainfile+" -l "+domainfile+" -c 'Running gen_domain from PTCLM' > gen_domain.log")
 
-    #
-    #make and move ndep and aerosol deposition files ####################################
-    #
-    #Always make them for a simulation year range of 1850-2000, and 
-    #then later in namelists you will narrow down which year (or years) to focus on
-    os.environ["RES"]     = clmres
-    os.environ["GRDFIL"]  = gridfile
-    os.environ["CSMDATA"] = ccsm_input
-    os.environ["SIM_YR"]  = "1850"
-    os.environ["RCP"]     = rcp
-    if ( sim_year_range == "constant" ):
-        os.environ["SIM_YR_RNG"]="1850-2000"
-    else:
-        os.environ["SIM_YR_RNG"]=sim_year_range
-
-
-    queryOptsDep = " -onlyfiles -res "+clmres+clmusrdat+qoptionsbase
-    queryOptsDep += ",sim_year="+os.environ["SIM_YR"]+",sim_year_range="+os.environ["SIM_YR_RNG"]
-    if ( not options.aerdepgrid ):
-
-       os.chdir(clm_tools+"/ncl_scripts")
-       aerfile  = queryFilename( queryOptsDep+" -namelist datm_internal", "datm_file_aero" )
-       if plev>0: print "Creating aerosol deposition data"
-       if plev>0: print "RES="+os.environ["RES"]+" GRDFIL="+os.environ["GRDFIL"]+ \
-             " CSMDATA="+os.environ["CSMDATA"]+" SIM_YR="+os.environ["SIM_YR"]+ \
-             " SIM_YR_RNG="+os.environ["SIM_YR_RNG"]+" RCP="+os.environ["RCP"]
-       if ( os.path.exists( aerfile ) and (not options.owritesrfaer) ):
-          print "WARNING: do NOT overwrite existing file: "+aerfile
-       else:
-          lfile = "aerosoldep_*_mean_"+clmres+"_c*.nc"
-          system("/bin/rm -f "+lfile )
-          system("ncl "+clm_tools+"/ncl_scripts/aerdepregrid.ncl > aerdepregrid.log")
-          system("/bin/mv -f "+lfile+"  "+aerfile )
-
-    if ( not options.ndepgrid and (bgctypeCN != None) ):
-
-       os.chdir(clm_tools+"/ncl_scripts")
-       queryOptsNDep = queryOptsDep+",bgc="+bgctypeCN.group(1)+" -namelist ndepdyn_nml"
-       if plev>0: print "Creating Nitrogen deposition data"
-       ndepfile  = queryFilename( queryOptsNDep, "stream_fldfilename_ndep" )
-       if plev>0: print "RES="+os.environ["RES"]+" GRDFIL="+os.environ["GRDFIL"]+ \
-             " CSMDATA="+os.environ["CSMDATA"]+" SIM_YR="+os.environ["SIM_YR"]+ \
-             " SIM_YR_RNG="+os.environ["SIM_YR_RNG"]+" RCP="+os.environ["RCP"]
-       lfile = "fndep_clm_*simyr*_"+clmres+"_c*.nc"
-       system("/bin/rm -f "+lfile )
-       system("ncl "+clm_tools+"/ncl_scripts/ndepregrid.ncl   > ndepregrid.log")
-       system("/bin/mv -f "+lfile+"  "+ndepfile )
-  
     # Default PFT-physiology file used to make site-level file ##########################
     pft_phys_file  = queryFilename( queryOptsNousr, "fpftcon" )
 
@@ -852,24 +744,24 @@ else:
 os.chdir(mycase)
 
 if ( clmusrdatname != "" ):
-   xmlchange_envconf_value( "CLM_USRDAT_NAME", clmusrdatname )
+   xmlchange_env_value( "CLM_USRDAT_NAME", clmusrdatname )
 
 if(useQIAN):
-    xmlchange_envconf_value(        "DATM_MODE",             "CLM_QIAN" )
+    xmlchange_env_value(        "DATM_MODE",             "CLM_QIAN" )
     if(options.QIAN_tower_yrs):
-       xmlchange_envconf_value(     "DATM_CLMNCEP_YR_START", str(startyear) )
+       xmlchange_env_value(     "DATM_CLMNCEP_YR_START", str(startyear) )
        if(endyear < 2005):
-           xmlchange_envconf_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
+           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
        else:
-           xmlchange_envconf_value( "DATM_CLMNCEP_YR_END",   "2004" )
+           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   "2004" )
 else:
-    xmlchange_envconf_value( "DATM_MODE",             "CLM1PT" )
-    xmlchange_envconf_value( "DATM_CLMNCEP_YR_START", str(startyear) )
-    xmlchange_envconf_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
+    xmlchange_env_value( "DATM_MODE",             "CLM1PT" )
+    xmlchange_env_value( "DATM_CLMNCEP_YR_START", str(startyear) )
+    xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
 
-xmlchange_envconf_value( "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
+xmlchange_env_value( "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
 
-xmlchange_envbuild_value( "MPILIB", "mpi-serial" )
+xmlchange_env_value( "MPILIB", "mpi-serial" )
 
 ###### SET Spinup and ENV_RUN.XML VALUES ################################################
    
@@ -877,17 +769,17 @@ hist_nhtfrq = 0
 if (ad_spinup):
    hist_mfilt  = 100
    hist_nhtfrq = -8760
-   xmlchange_envconf_value( "CLM_CONFIG_OPTS",     "'"+clmconfigopts+" -ad_spinup on'" )
-   xmlchange_envconf_value( "CLM_FORCE_COLDSTART", "'on'"  )
-   xmlchange_envrun_value( "STOP_DATE",   "06010101"       )
+   xmlchange_env_value( "CLM_CONFIG_OPTS",     "'"+clmconfigopts+" -spinup AD'" )
+   xmlchange_env_value( "CLM_FORCE_COLDSTART", "'on'"  )
+   xmlchange_env_value( "STOP_DATE",   "06010101"       )
 elif (exit_spinup):
    hist_mfilt  = 12
-   xmlchange_envconf_value( "CLM_CONFIG_OPTS",     "'"+clmconfigopts+" -exit_spinup on'" )
-   xmlchange_envconf_value( "RUN_TYPE",            "branch" )
-   xmlchange_envconf_value( "RUN_REFCASE",         \
+   xmlchange_env_value( "CLM_CONFIG_OPTS",     "'"+clmconfigopts+" -spinup exit'" )
+   xmlchange_env_value( "RUN_TYPE",            "branch" )
+   xmlchange_env_value( "RUN_REFCASE",         \
                             mycase.replace("_exit_spinup","_ad_spinup" ) )
-   xmlchange_envconf_value( "RUN_REFDATE",         "0601-01-01" )
-   xmlchange_envconf_value( "GET_REFCASE",         "FALSE" )
+   xmlchange_env_value( "RUN_REFDATE",         "0601-01-01" )
+   xmlchange_env_value( "GET_REFCASE",         "FALSE" )
 elif (final_spinup):
    hist_mfilt  = 12*int(myrun_n)
 elif(options.stdurbpt):
@@ -895,38 +787,38 @@ elif(options.stdurbpt):
    hist_nhtfrq = "-1,-1,-1"
    if ( clmnmlusecase != "UNSET" and clmnmlusecase != "2000_control" ):
       error( "Option stdurbpt is incompatible with this compset" )
-   xmlchange_envconf_value( "CLM_NML_USE_CASE", "stdurbpt_pd" )
-   xmlchange_envconf_value( "ATM_NCPL",  str(24) )
+   xmlchange_env_value( "CLM_NML_USE_CASE", "stdurbpt_pd" )
+   xmlchange_env_value( "ATM_NCPL",  str(24) )
 else:
    hist_mfilt  = 1200
 
 if ( suprtclm1pt ):
-   clmconfigopts = Get_envconf_Value( "CLM_CONFIG_OPTS" )
-   xmlchange_envconf_value( "CLM_CONFIG_OPTS", "'"+clmconfigopts+" -sitespf_pt "+ \
+   clmconfigopts = Get_env_Value( "CLM_CONFIG_OPTS" )
+   xmlchange_env_value( "CLM_CONFIG_OPTS", "'"+clmconfigopts+" -sitespf_pt "+ \
                              clmres+"'")
    run_startdate = queryFilename( queryOptsNousr+" -namelist default_settings", "run_startdate" )
-   xmlchange_envconf_value( "RUN_STARTDATE",   run_startdate  )
+   xmlchange_env_value( "RUN_STARTDATE",   run_startdate  )
    starttod   = queryFilename( queryOptsNousr+" -namelist seq_timemgr_inparm", "start_tod" )
-   xmlchange_envrun_value( "START_TOD", starttod  )
-   xmlchange_envconf_value( "DATM_PRESAERO", "pt1_pt1" )
+   xmlchange_env_value( "START_TOD", starttod  )
+   xmlchange_env_value( "DATM_PRESAERO", "pt1_pt1" )
 
-xmlchange_envrun_value( "STOP_N",      str(myrun_n) )
-xmlchange_envrun_value( "STOP_OPTION", myrun_units )
-xmlchange_envrun_value( "REST_OPTION", str(myrun_units) )
+xmlchange_env_value( "STOP_N",      str(myrun_n) )
+xmlchange_env_value( "STOP_OPTION", myrun_units )
+xmlchange_env_value( "REST_OPTION", str(myrun_units) )
 rest_n = max( 1, int(myrun_n) // 5 )
-xmlchange_envrun_value( "REST_N",      str(rest_n)     )
+xmlchange_env_value( "REST_N",      str(rest_n)     )
 
-xmlchange_envrun_value( "DIN_LOC_ROOT_CSMDATA", ccsm_input   )
+xmlchange_env_value( "DIN_LOC_ROOT", ccsm_input   )
 
 if ( options.coldstart ):
-   xmlchange_envconf_value( "CLM_FORCE_COLDSTART", "on" )
-   if ( Get_envconf_Value( "RUN_TYPE" ) == "hybrid" ): 
-      xmlchange_envconf_value( "RUN_TYPE", "startup" )
+   xmlchange_env_value( "CLM_FORCE_COLDSTART", "on" )
+   if ( Get_env_Value( "RUN_TYPE" ) == "hybrid" ): 
+      xmlchange_env_value( "RUN_TYPE", "startup" )
 
 ####  SET NAMELIST OPTIONS ##############################################################
 
 output = open("user_nl_clm",'w')
-output.write("&clm_inparm\n")
+#output.write("&clm_inparm\n")
 output.write(   " hist_nhtfrq = "+str(hist_nhtfrq)+"\n" )
 output.write(   " hist_mfilt  = "+str(hist_mfilt)+"\n" )
 if( pft_phys_out != "" ):
@@ -935,7 +827,7 @@ if(options.namelist != " "):
    output.write(options.namelist+"\n")
 if(finidat != " "):
    output.write(" finidat = '"+finidat+     "'\n")
-output.write("/\n")
+#output.write("/\n")
 output.close()
 if plev>1: os.system( "cat user_nl_clm" )
 
@@ -943,7 +835,7 @@ if plev>1: os.system( "cat user_nl_clm" )
 
 if plev>0: print "Scripts created successfully\n"
 if plev>0: print "cd "+mycase+" and then..."
-if plev>0: print "Configure, build and run your case as normal\n"
+if plev>0: print "setup, build and run your case as normal\n"
 
 ###   END PTCLM SCRIPT ####################################################################
 

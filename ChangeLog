@@ -2,10 +2,26 @@
 This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
+Date: Jan/30/2013
+Tag: PTCLM1_130130
+cesm_baseline:  scripts4_130130
+One-line:  Initial changes to get PTCLM working with new scripts and tools
+Testing: Limited testing
+
+Initial add of yellowstone to testcases and switch frankfurt for edinburgh.
+Remove generic stuff for userdefined. Remove ndep/aer grid.
+
+M       PTCLM.py
+M       testcases.csh
+D       usr_files/mkdatadomain.TEMPLATE
+
+================================================================================        
+Originator: erik
 Date: Jan/11/2013
 Tag: PTCLM1_130111
 cesm_baseline:  scripts4_120125
 One-line:  Add some new sitedata from Keith Oleson
+Testing: none
 
 A       PTCLM_sitedata/LBA_pftdata.txt
 M       PTCLM_sitedata/Fluxnet-Canada_sitedata.txt
