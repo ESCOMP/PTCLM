@@ -214,8 +214,10 @@ def Get_env_Value( var ):
      query = "./xmlquery";
      if ( not os.path.isfile(query) ):
         error( query+" does NOT exist" );
-     cmd = query+" "+var
-     env_val = os.popen( cmd )
+     cmd = query+" -valonly -silent "+var;
+     stdout = os.popen( cmd );
+     env_val = str.strip( stdout.read() )
+     print "env_val("+var+") = "+env_val+"\n";
      return env_val
 
 def xmlchange_env_value( var, value ):
@@ -446,8 +448,8 @@ if plev>0: print "CCSM input data directory:\t\t\t\t"+ccsm_input
 #define data and utility directroies
 clm_tools   = abs_base_cesm+'/models/lnd/clm/tools/clm4_5'
 gen_dom_dir = abs_base_cesm+'/mapping'
-mkmapgrd_dir= clm_tools+'/mkmapdata'
-mkmapdat_dir= mkmapgrd_dir
+mkmapgrd_dir= clm_tools+'/mkmapgrids'
+mkmapdat_dir= clm_tools+'/mkmapdata'
 clm_input   = ccsm_input+'/lnd/clm2'
 datm_input  = ccsm_input+'/atm/datm7'
 
@@ -584,20 +586,28 @@ if makeptfiles:
     if plev>0: print("Making input files for the point (this may take a while if creating transient datasets)")
 
     surffile   = queryFilename( queryOpts, "fsurdat"    )
-    domainfile = queryFilename( queryOpts+" -namelist shr_strdata_nml", "domainfile" )
-    ocndomfile = queryFilename( queryOpts+" -namelist shr_strdata_nml", "ocndomainfile" )
+    domainfile    = Get_env_Value( "ATM_DOMAIN_FILE"      )
+    ocndomainfile = domainfile.replace( "lnd", "ocn" )
 
     mksrf_fnavyoro  = queryFilename( queryOptsNavy+" -namelist clmexp", "mksrf_fnavyoro" )
 
     os.chdir(ptclm_dir)
     #make map grid file and atm to ocean map ############################################
     if plev>0: print "Creating map file for a point with no ocean"
-    ocean = "noocean";
-    system(mkmapdat_dir+"/mknoocnmap.pl -p "+lat+","+lon+" -name "+clmres+" > mknoocnmap.log")
-    mapfile       = os.popen( "ls -1t1 "+mkmapdat_dir+"/map_"+clmres+"_nomask_to_"+clmres+"_"+ocean+"_aave_da_c*.nc" );
-    scripgridfile = os.popen( "ls -1t1 "+mkmapgrd_dir+"/SCRIPgrid__"+clmres+"_nomask_c*.nc" );
+    print "lat="+str(lat)
+    ptstr = str(lat)+","+str(lon)
+    system(mkmapdat_dir+"/mknoocnmap.pl -p "+ptstr+" -name "+clmres+" > mknoocnmap.log")
+    stdout        = os.popen( "ls -1t1 "+mkmapdat_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_c*.nc" );
+    mapfile       = str.strip( stdout.read() )
+    print "mapfile="+mapfile
+    cmd           = "ls -1t1 "+mkmapgrd_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc"
+    print "cmd="+cmd
+    stdout        = os.popen( cmd )
+    scripgridfile = str.strip( stdout.read() )
+    print "scripgridfile="+scripgridfile
     #make mapping files needed for mksurfdata_map #######################################
-    sdate = os.popen( "date +%y%m%d" );
+    stdout = os.popen( "date +%y%m%d" );
+    sdate  = str.strip( stdout.read() )
     cmd = mkmapdat_dir+"/mkmapdata.sh -f "+scripgridfile+" -res ";
     cmd += clmres+" -t regional > mkmapdata.log";
     system(cmd);
@@ -755,7 +765,6 @@ if(useQIAN):
        else:
            xmlchange_env_value( "DATM_CLMNCEP_YR_END",   "2004" )
 else:
-    xmlchange_env_value( "DATM_MODE",             "CLM1PT" )
     xmlchange_env_value( "DATM_CLMNCEP_YR_START", str(startyear) )
     xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
 
@@ -796,11 +805,6 @@ if ( suprtclm1pt ):
    clmconfigopts = Get_env_Value( "CLM_CONFIG_OPTS" )
    xmlchange_env_value( "CLM_CONFIG_OPTS", "'"+clmconfigopts+" -sitespf_pt "+ \
                              clmres+"'")
-   run_startdate = queryFilename( queryOptsNousr+" -namelist default_settings", "run_startdate" )
-   xmlchange_env_value( "RUN_STARTDATE",   run_startdate  )
-   starttod   = queryFilename( queryOptsNousr+" -namelist seq_timemgr_inparm", "start_tod" )
-   xmlchange_env_value( "START_TOD", starttod  )
-   xmlchange_env_value( "DATM_PRESAERO", "pt1_pt1" )
 
 xmlchange_env_value( "STOP_N",      str(myrun_n) )
 xmlchange_env_value( "STOP_OPTION", myrun_units )

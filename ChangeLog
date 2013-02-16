@@ -2,6 +2,17 @@
 This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
+Date: Feb/16/2013
+Tag: PTCLM1_130216
+cesm_baseline:  scripts4_130130
+One-line:  Get supported compsets working and some progress with tools
+Testing: Limited -- but surported res work on ys
+
+M       PTCLM.py
+M       testcases.csh
+
+================================================================================        
+Originator: erik
 Date: Jan/30/2013
 Tag: PTCLM1_130130
 cesm_baseline:  scripts4_130130

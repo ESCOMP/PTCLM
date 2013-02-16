@@ -56,8 +56,9 @@ if (      $host =~ be* )then
   set rundata="/ptmp/$USER"
   set netcdf=$NETCDF
   set toolsmake=""
-else if (  $host =~ yellowstone* )then
+else if (  $host =~ ys* )then
   module load netcdf
+  module load ncl
   set parcmp=32
   set machine="yellowstone"
   set compiler="intel"
