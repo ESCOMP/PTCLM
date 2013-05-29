@@ -1,11 +1,4 @@
-scripts/ccsm_utils/Tools/lnd/clm/PTCLM/KnownBugs                   Jul/26/2011
-
-====================================================================================
-Bug number: 1379 
-all spinup tests fail for PTCLM testcases.csh
-
-All of the spinup tests fail for PTCLM on: jaguar, edinburgh, bluefire, and
-yong.
+scripts/ccsm_utils/Tools/lnd/clm/PTCLM/KnownBugs                   May/23/2013
 
 ====================================================================================
 Bug number: 1364 

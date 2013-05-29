@@ -54,7 +54,8 @@ defmyrun_units="default"  #default time units to run
 defmyrun_n=-999           #default number of time to run
 defSitesGroup = "EXAMPLE" #default site group name
 
-ccsm_input="default"
+ccsm_input=" "
+filen = " "
 
 ######  GET VERSION INFORMATION #########################################################
 
@@ -74,7 +75,7 @@ elif ( svnurl.split('/')[4] == "branch_tags" ):
 else:
    print( "Error getting version from: "+svnurl)
    os.abort()
-version="PTCLM"+str(0.5)+"_"+svnvers
+version="PTCLM"+str(0.6)+"_"+svnvers
 
 ### PARSE THE COMMAND LINE INPUT ########################################################
 
@@ -94,13 +95,10 @@ required.add_option("-s", "--site", dest="mysite", default="none", \
                   help="Site-code to run, FLUXNET code or CLM1PT name (-s list to list valid names)")
 parser.add_option_group(required)
 options  = OptionGroup( parser, "Configure and Run Options" )
-options.add_option("-c", "--compset", dest="mycompset", default="ICN", \
+options.add_option("-c", "--compset", dest="mycompset", default="ICRUCLM45BGC", \
                   help="Compset for CCSM simulation (Must be a valid 'I' compset [other than IG compsets], use -c list to list valid compsets)")
 options.add_option("--coldstart", dest="coldstart", action="store_true", default=False, \
                   help="Do a coldstart with arbitrary initial conditions")
-options.add_option("--ad_spinup", action="store_true", \
-                  dest="ad_spinup", default=False, \
-                  help="Run accelerated decomposition spinup (CN compset only)")
 options.add_option("--caseidprefix", dest="mycaseid", default="", \
                   help="Unique identifier to include as a prefix to the case name")
 options.add_option("--cesm_root", dest="base_cesm", \
@@ -108,12 +106,6 @@ options.add_option("--cesm_root", dest="base_cesm", \
                   "Root CESM directory (top level directory with models and scripts subdirs)")
 options.add_option("--debug", dest="debug", action="store_true", default=False, \
                   help="Flag to turn on debug mode so won't run, but display what would happen")
-options.add_option("--exit_spinup", action="store_true", \
-                  dest="exit_spinup", default=False, \
-                  help="Exit from accelerated decomposition spinup (CN compset only)")
-options.add_option("--final_spinup", action="store_true", \
-                  dest="final_spinup", default=False, \
-                  help="Use for one more spinup for at least 50 years in normal mode")
 options.add_option("--finidat", dest="finidat", default=" ", \
                   help="Name of finidat initial conditions file to start CLM from")
 options.add_option("--list", dest="list", default=False, action="store_true", \
@@ -190,12 +182,16 @@ def system( cmd ):
      else: rcode = 0
      if ( rcode != 0 ):
         error( "Error running command"+cmd )
+        if ( os.path.isfile(filen) ):
+           output = open( filen,'a')
+           output.write(cmd+"\n")
+           output.close
 
 def queryFilename( queryopts, filetype ):
     "query the XML database to get a filename"
     query = abs_base_cesm+"/models/lnd/clm/bld/queryDefaultNamelist.pl -silent " \
              +"-justvalue "
-    if ( ccsm_input != "default" ): 
+    if ( ccsm_input != " " ): 
        query = query + " -csmdata "+ccsm_input
     cmd = query+queryopts+" -var "+filetype
     file = os.popen( cmd )
@@ -216,7 +212,7 @@ def Get_env_Value( var ):
         error( query+" does NOT exist" );
      cmd = query+" -valonly -silent "+var;
      stdout = os.popen( cmd );
-     env_val = str.strip( stdout.read() )
+     env_val = stdout.read().rstrip( )
      print "env_val("+var+") = "+env_val+"\n";
      return env_val
 
@@ -261,9 +257,9 @@ class ICompSetsList( ContentHandler ):
      self.list = [];
    
    def startElement(self, name, attrs):
-     if name == 'compset':
-       name = str( attrs.get('NAME',"") )
-       if ( name.startswith( "I" ) and not name.endswith( "_GLC" ) and "_CLM45" in name ): 
+     if name == 'COMPSET':
+       name = str( attrs.get('sname',"") )
+       if ( name.startswith( "I" ) and not "GLC" in name and "CLM45" in name ): 
           nlen = len(self.list)
           if (   nlen == 0                 ): self.list.append( name )
           elif ( name != self.list[nlen-1] ): self.list.append( name )
@@ -284,16 +280,8 @@ if(options.list):
     mymachine = "list"
     mysite    = "list"
 if ( mysite == "none" ): parser.error("sitename is a required argument, set it to a valid value"+infohelp )
-if ( (options.ad_spinup and options.exit_spinup) or (options.exit_spinup and options.final_spinup) or \
-     (options.ad_spinup and options.final_spinup) ):
-    parser.error( "More than one spinup option is selected"+infohelp )
-if ( options.stdurbpt and (options.ad_spinup or options.exit_spinup or \
-     options.final_spinup) ):
-    parser.error( "Standard urban point namelist setup option is incompatible with ANY spinup option"+infohelp )
 if ( options.verbose and options.quiet ):
     parser.error( "options quiet and verbose are mutually exclusive"+infohelp )
-if(options.ad_spinup and options.finidat != " "):
-    parser.error( "ad_spinup and setting the finidat file are mutually exclusive"+infohelp )
 if(options.coldstart and options.finidat != " "):
     parser.error( "coldstart and setting the finidat file are mutually exclusive"+infohelp )
 
@@ -323,13 +311,6 @@ mycasename=mycasename+"_"+mycompset
 if options.useQIAN:
    mycasename+="_QIAN"
   
-if options.ad_spinup:
-   mycasename+="_ad_spinup"
-elif options.exit_spinup:
-   mycasename+="_exit_spinup"
-elif options.final_spinup:
-   mycasename+="_final_spinup"
-
 if plev>0: print "CESM Component set:\t\t\t\t\t"+mycompset
 if plev>0: print "CESM machine:\t\t\t\t\t\t"+options.mymachine
 
@@ -338,11 +319,11 @@ if base_cesm == " ":
     #assume base directory is one level up from where script
     #  is executed, if not specified
     stdout    = os.popen("cd ../../../../../..; pwd")
-    base_cesm = os.path.abspath( str.strip(stdout.read()) )
+    base_cesm = os.path.abspath( stdout.read().rstrip( ) )
     ptclm_dir = base_cesm+"/scripts/ccsm_utils/Tools/lnd/clm/PTCLM"
 else:
     stdout    = os.popen("pwd")
-    ptclm_dir = str.strip(stdout.read())
+    ptclm_dir = stdout.read().rstrip( )
 
 abs_base_cesm = os.path.abspath( base_cesm )
 if plev>0: print "Root CLM directory:\t\t\t\t\t"+abs_base_cesm
@@ -358,15 +339,6 @@ else:
    mycasename = mycase.rpartition("/")[2]
 if plev>0: print "Case name:\t\t\t\t\t\t"+mycasename
 if plev>0: print "Case directory:\t\t\t\t\t"+mycasedir
-
-ad_spinup  = options.ad_spinup
-if plev>0: print "Accelerated Decomposition mode:\t\t\t\t"+str(ad_spinup)
-
-exit_spinup = options.exit_spinup
-if plev>0: print "Exit spinup mode:\t\t\t\t\t"+str(exit_spinup)
-
-final_spinup=options.final_spinup
-if plev>0: print "Final spin up:\t\t\t\t\t\t"+str(final_spinup)
 
 useQIAN=options.useQIAN
 if plev>0: print "Using QIAN climate inputs\t\t\t\t"+str(useQIAN)
@@ -446,10 +418,10 @@ if ccsm_input == " ":
    parser.error( "inputdatadir is a required argument, set it to the directory where you have your inputdata"+infohelp )
 if plev>0: print "CCSM input data directory:\t\t\t\t"+ccsm_input
 #define data and utility directroies
-clm_tools   = abs_base_cesm+'/models/lnd/clm/tools/clm4_5'
-gen_dom_dir = abs_base_cesm+'/mapping'
-mkmapgrd_dir= clm_tools+'/mkmapgrids'
-mkmapdat_dir= clm_tools+'/mkmapdata'
+clm_tools   = abs_base_cesm+'/models/lnd/clm/tools'
+gen_dom_dir = abs_base_cesm+'/tools/mapping/gen_domain_files'
+mkmapgrd_dir= clm_tools+'/shared/mkmapgrids'
+mkmapdat_dir= clm_tools+'/shared/mkmapdata'
 clm_input   = ccsm_input+'/lnd/clm2'
 datm_input  = ccsm_input+'/atm/datm7'
 
@@ -503,10 +475,6 @@ if ( "-bgc" in clmconfigopts ):
 else:
    bgctypeCN = None;
 
-if ( bgctypeCN == None ):
-   if (ad_spinup):  parser.error( "ad_spinup only works with CN compsets"+infohelp   )
-   if (exit_spinup): parser.error( "exit_spinup only works with CN compsets"+infohelp )
-
 filen = mycase+"/README.PTCLM"
 if plev>0: print "Write "+filen+" with command line"
 output = open( filen,'w')
@@ -549,13 +517,6 @@ else:
 
 qoptionsbase   = " -options mask="+mask+",rcp="+rcp
    
-if ( ad_spinup    ): 
-   qoptionsbase += ",bgc=cn,spinup=AD"
-if ( exit_spinup  ): 
-   qoptionsbase += ",bgc=cn,spinup=exit"
-if ( final_spinup ): 
-   qoptionsbase += ",final_spinup=on"
-
 qoptions       = qoptionsbase+",sim_year="+sim_year+",sim_year_range="+sim_year_range;
 queryOpts      = " -onlyfiles -res "+clmres+clmusrdat+qoptions
 queryOptsNousr = qoptions
@@ -579,6 +540,29 @@ if (  myrun_n == defmyrun_n ):
    myrun_n     = Get_env_Value( "STOP_N"      )
 
 if plev>0: print "Number of simulation "+myrun_units+" to run:\t\t\t\t"+str(myrun_n)
+
+#####  ENV XML CHANGES ##################################################################
+
+if ( clmusrdatname != "" ):
+   xmlchange_env_value( "CLM_USRDAT_NAME", clmusrdatname )
+
+if(useQIAN):
+    xmlchange_env_value(        "DATM_MODE",             "CLM_QIAN" )
+    if(options.QIAN_tower_yrs):
+       xmlchange_env_value(     "DATM_CLMNCEP_YR_START", str(startyear) )
+       if(endyear < 2005):
+           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
+       else:
+           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   "2004" )
+else:
+    xmlchange_env_value( "DATM_MODE",             "CLM1PT" )
+    xmlchange_env_value( "DATM_CLMNCEP_YR_START", str(startyear) )
+    xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
+
+xmlchange_env_value( "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
+
+xmlchange_env_value( "MPILIB", "mpi-serial" )
+
 ############# BEGIN CREATE POINT DATASETS ###############################################
 
 
@@ -596,26 +580,22 @@ if makeptfiles:
     if plev>0: print "Creating map file for a point with no ocean"
     print "lat="+str(lat)
     ptstr = str(lat)+","+str(lon)
-    system(mkmapdat_dir+"/mknoocnmap.pl -p "+ptstr+" -name "+clmres+" > mknoocnmap.log")
-    stdout        = os.popen( "ls -1t1 "+mkmapdat_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_c*.nc" );
-    mapfile       = str.strip( stdout.read() )
-    print "mapfile="+mapfile
-    cmd           = "ls -1t1 "+mkmapgrd_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc"
+    system(mkmapdat_dir+"/mknoocnmap.pl -p "+ptstr+" -name "+clmres+" > "+mycase+"/mknoocnmap.log")
+    stdout        = os.popen( "ls -1t1 "+mkmapdat_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_c*.nc | head -1" );
+    mapfile       = stdout.read().rstrip( );
+    print "mapfile="+mapfile+"\n";
+    cmd           = "ls -1t1 "+mkmapgrd_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc | head -1"
     print "cmd="+cmd
     stdout        = os.popen( cmd )
-    scripgridfile = str.strip( stdout.read() )
-    print "scripgridfile="+scripgridfile
+    scripgridfile = stdout.read().rstrip( );
+    print "scripgridfile="+scripgridfile+"\n";
     #make mapping files needed for mksurfdata_map #######################################
     stdout = os.popen( "date +%y%m%d" );
-    sdate  = str.strip( stdout.read() )
-    cmd = mkmapdat_dir+"/mkmapdata.sh -f "+scripgridfile+" -res ";
-    cmd += clmres+" -t regional > mkmapdata.log";
+    sdate  = stdout.read().rstrip( );
+    mapdir = ptclm_dir
+    cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional > "+mycase+"/mkmapdata.log";
     system(cmd);
 
-    #make domain file needed by datm ####################################################
-    cmd = gen_dom_dir+"/gen_dom -m "+mapipgridfile+" -res ";
-    cmd += clmres+" -t regional > mkmapdata.log";
-    system(cmd);
     #make surface data and dynpft #######################################################
     if (sim_year_range != "constant"):
        pftdynfile = queryFilename( queryOpts, "fpftdyn" )
@@ -719,10 +699,10 @@ if makeptfiles:
             dynpftopts = ""
 
         # Now run mksurfdata_map  ###########################################################
-        mksurfopts = "-res usrspec -usr_gname "+clmres+"-usr_gdate "+sdate+ \
-                     " -dinlc "+ccsm_input+" -y "+mksrfyears+" -rcp "+rcp+ \
-                     soilopts+pftopts+dynpftopts
-        system(clm_tools+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > mksurfdata_map.log")
+        mksurfopts = "-res usrspec -usr_gname "+clmres+" -usr_gdate "+sdate+ \
+                     " -usr_mapdir "+mapdir+" -dinlc "+ccsm_input+" -y "+mksrfyears+ \
+                     " -rcp "+rcp+soilopts+pftopts+dynpftopts
+        system(clm_tools+"/clm4_5/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+mycasedir+"/mksurfdata_map.log")
 
         #move surface data and pftdyn file to correct location
         system("/bin/mv -f ./surfdata_"+clmres+"_*_c*.nc  "+surffile )
@@ -730,11 +710,10 @@ if makeptfiles:
         if (sim_year_range != "constant"):
             system("/bin/mv -f surfdata.pftdyn_"+clmres+"_*.nc "+pftdynfile )
 
-    #make data domain file ##############################################################
+    #make domain file needed by datm ####################################################
     if plev>0: print "Creating data domain"
-    #write gen_domain namelist with correct inputs
-
-    system(gen_dom_dir+"/gen_domain  -m "+mapfile+" -o "+ocndomainfile+" -l "+domainfile+" -c 'Running gen_domain from PTCLM' > gen_domain.log")
+    cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+ocndomainfile+" -l "+domainfile+" -c 'Running gen_domain from PTCLM' > "+mycasedir+"/gen_domain.log"
+    system(cmd);
 
     # Default PFT-physiology file used to make site-level file ##########################
     pft_phys_file  = queryFilename( queryOptsNousr, "fpftcon" )
@@ -750,48 +729,11 @@ else:
 ####### END CREATE POINT DATASETS #######################################################
 
 
-#####  ENV XML CHANGES ##################################################################
-os.chdir(mycase)
-
-if ( clmusrdatname != "" ):
-   xmlchange_env_value( "CLM_USRDAT_NAME", clmusrdatname )
-
-if(useQIAN):
-    xmlchange_env_value(        "DATM_MODE",             "CLM_QIAN" )
-    if(options.QIAN_tower_yrs):
-       xmlchange_env_value(     "DATM_CLMNCEP_YR_START", str(startyear) )
-       if(endyear < 2005):
-           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
-       else:
-           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   "2004" )
-else:
-    xmlchange_env_value( "DATM_CLMNCEP_YR_START", str(startyear) )
-    xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
-
-xmlchange_env_value( "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
-
-xmlchange_env_value( "MPILIB", "mpi-serial" )
-
-###### SET Spinup and ENV_RUN.XML VALUES ################################################
+###### SET ENV_RUN.XML VALUES ###########################################################
    
+os.chdir(mycase)
 hist_nhtfrq = 0
-if (ad_spinup):
-   hist_mfilt  = 100
-   hist_nhtfrq = -8760
-   xmlchange_env_value( "CLM_CONFIG_OPTS",     "'"+clmconfigopts+" -spinup AD'" )
-   xmlchange_env_value( "CLM_FORCE_COLDSTART", "'on'"  )
-   xmlchange_env_value( "STOP_DATE",   "06010101"       )
-elif (exit_spinup):
-   hist_mfilt  = 12
-   xmlchange_env_value( "CLM_CONFIG_OPTS",     "'"+clmconfigopts+" -spinup exit'" )
-   xmlchange_env_value( "RUN_TYPE",            "branch" )
-   xmlchange_env_value( "RUN_REFCASE",         \
-                            mycase.replace("_exit_spinup","_ad_spinup" ) )
-   xmlchange_env_value( "RUN_REFDATE",         "0601-01-01" )
-   xmlchange_env_value( "GET_REFCASE",         "FALSE" )
-elif (final_spinup):
-   hist_mfilt  = 12*int(myrun_n)
-elif(options.stdurbpt):
+if(options.stdurbpt):
    hist_mfilt  = str(myrun_n)+", "+str(myrun_n)+", "+str(myrun_n)
    hist_nhtfrq = "-1,-1,-1"
    if ( clmnmlusecase != "UNSET" and clmnmlusecase != "2000_control" ):
@@ -822,7 +764,6 @@ if ( options.coldstart ):
 ####  SET NAMELIST OPTIONS ##############################################################
 
 output = open("user_nl_clm",'w')
-#output.write("&clm_inparm\n")
 output.write(   " hist_nhtfrq = "+str(hist_nhtfrq)+"\n" )
 output.write(   " hist_mfilt  = "+str(hist_mfilt)+"\n" )
 if( pft_phys_out != "" ):
@@ -831,7 +772,6 @@ if(options.namelist != " "):
    output.write(options.namelist+"\n")
 if(finidat != " "):
    output.write(" finidat = '"+finidat+     "'\n")
-#output.write("/\n")
 output.close()
 if plev>1: os.system( "cat user_nl_clm" )
 

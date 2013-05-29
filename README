@@ -33,7 +33,7 @@ Quickstart:
 
 # ASSUMPTIONS:
 # PTCLM.py -- is ONLY configured to work with clm4_5 physics!
-# For this example I'm running the default ICLM45CN case on yellowstone using  
+# For this example I'm running the default ICLM45BGC case on yellowstone using  
 # CSMDATA in the standard location
 # For our case we will set MYCSMDATA=$HOME/inputdata (change as needed)
 # Finally we use the 6-digit AmeriFlux site code for the University of Mich. Biological

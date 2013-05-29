@@ -2,6 +2,17 @@
 This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
+Date: May/29/2013
+Tag: PTCLM1_130529
+cesm_baseline:  scripts4_130529
+One-line:  Get PTCLM working with the new CLM tools
+Testing: Limited, test mexicocity, and 1x1_US-UMB basic case setup
+
+M   PTCLM.py ------- Remove spinup options, get working with new tools
+M   testcases.csh -- Remove spinup tests, get working again
+
+================================================================================        
+Originator: erik
 Date: Feb/16/2013
 Tag: PTCLM1_130216
 cesm_baseline:  scripts4_130130
