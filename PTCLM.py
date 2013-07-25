@@ -177,11 +177,25 @@ if len(args) != 0:
 def system( cmd ):
      "system function with error checking and debug prining"
      if plev>0: print "Run command: "+cmd
+     # Error check that command exists
+     firstspace = cmd.index(" ");
+     if ( firstspace == -1 ):
+        justcmd = cmd
+     else:
+        justcmd = cmd[:firstspace]
+     if ( cmd.index("/") != -1 ):
+        if ( not os.path.exists(justcmd) ): 
+           error( "Error command does NOT exist: "+justcmd );
+     else:
+        rcode = os.system( "which "+justcmd )
+        if ( rcode != 0 ):
+           error( "Error command is NOT in path: "+justcmd )
+     # Now actually run the command if not debug or if create_newcase
      if ( not options.debug or cmd.startswith( "./create_newcase" ) ):
         rcode = os.system( cmd )
      else: rcode = 0
      if ( rcode != 0 ):
-        error( "Error running command"+cmd )
+        error( "Error running command: "+cmd )
         if ( os.path.isfile(filen) ):
            output = open( filen,'a')
            output.write(cmd+"\n")
@@ -441,6 +455,7 @@ else:
    clmusrdatname    = "1x1pt_"+mysite
    clmusrdat        = " -usrname "+clmusrdatname
    clmres           = clmusrdatname
+   clmresoro        = clmres+"_navy"
    pft_phys_file    = queryFilename( " ", "fpftcon" )
    pft_phys_out     = re.search( "(.+)\.nc$", pft_phys_file ).group(1)+"."+mysite+".nc"
    myres            = "CLM_USRDAT"  #single-point mode (don't change)
@@ -570,31 +585,35 @@ if makeptfiles:
     if plev>0: print("Making input files for the point (this may take a while if creating transient datasets)")
 
     surffile   = queryFilename( queryOpts, "fsurdat"    )
-    domainfile    = Get_env_Value( "ATM_DOMAIN_FILE"      )
-    ocndomainfile = domainfile.replace( "lnd", "ocn" )
-
-    mksrf_fnavyoro  = queryFilename( queryOptsNavy+" -namelist clmexp", "mksrf_fnavyoro" )
 
     os.chdir(ptclm_dir)
     #make map grid file and atm to ocean map ############################################
     if plev>0: print "Creating map file for a point with no ocean"
     print "lat="+str(lat)
     ptstr = str(lat)+","+str(lon)
+    if ( os.system( "which ncl" ) != 0 ): error( "ncl is NOT in path" )  # check for ncl
     system(mkmapdat_dir+"/mknoocnmap.pl -p "+ptstr+" -name "+clmres+" > "+mycase+"/mknoocnmap.log")
-    stdout        = os.popen( "ls -1t1 "+mkmapdat_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_c*.nc | head -1" );
+    stdout        = os.popen( "ls -1t1 "+mkmapdat_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_*.nc | head -1" );
     mapfile       = stdout.read().rstrip( );
+    if ( not os.path.exists( mapfile) ): error( "mapfile does NOT exist" )
     print "mapfile="+mapfile+"\n";
     cmd           = "ls -1t1 "+mkmapgrd_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc | head -1"
     print "cmd="+cmd
     stdout        = os.popen( cmd )
     scripgridfile = stdout.read().rstrip( );
     print "scripgridfile="+scripgridfile+"\n";
-    #make mapping files needed for mksurfdata_map #######################################
-    stdout = os.popen( "date +%y%m%d" );
-    sdate  = stdout.read().rstrip( );
-    mapdir = ptclm_dir
-    cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional > "+mycase+"/mkmapdata.log";
+    if ( not os.path.exists( scripgridfile) ): error( "scripgridfile does NOT exist" )
+
+    #make domain file needed by datm ####################################################
+    if plev>0: print "Creating data domain"
+    cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+clmresoro+" -l "+clmresoro+" -c 'Running gen_domain from PTCLM' > "+mycasedir+"/gen_domain.log"
     system(cmd);
+    cmd        = "ls -1t1 domain.lnd."+clmresoro+"*.nc | head -1"
+    print "cmd="+cmd
+    stdout     = os.popen( cmd )
+    domainfile = stdout.read().rstrip( );
+    if ( not os.path.exists( domainfile) ): error( "domainfile does NOT exist" )
+
 
     #make surface data and dynpft #######################################################
     if (sim_year_range != "constant"):
@@ -612,6 +631,12 @@ if makeptfiles:
         else:
            mksrfyears = sim_year_range
 
+        #make mapping files needed for mksurfdata_map #######################################
+        stdout = os.popen( "date +%y%m%d" );
+        sdate  = stdout.read().rstrip( );
+        mapdir = ptclm_dir
+        cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional > "+mycase+"/mkmapdata.log";
+        system(cmd);
         # --- use site-level data for mksurfdata_map when available ----
         #PFT information for the site
         if (options.pftgrid == False):
@@ -707,13 +732,11 @@ if makeptfiles:
         #move surface data and pftdyn file to correct location
         system("/bin/mv -f ./surfdata_"+clmres+"_*_c*.nc  "+surffile )
         system("/bin/mv -f ./surfdata_"+clmres+"_*_c*.log "+clm_input+"/surfdata" )
+        if ( not os.path.exists( surffile ) ): error( "surface file does NOT exist" )
         if (sim_year_range != "constant"):
             system("/bin/mv -f surfdata.pftdyn_"+clmres+"_*.nc "+pftdynfile )
+            if ( not os.path.exists( pftdynfile ) ): error( "pftdyn file does NOT exist" )
 
-    #make domain file needed by datm ####################################################
-    if plev>0: print "Creating data domain"
-    cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+ocndomainfile+" -l "+domainfile+" -c 'Running gen_domain from PTCLM' > "+mycasedir+"/gen_domain.log"
-    system(cmd);
 
     # Default PFT-physiology file used to make site-level file ##########################
     pft_phys_file  = queryFilename( queryOptsNousr, "fpftcon" )
@@ -732,6 +755,9 @@ else:
 ###### SET ENV_RUN.XML VALUES ###########################################################
    
 os.chdir(mycase)
+if makeptfiles:
+    xmlchange_env_value( "ATM_DOMAIN_FILE", domainfile )
+    xmlchange_env_value( "LND_DOMAIN_FILE", domainfile )
 hist_nhtfrq = 0
 if(options.stdurbpt):
    hist_mfilt  = str(myrun_n)+", "+str(myrun_n)+", "+str(myrun_n)

@@ -2,6 +2,17 @@
 This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
+Date: Jul/24/2013
+Tag: PTCLM1_130724
+cesm_baseline:  scripts4_130724
+One-line:  Add some more error checking, more changes to get things working
+Testing: Limited, basic test setup
+
+M   PTCLM.py ------- error checking, correct mapfile name, get gen_domain working,
+                     set ATM/LND_DOMAIN_FILE
+
+================================================================================        
+Originator: erik
 Date: May/29/2013
 Tag: PTCLM1_130529
 cesm_baseline:  scripts4_130529
