@@ -159,10 +159,10 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
   else
      set suprted=FALSE
   endif
-  if ( "$suprted" == "TRUE" ) set compsets = ( ICLM45CN ICLM45 ICLM45 )
+  if ( "$suprted" == "TRUE" ) set compsets = ( ICLM45CRUBGC ICLM45 ICLM45 )
   if ( "$suprted" != "TRUE" ) then
      if ( $mysite == "US-UMB" ) then
-        set compsets = ( I_1850_CLM45 I20TRCLM45 ICLM45CN I1850CLM45BGC ICLM45BGC ICLM45BGC ICLM45BGC )
+        set compsets = ( ICLM45BGC ICLM45BGC ICLM45BGC )
      else
         set compsets = ( ICLM45 ICLM45 ICLM45 )
      endif
@@ -170,7 +170,8 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
   set n=0
   set finidat="none"
   foreach compset ( $compsets )
-    if ( $compset == ICLM45 ) @ n = $n + 1
+    if ( $compset == ICLM45    ) @ n = $n + 1
+    if ( $compset == ICLM45BGC ) @ n = $n + 1
     set opt="--caseidprefix=$casedir/${caseprefix}_${n}"
     set opt="$opt --cesm_root $CESM_ROOT"
     if ( "$suprted" == "TRUE" ) then
@@ -178,7 +179,6 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
     else
       set opt="$opt --owritesrf --run_units=ndays --run_n=5"
     endif
-    if ( $compset == I20TRCLM45 || $compset == I20TRCLM45CN ) set opt="$opt --coldstart"
     set casename="${caseprefix}_${n}_${mysite}_${compset}"
     # Use QIAN forcing on second "I" compset
     if ( $n == 2 ) then
@@ -243,8 +243,8 @@ foreach mysite ( 1x1_mexicocityMEX US-UMB )
        set status=1
     endif
     source ./Tools/ccsm_getenv || exit -2
-    gunzip $RUNDIR/cpl.log*.gz
-    set CplLogFile = `ls -1t $RUNDIR/cpl.log* | head -1`
+    gunzip $CASEROOT/logs/cpl.log*.gz
+    set CplLogFile = `ls -1t $CASEROOT/logs/cpl.log* | head -1`
     set basestatus = "UNDEF"
     if ( $status != 0 )then
        set basestatus = "FAIL"

@@ -1,6 +1,20 @@
 ================================================================================
 This file describes changes made to the PTCLM tool
 ================================================================================        
+
+================================================================================        
+Originator: erik
+Date: Sep/10/2013
+Tag: PTCLM1_130910
+cesm_baseline:  scripts4_130910
+One-line:  Get rid of pft-phys file copy, fix mapping file names, correct domain file
+Testing: Limited, basic test setup
+
+M  PTCLM.py --------- Remove pft-phys file copy, fix mapping file name, correct
+                      domain file path
+M  testcases.csh ---- change compsets testing, unzip log file to check status
+
+================================================================================        
 Originator: erik
 Date: Jul/24/2013
 Tag: PTCLM1_130724

@@ -448,16 +448,13 @@ if ( suprtclm1pt ):
       error( suprtclm1ptSettings )
    clmusrdatname    = ""
    clmres           = mysite
-   pft_phys_out     = ""
    clmusrdat        = ""
    myres            = mysite
 else:
    clmusrdatname    = "1x1pt_"+mysite
    clmusrdat        = " -usrname "+clmusrdatname
    clmres           = clmusrdatname
-   clmresoro        = clmres+"_navy"
-   pft_phys_file    = queryFilename( " ", "fpftcon" )
-   pft_phys_out     = re.search( "(.+)\.nc$", pft_phys_file ).group(1)+"."+mysite+".nc"
+   clmmask          = "navy"
    myres            = "CLM_USRDAT"  #single-point mode (don't change)
 
 if plev>0: print "----------------------------------------------------------------\n"
@@ -606,9 +603,9 @@ if makeptfiles:
 
     #make domain file needed by datm ####################################################
     if plev>0: print "Creating data domain"
-    cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+clmresoro+" -l "+clmresoro+" -c 'Running gen_domain from PTCLM' > "+mycasedir+"/gen_domain.log"
+    cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+clmmask+" -l "+clmres+" -c 'Running gen_domain from PTCLM' > "+mycasedir+"/gen_domain.log"
     system(cmd);
-    cmd        = "ls -1t1 domain.lnd."+clmresoro+"*.nc | head -1"
+    cmd        = "ls -1t1 domain.lnd."+clmres+"_"+clmmask+"*.nc | head -1"
     print "cmd="+cmd
     stdout     = os.popen( cmd )
     domainfile = stdout.read().rstrip( );
@@ -635,8 +632,14 @@ if makeptfiles:
         stdout = os.popen( "date +%y%m%d" );
         sdate  = stdout.read().rstrip( );
         mapdir = ptclm_dir
-        cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional > "+mycase+"/mkmapdata.log";
-        system(cmd);
+        stdout = os.popen( "ls -1t1 "+mapdir+"/map_*_to_"+clmres+"*"+sdate+".nc | head -1" );
+        mapfile= stdout.read().rstrip( );
+        if ( not os.path.exists( mapfile) ): 
+           if plev>0: print "\n\nRe-create mapping files for surface dataset:"
+           cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional > "+mycase+"/mkmapdata.log";
+           system(cmd);
+        else:
+           if plev>0: print "\n\nDo NOT re-create mapping files:"
         # --- use site-level data for mksurfdata_map when available ----
         #PFT information for the site
         if (options.pftgrid == False):
@@ -738,14 +741,6 @@ if makeptfiles:
             if ( not os.path.exists( pftdynfile ) ): error( "pftdyn file does NOT exist" )
 
 
-    # Default PFT-physiology file used to make site-level file ##########################
-    pft_phys_file  = queryFilename( queryOptsNousr, "fpftcon" )
-
-    #create site-specific pft-physiology file (only if does NOT exist)
-    if ( not os.path.exists( pft_phys_out ) ):
-       system("/bin/cp "+pft_phys_file+" "+pft_phys_out )
-    if plev>0: print "pft_phys_file = "+pft_phys_out+"\n"
-
 else:
     print "WARNING: nopointdata option was selected.  Model will crash if the site level data have not been created\n"    
    
@@ -756,6 +751,8 @@ else:
    
 os.chdir(mycase)
 if makeptfiles:
+    xmlchange_env_value( "ATM_DOMAIN_PATH", ptclm_dir  )
+    xmlchange_env_value( "LND_DOMAIN_PATH", ptclm_dir  )
     xmlchange_env_value( "ATM_DOMAIN_FILE", domainfile )
     xmlchange_env_value( "LND_DOMAIN_FILE", domainfile )
 hist_nhtfrq = 0
@@ -792,8 +789,6 @@ if ( options.coldstart ):
 output = open("user_nl_clm",'w')
 output.write(   " hist_nhtfrq = "+str(hist_nhtfrq)+"\n" )
 output.write(   " hist_mfilt  = "+str(hist_mfilt)+"\n" )
-if( pft_phys_out != "" ):
-   output.write(" fpftcon = '"+pft_phys_out+"'\n" )
 if(options.namelist != " "):
    output.write(options.namelist+"\n")
 if(finidat != " "):
