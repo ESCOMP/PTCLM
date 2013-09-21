@@ -4,6 +4,26 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Sep/20/2013
+Tag: PTCLM1_130920
+cesm_baseline:  scripts4_130920
+One-line:  Make datafiles in mydatafiles directory
+Testing: Ran basic US-UMB, US-NR1 and 1x1_mexicocityMEX cases
+
+M       PTCLM.py
+---------------- File changes from Keith Oleson
+M       PTCLM_sitedata/Fluxnet-Canada_sitedata.txt
+M       PTCLM_sitedata/EXAMPLE_sitedata.txt
+M       PTCLM_sitedata/Fluxnet-Canada_soildata.txt
+M       PTCLM_sitedata/AmeriFlux_sitedata.txt
+M       PTCLM_sitedata/EXAMPLE_soildata.txt
+M       PTCLM_sitedata/AmeriFlux_soildata.txt
+M       PTCLM_sitedata/Fluxnet-Canada_pftdata.txt
+M       PTCLM_sitedata/EXAMPLE_pftdata.txt
+M       PTCLM_sitedata/AmeriFlux_pftdata.txt
+
+================================================================================        
+Originator: erik
 Date: Sep/10/2013
 Tag: PTCLM1_130910
 cesm_baseline:  scripts4_130910

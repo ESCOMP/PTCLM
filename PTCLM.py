@@ -56,6 +56,7 @@ defSitesGroup = "EXAMPLE" #default site group name
 
 ccsm_input=" "
 filen = " "
+histrcp = str(-999.9)
 
 ######  GET VERSION INFORMATION #########################################################
 
@@ -431,15 +432,17 @@ ccsm_input=options.ccsm_input
 if ccsm_input == " ":
    parser.error( "inputdatadir is a required argument, set it to the directory where you have your inputdata"+infohelp )
 if plev>0: print "CCSM input data directory:\t\t\t\t"+ccsm_input
-#define data and utility directroies
+#define data and utility directories
 clm_tools   = abs_base_cesm+'/models/lnd/clm/tools'
 gen_dom_dir = abs_base_cesm+'/tools/mapping/gen_domain_files'
 mkmapgrd_dir= clm_tools+'/shared/mkmapgrids'
 mkmapdat_dir= clm_tools+'/shared/mkmapdata'
 clm_input   = ccsm_input+'/lnd/clm2'
 datm_input  = ccsm_input+'/atm/datm7'
+data_dir    = ptclm_dir+'/mydatafiles'
 
-mask = "navy"
+clmphysvers = "clm4_5"
+mask        = "navy"
 if ( suprtclm1pt ):
    if plev>0: print "Did NOT find input sitename:"+mysite+" in sitedata:"+sitedata
    if plev>0: print "Assuming that this is a supported CLM1PT single-point dataset"
@@ -503,12 +506,12 @@ if (   clmnmlusecase.endswith("_transient") ):
         sim_year_range = transient.group(1)
         sim_year       = re.search( '^([0-9]+)-',    transient.group(1) ).group(1)
         rcpcase        = re.search( '^rcp([0-9.]+)', transient.group(2) )
-        if ( rcpcase == None ): rcp = -999.9
+        if ( rcpcase == None ): rcp = histrcp
         else:                   rcp = rcpcase.group(1)
      elif ( clmnmlusecase.startswith("20thC_") ):
         sim_year_range = "1850-2000"
         sim_year       = "1850"
-        rcp            = "-999.9"
+        rcp            = histrcp
      else:
         error( "Can not parse use-case name, does not follow conventions:"+clmnmlusecase )
 
@@ -519,13 +522,18 @@ elif ( clmnmlusecase.endswith("_control") ):
           if ( sim_year == None ): error( "Trouble finding sim_year from:"+clmnmlusecase )
           sim_year       = str(sim_year)
           sim_year_range = "constant"
-          rcp            = str(-999.9)
+          rcp            = histrcp
 elif ( clmnmlusecase.endswith("_pd") or clmnmlusecase == "UNSET" ):
           sim_year       = "2000"   
           sim_year_range = "constant"
-          rcp            = str(-999.9)
+          rcp            = histrcp
 else:
           error( "Can not parse use-case name:, does not follow conventions"+clmnmlusecase )
+
+if ( rcp == histrcp ):
+   pftdyntype = "hist"
+else:
+   pftdyntype = "rcp"+rcp
 
 qoptionsbase   = " -options mask="+mask+",rcp="+rcp
    
@@ -575,15 +583,27 @@ xmlchange_env_value( "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
 
 xmlchange_env_value( "MPILIB", "mpi-serial" )
 
+# Find surface datasets if one exists
+if ( sim_year_range == "constant" ):
+  pftdynfile = None
+
+surffile   = queryFilename( queryOpts, "fsurdat"    )
+if ( sim_year_range != "constant" ):
+  pftdynfile = queryFilename( queryOpts, "fpftdyn" )
+if ( not os.path.exists( surffile ) ):
+  stdout     = os.popen( "ls -1t1 "+data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_"+clmphysvers+"_*.nc | head -1" );
+  surffile   = stdout.read().rstrip( );
+if ( sim_year_range != "constant" and not os.path.exists( pftdynfile )):
+  stdout     = os.popen( "ls -1t1 "+data_dir+"/surfdata.pftdyn_"+clmres+"*_"+pftdyntype+"*_simyr"+actual_sim_year_range+"_"+clmphysvers+"_*.nc | head -1" );
+  pftdynfile = stdout.read().rstrip( );
+
 ############# BEGIN CREATE POINT DATASETS ###############################################
 
 
 if makeptfiles:
     if plev>0: print("Making input files for the point (this may take a while if creating transient datasets)")
 
-    surffile   = queryFilename( queryOpts, "fsurdat"    )
-
-    os.chdir(ptclm_dir)
+    os.chdir(data_dir)
     #make map grid file and atm to ocean map ############################################
     if plev>0: print "Creating map file for a point with no ocean"
     print "lat="+str(lat)
@@ -613,16 +633,11 @@ if makeptfiles:
 
 
     #make surface data and dynpft #######################################################
-    if (sim_year_range != "constant"):
-       pftdynfile = queryFilename( queryOpts, "fpftdyn" )
-    else:
-       pftdynfile = None
     if ( (not options.owritesrf) and os.path.exists( surffile) and \
          ((pftdynfile == None) or os.path.exists( pftdynfile ) ) ):
         print "\n\nWARNING: Use existing surface file rather than re-creating it:\t"+surffile
     else:
-        if plev>0: print "\n\nRe-create surface dataset:\t"+surffile
-        if ( os.path.exists( surffile ) ): print "Over write file: "+surffile
+        if plev>0: print "\n\nRe-create surface dataset:\t"
         if ( sim_year_range == "constant" ):
            mksrfyears = sim_year
         else:
@@ -631,12 +646,12 @@ if makeptfiles:
         #make mapping files needed for mksurfdata_map #######################################
         stdout = os.popen( "date +%y%m%d" );
         sdate  = stdout.read().rstrip( );
-        mapdir = ptclm_dir
+        mapdir = data_dir
         stdout = os.popen( "ls -1t1 "+mapdir+"/map_*_to_"+clmres+"*"+sdate+".nc | head -1" );
         mapfile= stdout.read().rstrip( );
         if ( not os.path.exists( mapfile) ): 
            if plev>0: print "\n\nRe-create mapping files for surface dataset:"
-           cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional > "+mycase+"/mkmapdata.log";
+           cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional --phys "+clmphysvers+" > "+mycase+"/mkmapdata.log";
            system(cmd);
         else:
            if plev>0: print "\n\nDo NOT re-create mapping files:"
@@ -646,7 +661,7 @@ if makeptfiles:
             if plev>0: print "Replacing PFT information in surface data file"
             os.chdir(ptclm_dir+"/PTCLM_sitedata")
             AFdatareader = csv.reader(open(pftdata, "rb"))
-            os.chdir(ptclm_dir)
+            os.chdir(data_dir)
             pft_frac=[0,0,0,0,0]
             pft_code=[0,0,0,0,0]
             found=0
@@ -680,7 +695,7 @@ if makeptfiles:
             os.chdir(ptclm_dir+"/PTCLM_sitedata")
             if plev>0: print "Replacing soil information in surface data file"
             AFdatareader = csv.reader(open(soildata, "rb"))
-            os.chdir(ptclm_dir)
+            os.chdir(data_dir)
             found=0
             for row in AFdatareader:
                 if plev>1: print " site = %9s" % row[0]
@@ -730,19 +745,35 @@ if makeptfiles:
         mksurfopts = "-res usrspec -usr_gname "+clmres+" -usr_gdate "+sdate+ \
                      " -usr_mapdir "+mapdir+" -dinlc "+ccsm_input+" -y "+mksrfyears+ \
                      " -rcp "+rcp+soilopts+pftopts+dynpftopts
-        system(clm_tools+"/clm4_5/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+mycasedir+"/mksurfdata_map.log")
+        system(clm_tools+"/"+clmphysvers+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+mycasedir+"/mksurfdata_map.log")
 
-        #move surface data and pftdyn file to correct location
-        system("/bin/mv -f ./surfdata_"+clmres+"_*_c*.nc  "+surffile )
-        system("/bin/mv -f ./surfdata_"+clmres+"_*_c*.log "+clm_input+"/surfdata" )
-        if ( not os.path.exists( surffile ) ): error( "surface file does NOT exist" )
+        stdout  = os.popen( "ls -1t1 "+data_dir+"/surfdata_"+clmres+"_simyr"+sim_year+"_*.nc | head -1" );
+        surffile= stdout.read().rstrip( );
+        stdout  = os.popen( "ls -1t1 "+data_dir+"/surfdata_"+clmres+"_simyr"+sim_year+"_*.log | head -1" );
+        logfile = stdout.read().rstrip( );
+        if ( not os.path.exists( surffile ) ): error( "surface file does NOT exist"     )
+        if ( not os.path.exists( logfile  ) ): error( "surface log file does NOT exist" )
+        if ( sim_year_range != "constant" ):
+           stdout     = os.popen( "ls -1t1 "+data_dir+"/surfdata.pftdyn_"+clmres+"_"+pftdyntype+"_simyr"+actual_sim_year_range+"_"+"_*.nc | head -1" );
+           pftdynfile = stdout.read().rstrip( );
+           if ( not os.path.exists( pftdynfile ) ): error( "pftdynfile file does NOT exist" )
+        # rename files with clm version in the filename
+        newsurffile = "surfdata_"+clmres+"_simyr"+sim_year+"_"+clmphysvers+"_c"+sdate+".nc"
+        newlogfile  = "surfdata_"+clmres+"_simyr"+sim_year+"_"+clmphysvers+"_c"+sdate+".log"
+        system("/bin/mv -f "+surffile+" "+newsurffile )
+        system("/bin/mv -f "+logfile+" "+newlogfile   )
+        surffile    = data_dir+"/"+newsurffile
         if (sim_year_range != "constant"):
-            system("/bin/mv -f surfdata.pftdyn_"+clmres+"_*.nc "+pftdynfile )
-            if ( not os.path.exists( pftdynfile ) ): error( "pftdyn file does NOT exist" )
+            newpftdynfile = "surfdata.pftdyn"+clmres+"_"+pftdyntype+"_simyr"+actual_sim_year_range+"_"+clmphysvers+"_c"+sdate+".nc"
+            system("/bin/mv -f "+pftdynfile+" "+newpftdynfile )
+            pftdynfile = data_dir+"/"+newpftdynfile
 
 
 else:
-    print "WARNING: nopointdata option was selected.  Model will crash if the site level data have not been created\n"    
+    # Make sure surface dataset exists for --nopointdata option
+    if ( not os.path.exists( surffile ) ): error( "surface dataset does NOT exist" )
+
+
    
 ####### END CREATE POINT DATASETS #######################################################
 
@@ -751,8 +782,8 @@ else:
    
 os.chdir(mycase)
 if makeptfiles:
-    xmlchange_env_value( "ATM_DOMAIN_PATH", ptclm_dir  )
-    xmlchange_env_value( "LND_DOMAIN_PATH", ptclm_dir  )
+    xmlchange_env_value( "ATM_DOMAIN_PATH", data_dir   )
+    xmlchange_env_value( "LND_DOMAIN_PATH", data_dir   )
     xmlchange_env_value( "ATM_DOMAIN_FILE", domainfile )
     xmlchange_env_value( "LND_DOMAIN_FILE", domainfile )
 hist_nhtfrq = 0
@@ -787,6 +818,9 @@ if ( options.coldstart ):
 ####  SET NAMELIST OPTIONS ##############################################################
 
 output = open("user_nl_clm",'w')
+output.write(   " fsurdat = '"+surffile+"'\n" )
+if (sim_year_range != "constant"):
+   output.write(   " fpftdyn = "+pftdynfile+"\n" )
 output.write(   " hist_nhtfrq = "+str(hist_nhtfrq)+"\n" )
 output.write(   " hist_mfilt  = "+str(hist_mfilt)+"\n" )
 if(options.namelist != " "):
