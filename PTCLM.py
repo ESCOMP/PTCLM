@@ -57,6 +57,7 @@ defSitesGroup = "EXAMPLE" #default site group name
 ccsm_input=" "
 filen = " "
 histrcp = str(-999.9)
+mydatadir   = "mydatafiles"
 
 ######  GET VERSION INFORMATION #########################################################
 
@@ -111,12 +112,14 @@ options.add_option("--finidat", dest="finidat", default=" ", \
                   help="Name of finidat initial conditions file to start CLM from")
 options.add_option("--list", dest="list", default=False, action="store_true", \
                   help="List all valid: sites, compsets, and machines")
+options.add_option("--mydatadir", dest="mydatadir", default=mydatadir \
+                  ,help="Directory of where to put (or expect) your data files (files will be under subdirectories for each site)" )
 options.add_option("--namelist", dest="namelist", default=" " \
                   ,help="List of namelist items to add to CLM namelist "+ \
                         "(example: --namelist=\"hist_fincl1='TG',hist_nhtfrq=-1\"" )
-options.add_option("--QIAN_tower_yrs",action="store_true",\
-                  dest="QIAN_tower_yrs",default=False,\
-                  help="Use the QIAN forcing data year that correspond to the tower years")
+options.add_option("--use_tower_yrs",action="store_true",\
+                  dest="use_tower_yrs",default=False,\
+                  help="Use the global forcing data year that corresponds to the tower years")
 options.add_option("--rmold", dest="rmold", action="store_true", default=False, \
                   help="Remove the old case directory before starting")
 options.add_option("--run_n", dest="myrun_n", default=defmyrun_n, \
@@ -126,14 +129,14 @@ options.add_option("--run_units", dest="myrun_units", default=defmyrun_units, \
 options.add_option("--quiet", action="store_true", \
                   dest="quiet", default=False, \
                   help="Print minimul information on what the script is doing")
+options.add_option("--cycle_forcing", action="store_true", \
+                  dest="cycle_forcing", default=False, \
+                  help="Cycle over the forcing data rather than do one run through (modifies start/end year to get this to work)")
 options.add_option("--sitegroupname", dest="sitegroup", default=defSitesGroup, \
                   help="Name of the group of sites to search for you selected site in "+ \
                   "(look for prefix group names in the PTCLM_sitedata directory)")
 options.add_option("--stdurbpt", dest="stdurbpt", default=False, action="store_true", \
                   help="If you want to setup for standard urban namelist settings")
-options.add_option("--useQIAN", dest="useQIAN", help= \
-                  "use QIAN input forcing data instead of tower site meterology data", \
-                  default=False, action="store_true")
 options.add_option("--verbose", action="store_true", \
                   dest="verbose", default=False, \
                   help="Print out extra information on what the script is doing")
@@ -262,25 +265,40 @@ class MachineList( ContentHandler ):
        self.list.append( str( attrs.get('MACH',"") ) )
 
    def endDocument(self):
-     print "\nValid Machines: "+str(self.list)+"\n\n";
+     print "\nValid Machines: "
+     for machine in self.list:
+        print str(machine)
+     print "\n\n";
 #
 # List the compsets  in the config_compsets.xml file
 #
 class ICompSetsList( ContentHandler ):
 
    def startDocument(self):
-     self.list = [];
+     self.list     = [];
+     self.map      = {};
+     self.tag      = "comment"
    
    def startElement(self, name, attrs):
+     self.tag = "comment"
      if name == 'COMPSET':
-       name = str( attrs.get('sname',"") )
-       if ( name.startswith( "I" ) and not "GLC" in name and "CLM45" in name ): 
-          nlen = len(self.list)
-          if (   nlen == 0                 ): self.list.append( name )
-          elif ( name != self.list[nlen-1] ): self.list.append( name )
+       sname  = str( attrs.get('sname',"") )
+       alias  = str( attrs.get('alias',"") )
+       desc   = ("%30s  %25s") % (sname, "("+alias+")" )
+       if ( sname.startswith( "I" ) and not "GLC" in sname ): 
+          self.list.append(  desc )
+          self.tag = desc
+          self.map[self.tag] = ""
+
+   def characters(self, content):
+     if ( self.tag != "comment" ): 
+        self.map[self.tag] += content.replace("\n","")
 
    def endDocument(self):
-     print "\nValid Compsets: "+str(self.list)+"\n\n";
+     print "\nValid Compsets: "
+     for compset in self.list:
+        print str(compset)+"\t"+self.map[compset]
+     print "\n\n";
 
 
 ###### SET OPTIONS BASED ON INPUT FROM PARSER  ##########################################
@@ -323,9 +341,6 @@ else:
 
 mycasename=mycasename+"_"+mycompset
   
-if options.useQIAN:
-   mycasename+="_QIAN"
-  
 if plev>0: print "CESM Component set:\t\t\t\t\t"+mycompset
 if plev>0: print "CESM machine:\t\t\t\t\t\t"+options.mymachine
 
@@ -354,9 +369,6 @@ else:
    mycasename = mycase.rpartition("/")[2]
 if plev>0: print "Case name:\t\t\t\t\t\t"+mycasename
 if plev>0: print "Case directory:\t\t\t\t\t"+mycasedir
-
-useQIAN=options.useQIAN
-if plev>0: print "Using QIAN climate inputs\t\t\t\t"+str(useQIAN)
 
 finidat    = options.finidat
 if (finidat == " "):
@@ -414,6 +426,7 @@ for row in AFdatareader:
         startyear=int(row[6])
         endyear=int(row[7])
         alignyear = int(row[8])
+        timestep  = int(row[9])
 
 if ( mysite == "list" ): 
   print "\nSupported CLM1PT name dataset names are:\n";
@@ -439,9 +452,11 @@ mkmapgrd_dir= clm_tools+'/shared/mkmapgrids'
 mkmapdat_dir= clm_tools+'/shared/mkmapdata'
 clm_input   = ccsm_input+'/lnd/clm2'
 datm_input  = ccsm_input+'/atm/datm7'
-data_dir    = ptclm_dir+'/mydatafiles'
+if ( options.mydatadir.startswith("/") ):
+   data_dir    = options.mydatadir
+else:
+   data_dir    = ptclm_dir+'/mydatafiles'
 
-clmphysvers = "clm4_5"
 mask        = "navy"
 if ( suprtclm1pt ):
    if plev>0: print "Did NOT find input sitename:"+mysite+" in sitedata:"+sitedata
@@ -484,11 +499,6 @@ clmnmlusecase    = Get_env_Value( "CLM_NML_USE_CASE" )
 # Get any options already set in CLM_CONFIG_OPTS and check for consistency ##############
 clmconfigopts    = Get_env_Value( "CLM_CONFIG_OPTS" )
 datmpresaero     = Get_env_Value( "DATM_PRESAERO" )
-
-if ( "-bgc" in clmconfigopts ):
-   bgctypeCN = re.search('-bgc (cn[a-z]*)', clmconfigopts )
-else:
-   bgctypeCN = None;
 
 filen = mycase+"/README.PTCLM"
 if plev>0: print "Write "+filen+" with command line"
@@ -548,6 +558,29 @@ if ( suprtclm1pt ):
     endyear    = Get_env_Value( "DATM_CLMNCEP_YR_END"   )
     alignyear  = startyear
 
+#
+# If you are trying to cycle the forcing years you need to be careful about
+# the number of years cycling over and taking leap years into account.
+#
+if ( options.cycle_forcing ):
+    numyears = endyear - startyear + 1
+    numfour = int(numyears/4)
+    # If have three years or less (numfour = 0) just repeat first year  
+    # unless first year is leap year then use next year.
+    # Since just using one year that is not a leap year endyear is startyear
+    if (numfour == 0):
+      if (startyear % 4 == 0):
+        startyear = startyear + 1
+
+      endyear  = startyear
+    else:
+      endyear = startyear + numfour * 4 - 1
+
+    alignyear = startyear
+
+clmphysvers = (re.search('-phys (clm[405_]+)', clmconfigopts )).group(1)
+if plev>0: print "CLM Physics Version: "+clmphysvers
+
 ####### ANY OTHER LAST SETTINGS BEFORE CREATING DATASETS ################################
 
 myrun_n     = options.myrun_n
@@ -566,16 +599,10 @@ if plev>0: print "Number of simulation "+myrun_units+" to run:\t\t\t\t"+str(myru
 if ( clmusrdatname != "" ):
    xmlchange_env_value( "CLM_USRDAT_NAME", clmusrdatname )
 
-if(useQIAN):
-    xmlchange_env_value(        "DATM_MODE",             "CLM_QIAN" )
-    if(options.QIAN_tower_yrs):
-       xmlchange_env_value(     "DATM_CLMNCEP_YR_START", str(startyear) )
-       if(endyear < 2005):
-           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
-       else:
-           xmlchange_env_value( "DATM_CLMNCEP_YR_END",   "2004" )
-else:
-    xmlchange_env_value( "DATM_MODE",             "CLM1PT" )
+datm_mode= Get_env_Value( "DATM_MODE" )
+if(datm_mode == "CLM_QIAN" and endyear > 2004):
+    endyear = 2004
+if(datm_mode == "CLM1PT" or options.use_tower_yrs):
     xmlchange_env_value( "DATM_CLMNCEP_YR_START", str(startyear) )
     xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
 
@@ -801,6 +828,10 @@ if ( suprtclm1pt ):
    clmconfigopts = Get_env_Value( "CLM_CONFIG_OPTS" )
    xmlchange_env_value( "CLM_CONFIG_OPTS", "'"+clmconfigopts+" -sitespf_pt "+ \
                              clmres+"'")
+else:
+   atm_ncpl = int((60 // timestep) * 24)
+   xmlchange_env_value(    "ATM_NCPL", str(atm_ncpl) )
+   xmlchange_env_value( "RUN_STARTDATE", str(alignyear)+"-01-01" )
 
 xmlchange_env_value( "STOP_N",      str(myrun_n) )
 xmlchange_env_value( "STOP_OPTION", myrun_units )
@@ -814,6 +845,7 @@ if ( options.coldstart ):
    xmlchange_env_value( "CLM_FORCE_COLDSTART", "on" )
    if ( Get_env_Value( "RUN_TYPE" ) == "hybrid" ): 
       xmlchange_env_value( "RUN_TYPE", "startup" )
+
 
 ####  SET NAMELIST OPTIONS ##############################################################
 

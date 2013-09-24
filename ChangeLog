@@ -4,6 +4,19 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Sep/23/2013
+Tag: PTCLM1_130923
+cesm_baseline:  scripts4_130916
+One-line:  Add --cycle_forcing, and --mydatadir options, remove useQIAN, rename --QIAN_tower_yrs to --use_tower_yrs
+Testing:  limited ran a couple cases
+
+M       PTCLM.py -------- Changes from Keith Oleson to cycle_forcing, check
+                          what model version is being used (clm4_0 or clm4_5) 
+                          set time-step.
+D       testcases.csh --- Remove as not working well on yellowstone
+
+================================================================================        
+Originator: erik
 Date: Sep/20/2013
 Tag: PTCLM1_130920
 cesm_baseline:  scripts4_130920
