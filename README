@@ -1,4 +1,4 @@
-scripts/PTCLM/README                                           01/29/2013
+scripts/ccsm_utils/Tools/lnd/clm/PTCLM/README                09/29/2013
 
 PTCLM is a python tool built on top of CESM1.2 for running CLM "I" cases
 for supported single-point grids, and for data from Ameriflux Tower-sites,
@@ -26,14 +26,11 @@ General Directory structure:
         for each site Also different "groups" of site-data lists, and the script to
         convert the transient years pftdyn files into pftdyn text files that
         mksurfdata can use.
-  scripts/ccsm_utils/Tools/lnd/clm/PTCLM/testcases.csh --- Test PTCLM script to run most
-        configurations, input options, and compsets
 
 Quickstart:
 
 # ASSUMPTIONS:
-# PTCLM.py -- is ONLY configured to work with clm4_5 physics!
-# For this example I'm running the default ICLM45BGC case on yellowstone using  
+# For this example I'm running the default ICLM451PT case on yellowstone using  
 # CSMDATA in the standard location
 # For our case we will set MYCSMDATA=$HOME/inputdata (change as needed)
 # Finally we use the 6-digit AmeriFlux site code for the University of Mich. Biological
@@ -49,11 +46,11 @@ cd scripts
 
 # Next build all of the clm tools you will need
 # NOTE: you do need to "gmake clean" between the builds
-cd ../models/lnd/clm/tools/mksurfdata_map
+cd ../models/lnd/clm/tools/clm4_5/mksurfdata_map
 gmake
 gmake clean
-cd ../../../../../../mapping/gen_domain_files/src
-../../../scripts/ccsm_utils/Machines/configure -mach yellowstone -compiler intel
+cd ../../../../../../tools/mapping/gen_domain_files/src
+env CCSMROOT=../../../.. ../../../../scripts/ccsm_utils/Machines/configure -mach yellowstone -compiler intel
 gmake
 gmake clean
 
@@ -69,13 +66,13 @@ mkdir 1x1pt_$SITE
 # (if other fields are available or with different names this can be changed by
 #  editing the streams file created after PTCLM.py is run)
 
-# next run PTCLM (NOTE -- MAKE SURE python IS IN YOUR PATH)
+# next run PTCLM (NOTE -- MAKE SURE python AND NCL IS IN YOUR PATH)
 cd ../../../../../scripts/ccsm_utils/Tools/lnd/clm/PTCLM
 setenv MYCASE "testPTCLM"
 ./PTCLM.py -m yellowstone_intel --case=$MYCASE --site=$SITE --csmdata=$MYCSMDATA
 
 # Finally configure, build, and run the case as normal
 cd ../../../../../$MYCASE
-./configure -case
+./cesm_setup
 ./$MYCASE.build
 ./$MYCASE.submit (or use the $MYCASE.run script to run interactively)

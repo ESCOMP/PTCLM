@@ -4,6 +4,25 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Sep/29/2013
+Tag: PTCLM1_130929
+cesm_baseline:  scripts4_130929
+One-line:  default compset: I1PTCLM45, files go under site subdir, add script to rename maps
+Testing:  limited ran mexicocity, US-UMB, US-Ha1, and BE-Vie cases
+
+M    PTCLM.py -------------------- Make default compset: I1PTCLM45, make files in resolution
+                                   subdiretory (under mydatadir)
+M    README ---------------------- Update documentation
+A    mydatafiles/renamemapfiles -- Script to rename mapping files creation date, so don't have
+                                   to recreate mapping files again.
+
+Remove directory NOT needed anymore...
+
+D         usr_files/mkgriddata.TEMPLATE
+D         usr_files
+
+================================================================================        
+Originator: erik
 Date: Sep/23/2013
 Tag: PTCLM1_130923
 cesm_baseline:  scripts4_130916

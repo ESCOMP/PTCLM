@@ -97,7 +97,7 @@ required.add_option("-s", "--site", dest="mysite", default="none", \
                   help="Site-code to run, FLUXNET code or CLM1PT name (-s list to list valid names)")
 parser.add_option_group(required)
 options  = OptionGroup( parser, "Configure and Run Options" )
-options.add_option("-c", "--compset", dest="mycompset", default="ICRUCLM45BGC", \
+options.add_option("-c", "--compset", dest="mycompset", default="I1PTCLM45", \
                   help="Compset for CCSM simulation (Must be a valid 'I' compset [other than IG compsets], use -c list to list valid compsets)")
 options.add_option("--coldstart", dest="coldstart", action="store_true", default=False, \
                   help="Do a coldstart with arbitrary initial conditions")
@@ -119,7 +119,7 @@ options.add_option("--namelist", dest="namelist", default=" " \
                         "(example: --namelist=\"hist_fincl1='TG',hist_nhtfrq=-1\"" )
 options.add_option("--use_tower_yrs",action="store_true",\
                   dest="use_tower_yrs",default=False,\
-                  help="Use the global forcing data year that corresponds to the tower years")
+                  help="Use the global forcing data year that corresponds to the tower years (for compsets with global forcing)")
 options.add_option("--rmold", dest="rmold", action="store_true", default=False, \
                   help="Remove the old case directory before starting")
 options.add_option("--run_n", dest="myrun_n", default=defmyrun_n, \
@@ -446,17 +446,6 @@ if ccsm_input == " ":
    parser.error( "inputdatadir is a required argument, set it to the directory where you have your inputdata"+infohelp )
 if plev>0: print "CCSM input data directory:\t\t\t\t"+ccsm_input
 #define data and utility directories
-clm_tools   = abs_base_cesm+'/models/lnd/clm/tools'
-gen_dom_dir = abs_base_cesm+'/tools/mapping/gen_domain_files'
-mkmapgrd_dir= clm_tools+'/shared/mkmapgrids'
-mkmapdat_dir= clm_tools+'/shared/mkmapdata'
-clm_input   = ccsm_input+'/lnd/clm2'
-datm_input  = ccsm_input+'/atm/datm7'
-if ( options.mydatadir.startswith("/") ):
-   data_dir    = options.mydatadir
-else:
-   data_dir    = ptclm_dir+'/mydatafiles'
-
 mask        = "navy"
 if ( suprtclm1pt ):
    if plev>0: print "Did NOT find input sitename:"+mysite+" in sitedata:"+sitedata
@@ -474,6 +463,22 @@ else:
    clmres           = clmusrdatname
    clmmask          = "navy"
    myres            = "CLM_USRDAT"  #single-point mode (don't change)
+
+clm_tools   = abs_base_cesm+'/models/lnd/clm/tools'
+gen_dom_dir = abs_base_cesm+'/tools/mapping/gen_domain_files'
+mkmapgrd_dir= clm_tools+'/shared/mkmapgrids'
+mkmapdat_dir= clm_tools+'/shared/mkmapdata'
+clm_input   = ccsm_input+'/lnd/clm2'
+datm_input  = ccsm_input+'/atm/datm7'
+
+if ( options.mydatadir.startswith("/") ):
+   data_dir    = options.mydatadir
+else:
+   data_dir    = ptclm_dir+'/mydatafiles'
+
+if ( not suprtclm1pt ):
+   data_dir    = data_dir+"/"+clmusrdatname
+   if ( not os.path.exists( data_dir ) ): system( "mkdir -p "+data_dir )
 
 if plev>0: print "----------------------------------------------------------------\n"
 
@@ -674,14 +679,10 @@ if makeptfiles:
         stdout = os.popen( "date +%y%m%d" );
         sdate  = stdout.read().rstrip( );
         mapdir = data_dir
-        stdout = os.popen( "ls -1t1 "+mapdir+"/map_*_to_"+clmres+"*"+sdate+".nc | head -1" );
-        mapfile= stdout.read().rstrip( );
-        if ( not os.path.exists( mapfile) ): 
-           if plev>0: print "\n\nRe-create mapping files for surface dataset:"
-           cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional --phys "+clmphysvers+" > "+mycase+"/mkmapdata.log";
-           system(cmd);
-        else:
-           if plev>0: print "\n\nDo NOT re-create mapping files:"
+        # mkmapdata.sh remembers where it is (although it starts over for a new date)
+        if plev>0: print "\n\nRe-create mapping files for surface dataset:"
+        cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional --phys "+clmphysvers+" > "+mycase+"/mkmapdata.log";
+        system(cmd);
         # --- use site-level data for mksurfdata_map when available ----
         #PFT information for the site
         if (options.pftgrid == False):
