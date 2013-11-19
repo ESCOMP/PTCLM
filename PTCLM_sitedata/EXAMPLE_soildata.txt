@@ -1,5 +1,5 @@
 site_code,soil_depth,n_layers,layer_depth,layer_sand%,layer_clay%
-CHATS,-999,1,-999,10.0,35.0
+US-CHATS,-999,1,-999,10.0,35.0
 US-FPe,-999,1,-999,47.0,21.0
 CA-Let,-999,1,-999,28.0,36.0
 US-NR1,-999,1,-999,43.13,21.43

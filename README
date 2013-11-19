@@ -1,7 +1,7 @@
-scripts/ccsm_utils/Tools/lnd/clm/PTCLM/README                09/29/2013
+models/lnd/clm/tools/shared/PTCLM/README                11/19/2013
 
-PTCLM is a python tool built on top of CESM1.2 for running CLM "I" cases
-for supported single-point grids, and for data from Ameriflux Tower-sites,
+PTCLM is a python tool built on top of CLM tools and CESM scripts
+for building datasets to run CLM "I" cases for data from Ameriflux Tower-sites,
 or other user-supplied single-point datasets.
 
 Original Authors:
@@ -30,49 +30,44 @@ General Directory structure:
 Quickstart:
 
 # ASSUMPTIONS:
-# For this example I'm running the default ICLM451PT case on yellowstone using  
+# For this example I'm running a ICLM451PT case on yellowstone using  
 # CSMDATA in the standard location
-# For our case we will set MYCSMDATA=$HOME/inputdata (change as needed)
 # Finally we use the 6-digit AmeriFlux site code for the University of Mich. Biological
 # Station US-UMB (data for this station is checked into the inputdata repository).
 # I also assume you are using UNIX C-shell, and GNU make is called gmake
 setenv CSMDATA   /glade/p/cesm/cseg/inputdata
-setenv MYCSMDATA $HOME/inputdata
 setenv SITE      US-UMB
 
-# First link the standard input files to a location you have write access
-cd scripts
-./link_dirtree $CSMDATA $MYCSMDATA
+
+cd models/lnd/clm/tools/shared/PTCLM
+setenv MYUSRDATA `pwd`/mydatafiles
 
 # Next build all of the clm tools you will need
-# NOTE: you do need to "gmake clean" between the builds
-cd ../models/lnd/clm/tools/clm4_5/mksurfdata_map
-gmake
-gmake clean
-cd ../../../../../../tools/mapping/gen_domain_files/src
-env CCSMROOT=../../../.. ../../../../scripts/ccsm_utils/Machines/configure -mach yellowstone -compiler intel
-gmake
-gmake clean
+# The following script assumes yellowstone_intel, for other machines
+# you'll need to build each tool by hand
+./buildtools
 
 # Next copy the towersite meterology datafiles into your $MYCSMDATA space
 # (For the US-UMB station you can skip this step as the .build step will bring the data over)
 
-cd $MYCSMDATA/atm/datm7/CLM1PT_data
-mkdir 1x1pt_$SITE
+mkdir -p $MYUSRDATA/1x1pt_$SITE/CLM1PT_data
 # Copy meteorology data NetCDF files into 1x1pt_$SITE sub-directory 
 # (with filenames of yyyy-mm.nc)
 # The variables assumed to be on the files are: 
 #     ZBOT, TBOT, RH, WIND, PRECTmms, FSDS, PSRF, FLDS
 # (if other fields are available or with different names this can be changed by
-#  editing the streams file created after PTCLM.py is run)
+#  editing the streams file in your case)
 
 # next run PTCLM (NOTE -- MAKE SURE python AND NCL IS IN YOUR PATH)
-cd ../../../../../scripts/ccsm_utils/Tools/lnd/clm/PTCLM
+./PTCLM.py -m yellowstone_intel -s $SITE -d $MYCSMDATA
+
+# Then create a case using the data you just created
 setenv MYCASE "testPTCLM"
-./PTCLM.py -m yellowstone_intel --case=$MYCASE --site=$SITE --csmdata=$MYCSMDATA
+cd ../../../../../../scripts
+./create_newcase -user_mods_dir $MYCSMDATA/1x1pt_$SITE -case $MYCASE -res CLM_USRDAT -compset ICLM451PT -mach yellowstone_intel
 
 # Finally configure, build, and run the case as normal
-cd ../../../../../$MYCASE
+cd $MYCASE
 ./cesm_setup
 ./$MYCASE.build
-./$MYCASE.submit (or use the $MYCASE.run script to run interactively)
+./$MYCASE.submit

@@ -4,6 +4,34 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Nov/19/2013
+Tag: PTCLM2_131119
+One-line:  Remove create_newcase call from PTCLM, just create datasets
+Testing:  limited setup for US-UMB case on yellowstone
+Requires: scripts4_131119
+
+Change PTCLM to JUST be a tool that creates datasets rather than also
+creates a case for you. Running create_newcase is now a seperate step
+that you use the -user_mods_dir option with.
+
+There are some issues with this version. But, it has basic functionality.
+
+The xmlchange_xcmnds file that is created has many fields multiple times. The
+dataset location is also screwy.
+
+Change name for CHATS datasite to US-CHATS so name is more similar to the
+other FluxNet sites. CHATS is an experiment that NCAR ran.
+
+A buildtools -- new script to build all the tools needed for PTCLM
+M PTCLM.py ---- Change so that only creates datasets, does NOT run create_newcase
+M README ------ Update documentation
+
+M PTCLM_sitedata/EXAMPLE_sitedata.txt -- Add campaign name to end
+M PTCLM_sitedata/EXAMPLE_soildata.txt -- Change CHATS to US-CHATS
+M PTCLM_sitedata/EXAMPLE_pftdata.txt --- Change CHATS to US-CHATS
+
+================================================================================        
+Originator: erik
 Date: Sep/29/2013
 Tag: PTCLM1_130929
 cesm_baseline:  scripts4_130929
