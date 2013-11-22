@@ -50,8 +50,6 @@ def error( desc ):
 
 #configure case options          
 #run time defaults
-defmyrun_units="default"  #default time units to run
-defmyrun_n=-999           #default number of time to run
 defSitesGroup = "EXAMPLE" #default site group name
 
 cesm_input    = " "
@@ -60,7 +58,6 @@ histrcp       = str(-999.9)
 mydatadir     = "mydatafiles"
 clmphysvers   = "clm4_5"
 clmnmlusecase = "2000_control"
-datm_mode     = "CLM1PT"
 
 ######  GET VERSION INFORMATION #########################################################
 
@@ -106,25 +103,18 @@ options.add_option("--cesm_root", dest="base_cesm", \
 options.add_option("--debug", dest="debug", action="store_true", default=False, \
                   help="Flag to turn on debug mode so won't run, but display what would happen")
 options.add_option("--clmnmlusecase", dest="clmnmlusecase", default=clmnmlusecase, \
-                  help="CLM namelist use case to use" )
-options.add_option("--datm_mode", dest="datm_mode", default=datm_mode, \
-                  help="DATM_MODE to use" )
+                  help="CLM namelist use case to use (default:"+clmnmlusecase+")" )
 options.add_option("--phys", dest="clmphysvers", default=clmphysvers, \
-                  help="CLM physics version to use" )
+                  help="CLM physics version to use (default:" +clmphysvers+")")
 options.add_option("--list", dest="list", default=False, action="store_true", \
                   help="List all valid: sites and machines")
 options.add_option("--mydatadir", dest="mydatadir", default=mydatadir \
-                  ,help="Directory of where to put your data files (files will be under subdirectories for each site)" )
-options.add_option("--namelist", dest="namelist", default=" " \
-                  ,help="List of namelist items to add to CLM namelist "+ \
-                        "(example: --namelist=\"hist_fincl1='TG',hist_nhtfrq=-1\"" )
-options.add_option("--use_tower_yrs",action="store_true",\
-                  dest="use_tower_yrs",default=False,\
-                  help="Use the global forcing data year that corresponds to the tower years (for cases using global forcing)")
-options.add_option("--run_n", dest="myrun_n", default=defmyrun_n, \
-                  help="Number of time units to run simulation" )
-options.add_option("--run_units", dest="myrun_units", default=defmyrun_units, \
-                  help="Time units to run simulation (steps,days,years, etc.)")
+                  ,help="Directory of where to put your data files (files will be under subdirectories for each site)"+\
+                        " (default: "+mydatadir+")" )
+options.add_option("--donot_use_tower_yrs",action="store_false",\
+                  dest="use_tower_yrs",default=True,\
+                  help="Do NOT use the data years that correspond to the tower years "+\
+                       "(when you plan on using global forcing)" )
 options.add_option("--quiet", action="store_true", \
                   dest="quiet", default=False, \
                   help="Print minimul information on what the script is doing")
@@ -207,15 +197,28 @@ def queryFilename( queryopts, filetype ):
        error( "Trouble finding file from XML database: "+filetype )
     return( filename.replace( "\n", "" ) )
 
-def xmlchange_env_value( var, value ):
+def setup_case_files( ):
+     "Setup the user_nl_clm and xmlchange_cmnds files"
+     filex = data_dir+"/xmlchange_cmnds"
+     output = open( filex,'w')
+     output.write("# xmlchange commands written by PTCLM:\n")
+     output.write("# "+cmdline+"\n")
+     output.close
+     system( "/bin/chmod +x "+filex )
+     usernlclm = data_dir+"/user_nl_clm"
+     output = open( usernlclm,'w')
+     output.write("! user_nl_clm namelist options written by PTCLM:\n")
+     output.write("! "+cmdline+"\n")
+     output.close
+     return( filex, usernlclm )
+
+def xmlchange_env_value( filex, var, value ):
      'Function to set the value of a variable in one of the env_*.xml files'
      change = "./xmlchange"
      cmd = change+" "+var+"="+value
-     filex = data_dir+"/xmlchange_cmnds"
      output = open( filex,'a')
      output.write(cmd+"\n")
      output.close
-     system( "/bin/chmod +x "+filex )
 
 def write_datm_namelistdefaults_file( dir ):
      "Write namelist_defaults_datm.xml file"
@@ -299,16 +302,15 @@ if plev>0: print "Site name:\t\t\t\t\t\t"+mysite+"\n"
 
 if plev>0: print "CESM machine:\t\t\t\t\t\t"+options.mymachine
 
+stdout    = os.popen("pwd")
+cwd       = os.path.abspath( stdout.read().rstrip( ) )
+ptclm_dir = cwd
 base_cesm = options.base_cesm
 if base_cesm == " ":
-    #assume base directory is one level up from where script
+    #assume base directory is six levels up from where script
     #  is executed, if not specified
     stdout    = os.popen("cd ../../../../../..; pwd")
     base_cesm = os.path.abspath( stdout.read().rstrip( ) )
-    ptclm_dir = base_cesm+"/scripts/ccsm_utils/Tools/lnd/clm/PTCLM"
-else:
-    stdout    = os.popen("pwd")
-    ptclm_dir = stdout.read().rstrip( )
 
 abs_base_cesm = os.path.abspath( base_cesm )
 if plev>0: print "Root CLM directory:\t\t\t\t\t"+abs_base_cesm
@@ -469,25 +471,19 @@ if plev>0: print "CLM Physics Version: "+options.clmphysvers
 
 ####### ANY OTHER LAST SETTINGS BEFORE CREATING DATASETS ################################
 
-myrun_n     = options.myrun_n
-myrun_units = options.myrun_units
-
-
 #####  ENV XML CHANGES ##################################################################
+filex, usernlclm = setup_case_files( )
 
 if ( clmusrdatname != "" ):
-   xmlchange_env_value( "CLM_USRDAT_NAME", clmusrdatname )
+   xmlchange_env_value( filex, "CLM_USRDAT_NAME", clmusrdatname )
 
-datm_mode= options.datm_mode
-if(datm_mode == "CLM_QIAN" and endyear > 2004):
-    endyear = 2004
-if(datm_mode == "CLM1PT" or options.use_tower_yrs):
-    xmlchange_env_value( "DATM_CLMNCEP_YR_START", str(startyear) )
-    xmlchange_env_value( "DATM_CLMNCEP_YR_END",   str(endyear) )
+if(options.use_tower_yrs):
+    xmlchange_env_value( filex, "DATM_CLMNCEP_YR_START", str(startyear) )
+    xmlchange_env_value( filex, "DATM_CLMNCEP_YR_END",   str(endyear) )
 
-xmlchange_env_value( "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
+xmlchange_env_value( filex, "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
 
-xmlchange_env_value( "MPILIB", "mpi-serial" )
+xmlchange_env_value( filex, "MPILIB", "mpi-serial" )
 
 ############# BEGIN CREATE POINT DATASETS ###############################################
 
@@ -660,33 +656,22 @@ else:
 ###### SET ENV_RUN.XML VALUES ###########################################################
    
 os.chdir(data_dir)
-xmlchange_env_value( "ATM_DOMAIN_PATH", data_dir   )
-xmlchange_env_value( "LND_DOMAIN_PATH", data_dir   )
-xmlchange_env_value( "ATM_DOMAIN_FILE", domainfile )
-xmlchange_env_value( "LND_DOMAIN_FILE", domainfile )
+xmlchange_env_value( filex, "ATM_DOMAIN_PATH", data_dir   )
+xmlchange_env_value( filex, "LND_DOMAIN_PATH", data_dir   )
+xmlchange_env_value( filex, "ATM_DOMAIN_FILE", domainfile )
+xmlchange_env_value( filex, "LND_DOMAIN_FILE", domainfile )
 
-xmlchange_env_value( "CALENDAR",        "GREGORIAN" )
-xmlchange_env_value( "DOUT_S",          "FALSE" )
+xmlchange_env_value( filex, "CALENDAR",        "GREGORIAN" )
+xmlchange_env_value( filex, "DOUT_S",          "FALSE" )
 hist_nhtfrq = 0
 hist_mfilt  = 1200
 
 atm_ncpl = int((60 // timestep) * 24)
-xmlchange_env_value(    "ATM_NCPL", str(atm_ncpl) )
-xmlchange_env_value( "RUN_STARTDATE", str(alignyear)+"-01-01" )
-xmlchange_env_value( "DATM_CLMNCEP_YR_ALIGN", str(alignyear) )
+xmlchange_env_value( filex,    "ATM_NCPL", str(atm_ncpl) )
+xmlchange_env_value( filex, "RUN_STARTDATE", str(alignyear)+"-01-01" )
+xmlchange_env_value( filex, "DATM_CLMNCEP_YR_ALIGN", str(alignyear) )
 
-#default simulation length for different types of runs
-if (  myrun_units != defmyrun_units ):
-   xmlchange_env_value( "STOP_OPTION", myrun_units )
-   xmlchange_env_value( "REST_OPTION", str(myrun_units) )
-if (  myrun_n != defmyrun_n ):
-   xmlchange_env_value( "STOP_N",      str(myrun_n) )
-   rest_n = max( 1, int(myrun_n) // 5 )
-   xmlchange_env_value( "REST_N",      str(rest_n)     )
-
-if plev>0: print "Number of simulation "+myrun_units+" to run:\t\t\t\t"+str(myrun_n)
-
-xmlchange_env_value( "DIN_LOC_ROOT", cesm_input   )
+xmlchange_env_value( filex, "DIN_LOC_ROOT", cesm_input   )
 
 
 ####  NAMELIST DEFAULTS FILE MODIFICATIONS ##############################################
@@ -695,14 +680,12 @@ if ( os.path.isdir(datm_dir) ):
    write_datm_namelistdefaults_file( datm_dir )
 
 ####  SET NAMELIST OPTIONS ##############################################################
-output = open("user_nl_clm",'w')
+output = open(usernlclm,'a')
 output.write(   " fsurdat = '"+surffile+"'\n" )
 if (sim_year_range != "constant"):
    output.write(   " fpftdyn = "+pftdynfile+"\n" )
 output.write(   " hist_nhtfrq = "+str(hist_nhtfrq)+"\n" )
 output.write(   " hist_mfilt  = "+str(hist_mfilt)+"\n" )
-if(options.namelist != " "):
-   output.write(options.namelist+"\n")
 output.close()
 if plev>1: os.system( "/bin/cat user_nl_clm" )
 

@@ -40,17 +40,24 @@ setenv SITE      US-UMB
 
 
 cd models/lnd/clm/tools/shared/PTCLM
-setenv MYUSRDATA `pwd`/mydatafiles
+setenv MYDATAFILES `pwd`/mydatafiles
 
 # Next build all of the clm tools you will need
 # The following script assumes yellowstone_intel, for other machines
 # you'll need to build each tool by hand
 ./buildtools
+# next run PTCLM (NOTE -- MAKE SURE python AND NCL IS IN YOUR PATH)
+# NOTE: Every day you run PTCLM it will remake the map called
+#       renamemapfiles to rename files with todays creation date.
+#       This makes running PTCLM a reasonable amount of time.
+#       However, you can use the script in mydatafiles
+#
+./PTCLM.py -m yellowstone_intel -s $SITE -d $CSMDATA
 
-# Next copy the towersite meterology datafiles into your $MYCSMDATA space
-# (For the US-UMB station you can skip this step as the .build step will bring the data over)
-
-mkdir -p $MYUSRDATA/1x1pt_$SITE/CLM1PT_data
+# Next copy the towersite meterology datafiles into your $MYDATAFILES space
+# (For the US-UMB station you can skip this step as the .build step will bring the data over) 
+cd $MYDATAFILES/1x1pt_$SITE
+mkdir $MYDATAFILES/1x1pt_$SITE/CLM1PT_data
 # Copy meteorology data NetCDF files into 1x1pt_$SITE sub-directory 
 # (with filenames of yyyy-mm.nc)
 # The variables assumed to be on the files are: 
@@ -58,13 +65,10 @@ mkdir -p $MYUSRDATA/1x1pt_$SITE/CLM1PT_data
 # (if other fields are available or with different names this can be changed by
 #  editing the streams file in your case)
 
-# next run PTCLM (NOTE -- MAKE SURE python AND NCL IS IN YOUR PATH)
-./PTCLM.py -m yellowstone_intel -s $SITE -d $MYCSMDATA
-
 # Then create a case using the data you just created
 setenv MYCASE "testPTCLM"
 cd ../../../../../../scripts
-./create_newcase -user_mods_dir $MYCSMDATA/1x1pt_$SITE -case $MYCASE -res CLM_USRDAT -compset ICLM451PT -mach yellowstone_intel
+./create_newcase -user_mods_dir $MYDATAFILES/1x1pt_$SITE -case $MYCASE -res CLM_USRDAT -compset ICLM451PT -mach yellowstone_intel
 
 # Finally configure, build, and run the case as normal
 cd $MYCASE

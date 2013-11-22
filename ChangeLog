@@ -4,6 +4,25 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Nov/22/2013
+Tag: PTCLM2_131122
+One-line:  Add more documentation, remove some case settings not needed, make
+work a bit cleaner
+Testing:  limited setup for US-UMB case on yellowstone
+Requires: scripts4_131122
+
+>>>> Add README file for the sample mydatafiles directory
+A https://svn-ccsm-models.cgd.ucar.edu/PTCLM/trunk_tags/PTCLM2_131119/mydatafiles/README
+
+M https://svn-ccsm-models.cgd.ucar.edu/PTCLM/trunk_tags/PTCLM2_131119/PTCLM.py
+-- remove some options not needed. Fix directory, and setup user_nl_clm and
+xmlchange_cmnds files.
+M https://svn-ccsm-models.cgd.ucar.edu/PTCLM/trunk_tags/PTCLM2_131119/README
+-- update doc...
+
+
+================================================================================        
+Originator: erik
 Date: Nov/19/2013
 Tag: PTCLM2_131119
 One-line:  Remove create_newcase call from PTCLM, just create datasets
