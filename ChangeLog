@@ -5,11 +5,50 @@ This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
 Date: Nov/22/2013
+Tag: PTCLM2_131122b
+One-line:  Rename a bunch of files, add US-UMB sample data
+Testing:  limited setup for US-UMB case on yellowstone
+
+Rename files to new names:
+
+A  +    PTCLMmkdata
+A  +    PTCLM_sitedata/PTCLMDATA_pftdata.txt
+A  +    PTCLM_sitedata/PTCLMDATA_sitedata.txt
+A  +    PTCLM_sitedata/PTCLMDATA_soildata.txt
+
+A       mydatafiles/1x1pt_US-UMB ---- sample directory for US-UMB site
+
+D       PTCLM.py
+D       PTCLM_sitedata/EXAMPLE_sitedata.txt
+D       PTCLM_sitedata/EXAMPLE_soildata.txt
+D       PTCLM_sitedata/EXAMPLE_pftdata.txt
+
+>>>>> Remove other site data files as we already have
+      a lot of sample data in the PTCLMDATA file set.
+D       PTCLM_sitedata/LBA_pftdata.txt
+D       PTCLM_sitedata/LBA_sitedata.txt
+D       PTCLM_sitedata/LBA_soildata.txt
+D       PTCLM_sitedata/Fluxnet-Canada_sitedata.txt
+D       PTCLM_sitedata/Fluxnet-Canada_soildata.txt
+D       PTCLM_sitedata/Fluxnet-Canada_pftdata.txt
+D       PTCLM_sitedata/AmeriFlux_sitedata.txt
+D       PTCLM_sitedata/AmeriFlux_soildata.txt
+D       PTCLM_sitedata/AmeriFlux_pftdata.txt
+D       PTCLM_sitedata/CarboEurope_pftdata.txt
+D       PTCLM_sitedata/CarboEurope_sitedata.txt
+D       PTCLM_sitedata/CarboEurope_soildata.txt
+
+>>>>>> Update documentation
+M       KnownBugs
+M       README
+
+================================================================================        
+Originator: erik
+Date: Nov/22/2013
 Tag: PTCLM2_131122
 One-line:  Add more documentation, remove some case settings not needed, make
 work a bit cleaner
 Testing:  limited setup for US-UMB case on yellowstone
-Requires: scripts4_131122
 
 >>>> Add README file for the sample mydatafiles directory
 A https://svn-ccsm-models.cgd.ucar.edu/PTCLM/trunk_tags/PTCLM2_131119/mydatafiles/README

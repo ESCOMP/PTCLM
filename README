@@ -1,6 +1,6 @@
-models/lnd/clm/tools/shared/PTCLM/README                11/19/2013
+models/lnd/clm/tools/shared/PTCLM/README                11/22/2013
 
-PTCLM is a python tool built on top of CLM tools and CESM scripts
+PTCLMmkdata is a python tool built on top of CLM tools and CESM scripts
 for building datasets to run CLM "I" cases for data from Ameriflux Tower-sites,
 or other user-supplied single-point datasets.
 
@@ -20,12 +20,19 @@ Erik Kluzek (NCAR)
 
 General Directory structure:
 
-  scripts/ccsm_utils/Tools/lnd/clm/PTCLM/PTCLM.py -------- Main script
-  scripts/ccsm_utils/Tools/lnd/clm/PTCLM/PTCLM_sitedata  - Site data files of 
+  models/lnd/clm/tools/shared/PTCLM/PTCLMmkdata ----- Main script
+  models/lnd/clm/tools/shared/PTCLM/PTCLM_sitedata  - Site data files of 
         static information latitude, longitude, soil info., and PFT information 
         for each site Also different "groups" of site-data lists, and the script to
         convert the transient years pftdyn files into pftdyn text files that
         mksurfdata can use.
+  models/lnd/clm/tools/shared/PTCLM/mydatafiles ----- Default location of
+        data files that will be created by PTCLMmkdata. Sites will be built
+        in their own subdirectories under here. Optionally you can give your
+        own location you'd like to use for your data.
+  models/lnd/clm/tools/shared/PTCLM/buildtools ------ Script to build the CLM
+        tools needed to run PTCLMmkdata (mksurfdata_map both clm4_0 and clm4_5
+        versions and gen_domain). Works on yellowstone.
 
 Quickstart:
 
@@ -46,13 +53,13 @@ setenv MYDATAFILES `pwd`/mydatafiles
 # The following script assumes yellowstone_intel, for other machines
 # you'll need to build each tool by hand
 ./buildtools
-# next run PTCLM (NOTE -- MAKE SURE python AND NCL IS IN YOUR PATH)
-# NOTE: Every day you run PTCLM it will remake the map called
+# next run PTCLMmkdata (NOTE -- MAKE SURE python AND NCL IS IN YOUR PATH)
+# NOTE: Every day you run PTCLMmkdata it will remake the map called
 #       renamemapfiles to rename files with todays creation date.
-#       This makes running PTCLM a reasonable amount of time.
+#       This makes running PTCLMmkdata a reasonable amount of time.
 #       However, you can use the script in mydatafiles
 #
-./PTCLM.py -m yellowstone_intel -s $SITE -d $CSMDATA
+./PTCLMmkdata -m yellowstone_intel -s $SITE -d $CSMDATA
 
 # Next copy the towersite meterology datafiles into your $MYDATAFILES space
 # (For the US-UMB station you can skip this step as the .build step will bring the data over) 

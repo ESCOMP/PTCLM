@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #########################################################################################
 #
-# PTCLM.py
+# PTCLMmkdata
 #
 # Python script to create datasets to run point simulations of CLM4
 # using Tower Datasets for Ameriflux tower sites, using the CESM1
@@ -17,9 +17,9 @@
 #
 #  Modified by Erik Kluzek (NCAR) to be incorporated as a standard part of CLM4.
 #
-#  For help on PTCLM.py type:
+#  For help on PTCLMmkdata type:
 #
-#   PTCLM.py --help
+#   PTCLMmkdata --help
 #
 #  Also see the README file
 #
@@ -50,7 +50,7 @@ def error( desc ):
 
 #configure case options          
 #run time defaults
-defSitesGroup = "EXAMPLE" #default site group name
+defSitesGroup = "PTCLMDATA" #default site group name
 
 cesm_input    = " "
 filen         = " "
@@ -62,7 +62,7 @@ clmnmlusecase = "2000_control"
 ######  GET VERSION INFORMATION #########################################################
 
 if sys.version_info < (2, 4):
-    error( "The version of Python being used is too old for PTCLM" )
+    error( "The version of Python being used is too old for PTCLMmkdata" )
 
 
 svnurl="$HeadURL$"
@@ -201,13 +201,13 @@ def setup_case_files( ):
      "Setup the user_nl_clm and xmlchange_cmnds files"
      filex = data_dir+"/xmlchange_cmnds"
      output = open( filex,'w')
-     output.write("# xmlchange commands written by PTCLM:\n")
+     output.write("# xmlchange commands written by PTCLMmkdata:\n")
      output.write("# "+cmdline+"\n")
      output.close
      system( "/bin/chmod +x "+filex )
      usernlclm = data_dir+"/user_nl_clm"
      output = open( usernlclm,'w')
-     output.write("! user_nl_clm namelist options written by PTCLM:\n")
+     output.write("! user_nl_clm namelist options written by PTCLMmkdata:\n")
      output.write("! "+cmdline+"\n")
      output.close
      return( filex, usernlclm )
@@ -295,7 +295,7 @@ soildata=SitesGroup+"_soildata.txt"
 pftdata=SitesGroup+"_pftdata.txt"
 
 
-if plev>0: print "---------------- PTCLM version "+str(version)+"-----------------------------\n"
+if plev>0: print "---------------- PTCLMmkdata version "+str(version)+"-----------------------------\n"
 if plev>0: print "   "+cmdline+"\n"
 if plev>0: print "   OPTIONS:\n" 
 if plev>0: print "Site name:\t\t\t\t\t\t"+mysite+"\n"
@@ -510,7 +510,7 @@ if ( not os.path.exists( scripgridfile) ): error( "scripgridfile does NOT exist"
 
 #make domain file needed by datm ####################################################
 if plev>0: print "Creating data domain"
-cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+clmmask+" -l "+clmres+" -c 'Running gen_domain from PTCLM' > "+data_dir+"/gen_domain.log"
+cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+clmmask+" -l "+clmres+" -c 'Running gen_domain from PTCLMmkdata' > "+data_dir+"/gen_domain.log"
 system(cmd);
 cmd        = "ls -1t1 domain.lnd."+clmres+"_"+clmmask+"*.nc | head -1"
 print "cmd="+cmd
