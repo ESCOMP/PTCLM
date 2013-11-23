@@ -1,0 +1,1 @@
+./PTCLMmkdata -m yellowstone_intel -s US-UMB -d /glade/p/cesmdata/cseg/inputdata --mydatadir /glade/p/cesmdata/cseg/inputdata/lnd/clm2/PTCLMmydatafiles/ 

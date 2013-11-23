@@ -5,6 +5,17 @@ This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
 Date: Nov/22/2013
+Tag: PTCLM2_131122c
+One-line:  Add some example files
+Testing:  limited setup for US-UMB case on yellowstone
+
+A       mydatafiles/1x1pt_US-UMB/user_nl_clm
+A       mydatafiles/1x1pt_US-UMB/xmlchange_cmnds
+A       mydatafiles/1x1pt_US-UMB/README.PTCLM
+
+================================================================================        
+Originator: erik
+Date: Nov/22/2013
 Tag: PTCLM2_131122b
 One-line:  Rename a bunch of files, add US-UMB sample data
 Testing:  limited setup for US-UMB case on yellowstone
