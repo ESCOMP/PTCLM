@@ -59,7 +59,7 @@ setenv MYDATAFILES `pwd`/mydatafiles
 #       This makes running PTCLMmkdata a reasonable amount of time.
 #       However, you can use the script in mydatafiles
 #
-./PTCLMmkdata -m yellowstone_intel -s $SITE -d $CSMDATA
+./PTCLMmkdata -s $SITE -d $CSMDATA
 
 # Next copy the towersite meterology datafiles into your $MYDATAFILES space
 # (For the US-UMB station you can skip this step as the .build step will bring the data over) 

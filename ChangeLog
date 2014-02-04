@@ -4,6 +4,52 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Feb/04/2014
+Tag: PTCLM2_140204
+One-line: Add testing directory, some reworking, and bug fixes, remove -mach
+          Remove --mach, --sitegroupname options add --map_gdate options.
+Testing:  Ran PTCLM tests in test directory, and test_driver.sh tests on
+          yellowstone.
+
+   Add test directory and XML based test list
+	  A test
+	  A test/compdirs
+	  A test/compdirs/* ----------- Compare directory files
+	  A test/PTCLMtestlist.py ----- Class for reading the test list
+	  A test/run_PTCLM_tests ------ Main test script
+	  A test/PTCLMtestlist.xml ---- XML test list
+	  A test/PTCLMtesting_prog.py - Main class for test script
+	  A test/listings ------------- List option compare directory
+	  A test/listings/sitelist ---- Site list compare
+	  A test/listings/help -------- Help compare
+	  A test/listings/list -------- List compare
+	  A test/README
+
+	  M buildtools ---- Remove *.o files for gen_domain and gmake clean everything else
+	  M PTCLMmkdata --- STARTDATE and ALIGNYR only set if using tower years. Add more metadata to filenames.
+                            More work on debug option so works well. Also run mksurfdata.pl in debug mode with
+                            --debug and --allownofile so will test it's usage. Remove -mach option, add --map_gdate
+                            option so can use old maps easier. Add function to get filenames of created files, and
+                            touch the file in debug mode. Fix some of the use-case logic. Fix directory logic, and
+                            allow being able to run from a different directory. Exercise more commands in system
+                            function for debug mode.
+
+   Remove -m option
+	  M mydatafiles/1x1pt_US-UMB/user_nl_clm
+	  M mydatafiles/1x1pt_US-UMB/xmlchange_cmnds
+	  M mydatafiles/1x1pt_US-UMB/README.PTCLM
+
+	  M README --- Remove -m option
+
+   Add some test sites for testing: TS-Ts1, TS-Ts2, TS-Ts3
+	  M PTCLM_sitedata/PTCLMDATA_sitedata.txt ----- Add test sites, change align year as first year to use when cycle_forcing used
+                 This is usually the first year, unless it's a leap year and it's the year after that. If the site has less than 3 years
+                 it's "1".
+	  M PTCLM_sitedata/PTCLMDATA_soildata.txt
+	  M PTCLM_sitedata/PTCLMDATA_pftdata.txt
+
+================================================================================        
+Originator: erik
 Date: Nov/22/2013
 Tag: PTCLM2_131122c
 One-line:  Add some example files

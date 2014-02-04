@@ -94,7 +94,11 @@ for dir in ${dirs[*]}; do
       echo "Problem with build: $?"
       exit -1
    fi
-   #$gmake clean
+   if [[ "$dir" =~ gen_domain ]]; then
+      /bin/rm *.o
+   else
+      $gmake clean
+   fi
 done
 
 echo -e "\n\nSuccessfully built CLM tools needed to create datasets for PTCLM\n"

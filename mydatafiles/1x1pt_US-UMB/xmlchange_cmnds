@@ -1,5 +1,5 @@
 # xmlchange commands written by PTCLMmkdata:
-# ./PTCLMmkdata -m yellowstone_intel -s US-UMB -d /glade/p/cesmdata/cseg/inputdata --mydatadir /glade/p/cesmdata/cseg/inputdata/lnd/clm2/PTCLMmydatafiles/ 
+# ./PTCLMmkdata -s US-UMB -d /glade/p/cesmdata/cseg/inputdata --map_gdate 140121 --mydatadir /glade/p/cesmdata/cseg/inputdata/lnd/clm2/PTCLMmydatafiles/
 ./xmlchange CLM_USRDAT_NAME=1x1pt_US-UMB
 ./xmlchange DATM_CLMNCEP_YR_START=1999
 ./xmlchange DATM_CLMNCEP_YR_END=2006
