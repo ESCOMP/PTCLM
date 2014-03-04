@@ -37,7 +37,7 @@ General Directory structure:
 Quickstart:
 
 # ASSUMPTIONS:
-# For this example I'm running a ICLM451PT case on yellowstone using  
+# For this example I'm running a I1PTCLM45 case on yellowstone using  
 # CSMDATA in the standard location
 # Finally we use the 6-digit AmeriFlux site code for the University of Mich. Biological
 # Station US-UMB (data for this station is checked into the inputdata repository).
@@ -75,7 +75,7 @@ mkdir $MYDATAFILES/1x1pt_$SITE/CLM1PT_data
 # Then create a case using the data you just created
 setenv MYCASE "testPTCLM"
 cd ../../../../../../scripts
-./create_newcase -user_mods_dir $MYDATAFILES/1x1pt_$SITE -case $MYCASE -res CLM_USRDAT -compset ICLM451PT -mach yellowstone_intel
+./create_newcase -user_mods_dir $MYDATAFILES/1x1pt_$SITE -case $MYCASE -res CLM_USRDAT -compset I1PTCLM45 -mach yellowstone_intel
 
 # Finally configure, build, and run the case as normal
 cd $MYCASE

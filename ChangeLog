@@ -4,6 +4,15 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Feb/16/2014
+Tag: PTCLM2_140216
+One-line: Fix documentation in README file for tutorial
+Testing:  None
+
+M README -- Correct compset used.
+
+================================================================================        
+Originator: erik
 Date: Feb/04/2014
 Tag: PTCLM2_140204
 One-line: Add testing directory, some reworking, and bug fixes, remove -mach
