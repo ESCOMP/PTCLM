@@ -4,12 +4,57 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
-Date: Feb/16/2014
-Tag: PTCLM2_140216
-One-line: Fix documentation in README file for tutorial
-Testing:  None
+Date: Apr/23/2014
+Tag: PTCLM2_140423
+One-line: Fix documentation, set DIN_LOC_ROOT_CLMFORC, correct call to mkmapdata.sh
+          allow release_tags in version, add hopper/edison to machine list.
+Testing:  Standard PTCLM test script on yellowstone, and test_driver.sh in clm4_5_71
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
 
-M README -- Correct compset used.
+A       PTCLMsublist --------- Script to submit a list of sites to the batch queue
+A       PTCLMsublist_prog.py - Python code to handle the submision list
+A       batchque.py ---------- Python code to handle batch command submission for single processor
+
+M       PTCLMmkdata -- Set DIN_LOC_ROOT_CLMFORC, Correct call to mkmapdata.sh
+                       Also allow release_tags in version find.
+M       README ------- Correct compset used.
+M       buildtools --- Add edison/hopper to list of machines will work for
+                       change frankfurt to goldbach, update netcdf version for yellowstone
+M       test/compdirs/* -------- Update the comparison files
+M       test/listings/sitelist - Update sitelist
+M       test/listings/help ----- Update help
+M       test/listings/list ----- Update list
+
+M       test/PTCLMtestlist.py ----- Change result codes to be more consistent with
+                 other testing mechanisms
+M       test/PTCLMtesting_prog.py - Change result codes, and set sdate/map_gdate so sdate won't
+                 change with the day testing was run.
+M       test/PTCLMtestlist.xml ---- Add new tests for new sites
+
+------> Add new sites for Rosie, RF-Bra,LBA-Cax,LTER-Sev
+------> And Jinyun US-Bol
+M       PTCLM_sitedata/PTCLMDATA_pftdata.txt
+M       PTCLM_sitedata/PTCLMDATA_sitedata.txt
+M       PTCLM_sitedata/PTCLMDATA_soildata.txt
+
+
+------> Add new comparison files for testing
+A       test/compdirs/std_RF-Bra
+A       test/compdirs/std_RF-Bra/user_nl_clm
+A       test/compdirs/std_RF-Bra/run.log
+A       test/compdirs/std_RF-Bra/xmlchange_cmnds
+A       test/compdirs/std_RF-Bra/README.PTCLM
+A       test/compdirs/std_LBA-Cax
+A       test/compdirs/std_LBA-Cax/user_nl_clm
+A       test/compdirs/std_LBA-Cax/run.log
+A       test/compdirs/std_LBA-Cax/xmlchange_cmnds
+A       test/compdirs/std_LBA-Cax/README.PTCLM
+A       test/compdirs/std_LTER-Sev
+A       test/compdirs/std_LTER-Sev/user_nl_clm
+A       test/compdirs/std_LTER-Sev/run.log
+A       test/compdirs/std_LTER-Sev/xmlchange_cmnds
+A       test/compdirs/std_LTER-Sev/README.PTCLM
 
 ================================================================================        
 Originator: erik
