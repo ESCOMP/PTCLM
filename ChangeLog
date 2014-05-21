@@ -3,6 +3,30 @@ This file describes changes made to the PTCLM tool
 ================================================================================        
 
 ================================================================================        
+Originator: sacks
+Date: May/21/2014
+Tag: PTCLM2_140521
+One-line: rename fpftdyn to flanduse_timeseries, and do some other related variable renames
+Testing:  Standard PTCLM test script on yellowstone, and test_driver.sh in
+          dynlu_crops_n03_addclm50bld_n06_clm4_5_72
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+This is meant to go with an upcoming CLM tag, currently slated for clm4_5_74
+
+A  +    PTCLM_sitedata/cnvrt_trnsyrs2_landuse_timeseries_txtfile.pl
+D       PTCLM_sitedata/cnvrt_trnsyrs2_pftdyntxtfile.pl
+M       PTCLMmkdata
+M       README
+M       test/compdirs/global_US-UMB/user_nl_clm
+M       test/compdirs/rcp26_US-Dk2/user_nl_clm
+M       test/compdirs/rcp45_US-Dk3/user_nl_clm
+M       test/compdirs/rcp6_US-IB1/user_nl_clm
+M       test/compdirs/rcp85_US-Me4/user_nl_clm
+M       test/compdirs/trans_20th_US-Ne3/user_nl_clm
+M       test/compdirs/trans_clm45_US-Ha1/user_nl_clm
+
+================================================================================        
 Originator: erik
 Date: Apr/23/2014
 Tag: PTCLM2_140423

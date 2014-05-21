@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #
-# cnvrt_trnsyrs2_pftdyntxtfile.pl                  Erik Kluzek
+# cnvrt_trnsyrs2_landuse_timeseries_txtfile.pl     Erik Kluzek
 #                                                  Aug/5/2010
 #
-# Convert the transition years files to pftdyn text files.
+# Convert the transition years files to landuse_timeseries text files.
 #
 use Cwd;
 use strict;

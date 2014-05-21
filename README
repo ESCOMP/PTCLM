@@ -24,7 +24,7 @@ General Directory structure:
   models/lnd/clm/tools/shared/PTCLM/PTCLM_sitedata  - Site data files of 
         static information latitude, longitude, soil info., and PFT information 
         for each site Also different "groups" of site-data lists, and the script to
-        convert the transient years pftdyn files into pftdyn text files that
+        convert the transient years landuse_timeseries files into landuse_timeseries text files that
         mksurfdata can use.
   models/lnd/clm/tools/shared/PTCLM/mydatafiles ----- Default location of
         data files that will be created by PTCLMmkdata. Sites will be built

@@ -441,9 +441,9 @@ else:
      error( "Can not parse use-case name:, does not follow conventions: "+clmnmlusecase )
 
 if ( rcp == histrcp ):
-   pftdyntype = "hist"
+   landuse_timeseries_type = "hist"
 else:
-   pftdyntype = "rcp"+rcp
+   landuse_timeseries_type = "rcp"+rcp
 
 qoptionsbase   = " -options mask="+mask+",rcp="+rcp
    
@@ -600,19 +600,19 @@ if (options.pftgrid == False) and (sim_year_range != "constant"):
 
     if plev>0: print "Creating site-specific dynamics PFTs and harvesting"
 
-    pftdyn_site_filename = siteDir + \
+    landuse_timeseries_site_filename = siteDir + \
                            mysite + "_dynpftdata.txt"
 
     # only set dynpft file if the file exists
-    if ( os.path.exists( pftdyn_site_filename ) ):
+    if ( os.path.exists( landuse_timeseries_site_filename ) ):
        if plev>0: print "Transition PFT file exists, so using it for changes in PFT"
-           # Convert the file from transition years format to mksurfdata_map pftdyn format
+           # Convert the file from transition years format to mksurfdata_map landuse_timeseries_ format
        cnv = siteDir + \
-             "/cnvrt_trnsyrs2_pftdyntxtfile.pl " + \
-             pftdyn_site_filename+" "+sim_year_range
-       pftdynoutfile = data_dir+"/pftdyn_"+mysite+".txt"
-       system( cnv+" > "+pftdynoutfile )
-       dynpftopts = " -dynpft "+pftdynoutfile
+             "/cnvrt_trnsyrs2_landuse_timeseries_txtfile.pl " + \
+             landuse_timeseries_site_filename+" "+sim_year_range
+       landuse_timeseries_outfile = data_dir+"/landuse_timeseries_"+mysite+".txt"
+       system( cnv+" > "+landuse_timeseries_outfile )
+       dynpftopts = " -dynpft "+landuse_timeseries_outfile
     else:
        error( "Transition PFT file does NOT exist for this site, create one, use --pftgrid, or choose a non transient use-case" )
            
@@ -628,7 +628,7 @@ system(clm_tools+"/"+options.clmphysvers+"/mksurfdata_map/mksurfdata.pl "+mksurf
 surffile  = find_filename_created( data_dir+"/surfdata_"+clmres+"_simyr"+sim_year+"_*.nc",  "surface file"     )
 logfile   = find_filename_created( data_dir+"/surfdata_"+clmres+"_simyr"+sim_year+"_*.log", "surface log file" )
 if ( sim_year_range != "constant" ):
-   pftdynfile = find_filename_created( data_dir+"/surfdata.pftdyn_"+clmres+"_"+pftdyntype+"_simyr"+actual_sim_year_range+"_*.nc", "pftdynfile" )
+   landuse_timeseries_file = find_filename_created( data_dir+"/landuse.timeseries_"+clmres+"_"+landuse_timeseries_type+"_simyr"+actual_sim_year_range+"_*.nc", "landuse_timeseries_file" )
 # rename files with clm version in the filename
 mkopts = ""
 if (options.pftgrid         == True):  mkopts += "_pftgrd"
@@ -640,9 +640,9 @@ system("/bin/mv -f "+surffile+" "+newsurffile )
 system("/bin/mv -f "+logfile+" "+newlogfile   )
 surffile    = data_dir+"/"+newsurffile
 if (sim_year_range != "constant"):
-    newpftdynfile = "surfdata.pftdyn"+clmres+"_"+pftdyntype+"_simyr"+actual_sim_year_range+"_"+options.clmphysvers+mkopts+"_c"+options.sdate+".nc"
-    system("/bin/mv -f "+pftdynfile+" "+newpftdynfile )
-    pftdynfile = data_dir+"/"+newpftdynfile
+    new_landuse_timeseries_file = "landuse.timeseries"+clmres+"_"+landuse_timeseries_type+"_simyr"+actual_sim_year_range+"_"+options.clmphysvers+mkopts+"_c"+options.sdate+".nc"
+    system("/bin/mv -f "+landuse_timeseries_file+" "+new_landuse_timeseries_file )
+    landuse_timeseries_file = data_dir+"/"+new_landuse_timeseries_file
 
 
 
@@ -681,7 +681,7 @@ if ( os.path.isdir(datm_dir) ):
 output = open(usernlclm,'a')
 output.write(   " fsurdat = '"+surffile+"'\n" )
 if (sim_year_range != "constant"):
-   output.write(   " fpftdyn = "+pftdynfile+"\n" )
+   output.write(   " flanduse_timeseries = "+landuse_timeseries_file+"\n" )
 output.write(   " hist_nhtfrq = "+str(hist_nhtfrq)+"\n" )
 output.write(   " hist_mfilt  = "+str(hist_mfilt)+"\n" )
 output.close()
