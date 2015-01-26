@@ -6,13 +6,13 @@
 
 Site name:						list
 
-Root CLM directory:					/glade/p/work/erik/clm_beta12ext
+Root CLM directory:					/glade/p/work/erik/clm_clean_trunk
 ** Surface data file will be built using site-level data when available unless otherwise specified ** 
 
 	Extract PFT data from gridded files:		False
 	Extract soil data from gridded files:		False
 
-Open Site data file: /glade/p/work/erik/clm_beta12ext/models/lnd/clm/tools/shared/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
+Open Site data file: /glade/p/work/erik/clm_clean_trunk/models/lnd/clm/tools/shared/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
 
  site = site_code name: name                                                    Region:        state Campaign: campaign
  site =    US-Blo name: Blodgett Forest                                         Region:           CA Campaign: AmeriFlux

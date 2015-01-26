@@ -21,7 +21,7 @@ Options:
     --debug             Flag to turn on debug mode so won't run, but display
                         what would happen
     --sdate=SDATE       Use entered date string in all files (use the given
-                        date string in place of the current date:140816)
+                        date string in place of the current date:150126)
     --clmnmlusecase=CLMNMLUSECASE
                         CLM namelist use case to use (default:2000_control)
     --phys=CLMPHYSVERS  CLM physics version to use (default:clm4_5)
@@ -29,8 +29,8 @@ Options:
     --mydatadir=MYDATADIR
                         Directory of where to put your data files (files will
                         be under subdirectories for each site) (default: /glad
-                        e/p/work/erik/clm_beta12ext/models/lnd/clm/tools/share
-                        d/PTCLM/mydatafiles)
+                        e/p/work/erik/clm_clean_trunk/models/lnd/clm/tools/sha
+                        red/PTCLM/mydatafiles)
     --donot_use_tower_yrs
                         Do NOT use the data years that correspond to the tower
                         years (when you plan on using global forcing)
