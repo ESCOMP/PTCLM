@@ -1,4 +1,4 @@
-models/lnd/clm/tools/shared/PTCLM/README                11/22/2013
+components/clm/tools/shared/PTCLM/README                04/10/2015
 
 PTCLMmkdata is a python tool built on top of CLM tools and CESM scripts
 for building datasets to run CLM "I" cases for data from Ameriflux Tower-sites,
@@ -20,23 +20,23 @@ Erik Kluzek (NCAR)
 
 General Directory structure:
 
-  models/lnd/clm/tools/shared/PTCLM/PTCLMmkdata ----- Main script
-  models/lnd/clm/tools/shared/PTCLM/PTCLM_sitedata  - Site data files of 
+  components/clm/tools/shared/PTCLM/PTCLMmkdata ----- Main script
+  components/clm/tools/shared/PTCLM/PTCLM_sitedata  - Site data files of 
         static information latitude, longitude, soil info., and PFT information 
         for each site Also different "groups" of site-data lists, and the script to
         convert the transient years landuse_timeseries files into landuse_timeseries text files that
         mksurfdata can use.
-  models/lnd/clm/tools/shared/PTCLM/mydatafiles ----- Default location of
+  components/clm/tools/shared/PTCLM/mydatafiles ----- Default location of
         data files that will be created by PTCLMmkdata. Sites will be built
         in their own subdirectories under here. Optionally you can give your
         own location you'd like to use for your data.
 
-  models/lnd/clm/tools/shared/PTCLM/PTCLMsublist --------- Script to submit a list of PTCLM
+  components/clm/tools/shared/PTCLM/PTCLMsublist --------- Script to submit a list of PTCLM
         sites to the batch que (only setup for a few machines).
-  models/lnd/clm/tools/shared/PTCLM/PTCLMsublist_prog.py - Python module to support submit
+  components/clm/tools/shared/PTCLM/PTCLMsublist_prog.py - Python module to support submit
         list script. Handles command line arguments and such.
-  models/lnd/clm/tools/shared/PTCLM/batchque.py ---------- Python module for batch submital.
-  models/lnd/clm/tools/shared/PTCLM/buildtools ----------- Script to build the CLM
+  components/clm/tools/shared/PTCLM/batchque.py ---------- Python module for batch submital.
+  components/clm/tools/shared/PTCLM/buildtools ----------- Script to build the CLM
         tools needed to run PTCLMmkdata (mksurfdata_map both clm4_0 and clm4_5
         versions and gen_domain). Works on yellowstone.
 
@@ -52,7 +52,7 @@ setenv CSMDATA   /glade/p/cesm/cseg/inputdata
 setenv SITE      US-UMB
 
 
-cd models/lnd/clm/tools/shared/PTCLM
+cd components/clm/tools/shared/PTCLM
 setenv MYDATAFILES `pwd`/mydatafiles
 
 # Next build all of the clm tools you will need
@@ -85,7 +85,7 @@ mkdir $MYDATAFILES/1x1pt_$SITE/CLM1PT_data
 
 # Then create a case using the data you just created
 setenv MYCASE "testPTCLM"
-cd ../../../../../../scripts
+cd ../../../../../ime/scripts
 ./create_newcase -user_mods_dir $MYDATAFILES/1x1pt_$SITE -case $MYCASE -res CLM_USRDAT -compset I1PTCLM45 -mach yellowstone_intel
 
 # Next setup as normal

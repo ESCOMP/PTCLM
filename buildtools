@@ -18,7 +18,7 @@ echo "Build clm tools for PTCLM on "$host""
 # Get path to root
 #
 if [ -z "$CESM_ROOT" ]; then
-   cd "../../../../../.."
+   cd "../../../../.."
    CESM_ROOT=`pwd`
    cd -
 fi
@@ -95,16 +95,16 @@ export LIB_NETCDF=${netcdf}/lib
 #
 echo "Build the tools"
 dirs=( \
-       $CESM_ROOT/models/lnd/clm/tools/clm4_0/mksurfdata_map/src \
-       $CESM_ROOT/models/lnd/clm/tools/clm4_5/mksurfdata_map/src \
-       $CESM_ROOT/tools/mapping/gen_domain_files/src \
+       $CESM_ROOT/components/clm/tools/clm4_0/mksurfdata_map/src \
+       $CESM_ROOT/components/clm/tools/clm4_5/mksurfdata_map/src \
+       $CESM_ROOT/cime/tools/mapping/gen_domain_files/src \
      )
 for dir in ${dirs[*]}; do
    echo "Build in $dir"
    cd $dir
    if [[ "$dir" =~ gen_domain ]]; then
-      export CCSMROOT=$CESM_ROOT
-      cmd="$CESM_ROOT/scripts/ccsm_utils/Machines/configure -mach $machine -compiler $compiler"
+      export cimeroot=$CESM_ROOT/cime
+      cmd="$CESM_ROOT/cime/machines/configure -mach $machine -compiler $compiler"
       echo "$cmd"
       $cmd
       if [ $? != 0 ]; then

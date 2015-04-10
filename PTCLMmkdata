@@ -110,7 +110,7 @@ parser.add_option_group(required)
 options  = OptionGroup( parser, "Configure and Run Options" )
 options.add_option("--cesm_root", dest="base_cesm", \
                   default=" ", help = \
-                  "Root CESM directory (top level directory with models and scripts subdirs)")
+                  "Root CESM directory (top level directory with components and cime subdirs)")
 options.add_option("--debug", dest="debug", action="store_true", default=False, \
                   help="Flag to turn on debug mode so won't run, but display what would happen")
 options.add_option("--sdate", dest="sdate", default=sdate, \
@@ -210,7 +210,7 @@ def system( cmd ):
 
 def queryFilename( queryopts, filetype ):
     "query the XML database to get a filename"
-    query = abs_base_cesm+"/models/lnd/clm/bld/queryDefaultNamelist.pl -silent " \
+    query = abs_base_cesm+"/components/clm/bld/queryDefaultNamelist.pl -silent " \
              +"-justvalue "
     if ( cesm_input != " " ): 
        query = query + " -csmdata "+cesm_input
@@ -323,9 +323,9 @@ if plev>0: print "Site name:\t\t\t\t\t\t"+mysite+"\n"
 
 base_cesm = options.base_cesm
 if base_cesm == " ":
-    #assume base directory is six levels up from where PTCLM script
+    #assume base directory is five levels up from where PTCLM script
     #  is executed, if not specified
-    stdout    = os.popen("cd "+ptclm_dir+"/../../../../../..; pwd")
+    stdout    = os.popen("cd "+ptclm_dir+"/../../../../..; pwd")
     base_cesm = os.path.abspath( stdout.read().rstrip( ) )
 
 abs_base_cesm = os.path.abspath( base_cesm )
@@ -379,8 +379,8 @@ clmres        = clmusrdatname
 clmmask       = "navy"
 myres         = "CLM_USRDAT"  #single-point mode (don't change)
 
-clm_tools   = abs_base_cesm+'/models/lnd/clm/tools'
-gen_dom_dir = abs_base_cesm+'/tools/mapping/gen_domain_files'
+clm_tools   = abs_base_cesm+'/components/clm/tools'
+gen_dom_dir = abs_base_cesm+'/cime/tools/mapping/gen_domain_files'
 mkmapgrd_dir= clm_tools+'/shared/mkmapgrids'
 mkmapdat_dir= clm_tools+'/shared/mkmapdata'
 clm_input   = cesm_input+'/lnd/clm2'

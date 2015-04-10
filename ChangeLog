@@ -4,6 +4,33 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Apr/10/2015
+Tag: PTCLM2_150410
+One-line: Update to new cime directory structure
+Testing:  Standard PTCLM test script on yellowstone, and test_driver.sh in clm4_5_1_r105
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+Change the relative paths to the new cime directory structure where clm
+source and tools are under components, and CESM scripts are under
+cime/scripts.
+
+    M       PTCLMmkdata
+    M       mydatafiles/1x1pt_US-UMB/xmlchange_cmnds
+    M       mydatafiles/1x1pt_US-UMB/README.PTCLM
+    M       mydatafiles/1x1pt_US-UMB/user_nl_clm
+    M       KnownBugs
+    M       README
+    M       test/PTCLMtesting_prog.py
+    M       test/listings/help
+    M       test/listings/list
+    M       test/listings/sitelist
+    M       test/compdirs/*
+    M       test/PTCLMtestlist.py
+    M       buildtools
+
+================================================================================        
+Originator: erik
 Date: Jan/26/2015
 Tag: PTCLM2_150126
 One-line: Update test comparison and listings

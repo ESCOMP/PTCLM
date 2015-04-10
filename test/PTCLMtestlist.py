@@ -204,7 +204,7 @@ class test_PTCLMtestlist(unittest.TestCase):
 
    def setUp( self ):
      self.test = PTCLMtestlist()
-     cesmdir = os.getenv("CESM_ROOT", "../../../../../../.." )
+     cesmdir = os.getenv("CESM_ROOT", "../../../../../..")
      if ( not os.path.exists( cesmdir+"/ChangeLog" ) ):
          print "CESM_ROOT NOT input\n"
          sys.exit( 200 )
