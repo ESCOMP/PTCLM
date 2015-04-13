@@ -68,7 +68,7 @@ CESM input data directory:				/glade/p/cesmdata/cseg/inputdata
 
 Write /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/README.PTCLM with command line
 CLM Physics Version: clm4_5
-Run command: /bin/chmod +x /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/xmlchange_cmnds
+Run command: /bin/chmod +x /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/shell_commands
 Making input files for the point (this may take a while if creating transient datasets)
 Creating map file for a point with no ocean
 lat=38.7441

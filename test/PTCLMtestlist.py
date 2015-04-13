@@ -159,7 +159,7 @@ class PTCLMtestlist:
         stdout   = os.popen("cd "+testdir+"/*"+test['site']+"; pwd")
         testdir  = os.path.abspath( stdout.read().rstrip( ) )
         os.system( "mv "+tlog+" "+testdir )
-        filelist = ["README.PTCLM", tlog, "user_nl_clm", "xmlchange_cmnds" ]
+        filelist = ["README.PTCLM", tlog, "user_nl_clm", "shell_commands" ]
         for file in filelist:
            srcfile = testdir+"/"+file
            cmpfile = "compdirs/"+test['compdir']+"/"+file

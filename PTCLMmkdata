@@ -227,10 +227,10 @@ def queryFilename( queryopts, filetype ):
     return( filename.replace( "\n", "" ) )
 
 def setup_case_files( ):
-     "Setup the user_nl_clm and xmlchange_cmnds files"
-     filex = data_dir+"/xmlchange_cmnds"
+     "Setup the user_nl_clm and shell_commands files"
+     filex = data_dir+"/shell_commands"
      output = open( filex,'w')
-     output.write("# xmlchange commands written by PTCLMmkdata:\n")
+     output.write("# shell commands to execute xmlchange commands written by PTCLMmkdata:\n")
      output.write("# "+cmdline+"\n")
      output.close
      system( "/bin/chmod +x "+filex )
