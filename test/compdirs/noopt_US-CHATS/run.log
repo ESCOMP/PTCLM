@@ -1,5 +1,5 @@
 /glade/apps/opt/ncl/6.2.0/intel/12.1.5/bin/ncl
----------------- PTCLMmkdata version PTCLM2.0_scripts_trunk-----------------------------
+---------------- PTCLMmkdata version PTCLM2.0_PTCLM2_150414-----------------------------
 
    ../PTCLMmkdata --cesm_root ../../../../../.. -s US-CHATS -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/noopt_file_creation 
 

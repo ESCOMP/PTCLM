@@ -78,15 +78,15 @@ if sys.version_info < (2, 4):
 
 svnurl="$HeadURL$"
 if   ( svnurl.split('/')[4] == "trunk"       ):
-   svnvers="scripts_trunk"
+   svnvers="PTCLM_trunk"
 elif ( svnurl.split('/')[4] == "trunk_tags"  ):
    svnvers=svnurl.split('/')[5]
 elif ( svnurl.split('/')[4] == "branches"    ):
-   svnvers="scripts_branch_"+svnurl.split('/')[5]
+   svnvers="PTCLM_branch_"+svnurl.split('/')[5]
 elif ( svnurl.split('/')[4] == "branch_tags" ):
-   svnvers="scripts_brnchtag_"+svnurl.split('/')[6]
+   svnvers="PTCLM_brnchtag_"+svnurl.split('/')[6]
 elif ( svnurl.split('/')[4] == "release_tags" ):
-   svnvers="scripts_releasetag_"+svnurl.split('/')[6]
+   svnvers="PTCLM_releasetag_"+svnurl.split('/')[6]
 else:
    print( "Error getting version from: "+svnurl)
    os.abort()

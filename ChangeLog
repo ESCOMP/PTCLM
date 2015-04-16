@@ -4,7 +4,18 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
-Date: Apr/10/2015
+Date: Apr/14/2015
+Tag: PTCLM2_150414
+One-line: Send in cimeroot to buildtools
+Testing:  Standard PTCLM test script on yellowstone, and test_driver.sh in clm4_5_1_r105
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+M       buildtools
+
+================================================================================        
+Originator: erik
+Date: Apr/13/2015
 Tag: PTCLM2_150413
 One-line: Change output filenames of xmlchange_cmnds to shell_commands
 Testing:  Standard PTCLM test script on yellowstone, and test_driver.sh in clm4_5_1_r105

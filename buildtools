@@ -103,8 +103,8 @@ for dir in ${dirs[*]}; do
    echo "Build in $dir"
    cd $dir
    if [[ "$dir" =~ gen_domain ]]; then
-      export cimeroot=$CESM_ROOT/cime
-      cmd="$CESM_ROOT/cime/machines/configure -mach $machine -compiler $compiler"
+      export CIMEROOT=$CESM_ROOT/cime
+      cmd="$CESM_ROOT/cime/machines/configure -cimeroot $CIMEROOT -mach $machine -compiler $compiler"
       echo "$cmd"
       $cmd
       if [ $? != 0 ]; then
