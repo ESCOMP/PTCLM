@@ -40,13 +40,14 @@ if [[  "$host" =~ ys ]] || [[ "$host" =~ caldera ]] || [[ "host" =~ geyser ]]; t
   machine="yellowstone"
   compiler="intel"
   netcdf=$NETCDF
-elif [[ "$host" =~ goldbach ]]; then
-  echo "Setup for goldbach"
+elif [[ "$host" =~ hobart ]]; then
+  echo "Setup for hobart"
   gmake="gmake"
   parcmp=2
-  machine="goldbach"
+  machine="hobart"
   compiler="intel"
-  netcdf=/usr/local/netcdf-4.3.0-intel-cluster-2013.4.183
+  module load compiler/intel
+  netcdf=$NETCDF_PATH
   export PATH="${PATH}:/usr/bin"
 elif [[ "$host" =~ yongi ]] || [[ "$host" =~ vpn ]]; then
   echo "Setup for yongi"
@@ -85,7 +86,7 @@ elif [[  "$host" =~ edison ]]; then
   toolsmake="USER_FC=ftn"
   netcdf=$NETCDF_DIR
 else
-  echo "Bad host to run on: know about yellowstone, goldbach, hopper, edison or yongi"
+  echo "Bad host to run on: know about yellowstone, hobart, hopper, edison or yongi"
   exit -3
 fi
 export INC_NETCDF=${netcdf}/include

@@ -625,8 +625,8 @@ mksurfopts = "-res usrspec -usr_gname "+clmres+" -usr_gdate "+options.map_gdate+
              " -rcp "+rcp+soilopts+pftopts+dynpftopts+" "+options.mksurfdata_opts
 system(clm_tools+"/"+options.clmphysvers+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+data_dir+"/mksurfdata_map.log")
 
-surffile  = find_filename_created( data_dir+"/surfdata_"+clmres+"_simyr"+sim_year+"_*.nc",  "surface file"     )
-logfile   = find_filename_created( data_dir+"/surfdata_"+clmres+"_simyr"+sim_year+"_*.log", "surface log file" )
+surffile  = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.nc",  "surface file"     )
+logfile   = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.log", "surface log file" )
 if ( sim_year_range != "constant" ):
    landuse_timeseries_file = find_filename_created( data_dir+"/landuse.timeseries_"+clmres+"_"+landuse_timeseries_type+"_simyr"+actual_sim_year_range+"_*.nc", "landuse_timeseries_file" )
 # rename files with clm version in the filename

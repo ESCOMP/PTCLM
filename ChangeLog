@@ -4,6 +4,25 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Aug/26/2015
+Tag: PTCLM2_150826
+One-line: Allow for pft??_ in surface dataset filename
+Testing:  Standard PTCLM test script on yellowstone, and test_driver.sh in clm4_5_1_r119
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+In clm4_5_1_r108, surface datasets change standard filenames to include the
+PFT number. So PTCLMmkdata would no longer work for clm4_5. Add a wildcard for
+the pft number, so both clm4_0 and clm4_5 will now work.
+
+Move goldbach to hobart.
+
+M       buildtools
+M       PTCLMmkdata
+M test/compdirs/*/*
+
+================================================================================        
+Originator: erik
 Date: Apr/14/2015
 Tag: PTCLM2_150414
 One-line: Send in cimeroot to buildtools
