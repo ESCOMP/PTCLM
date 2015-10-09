@@ -279,7 +279,7 @@ def find_filename_created( wildcard, desc ):
         # If NOT debug mode, get the filename from a directory listing
         stdout   = os.popen( "ls -1t1 "+wildcard+" | head -1" );
         filename = stdout.read().rstrip( );
-        if ( not os.path.exists( filename) ): error( "filename does NOT exist" )
+        if ( not os.path.exists( filename) ): error( "filename does NOT exist:"+wildcard )
      else:
         # For debug mode, create a file with current date replacing any wildcards
         filename = wildcard.replace( "*", options.sdate )
@@ -628,7 +628,7 @@ system(clm_tools+"/"+options.clmphysvers+"/mksurfdata_map/mksurfdata.pl "+mksurf
 surffile  = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.nc",  "surface file"     )
 logfile   = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.log", "surface log file" )
 if ( sim_year_range != "constant" ):
-   landuse_timeseries_file = find_filename_created( data_dir+"/landuse.timeseries_"+clmres+"_"+landuse_timeseries_type+"_simyr"+actual_sim_year_range+"_*.nc", "landuse_timeseries_file" )
+   landuse_timeseries_file = find_filename_created( data_dir+"/landuse.timeseries_"+clmres+"_"+landuse_timeseries_type+"*_simyr"+actual_sim_year_range+"_*.nc", "landuse_timeseries_file" )
 # rename files with clm version in the filename
 mkopts = ""
 if (options.pftgrid         == True):  mkopts += "_pftgrd"
