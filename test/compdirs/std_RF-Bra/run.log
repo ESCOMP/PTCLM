@@ -1,10 +1,10 @@
 /glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin/ncl
 ! user_nl_clm namelist options written by PTCLMmkdata:
 ! ../PTCLMmkdata --verbose --pftgrid --soilgrid --donot_use_tower_yrs --cesm_root ../../../../../.. -s RF-Bra -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/grid_file_creation 
- fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra_simyr2000_clm4_5_pftgrd_soigrd_c140204.nc'
+ fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra_simyr2000_clm5_0_pftgrd_soigrd_c140204.nc'
  hist_nhtfrq = 0
  hist_mfilt  = 1200
----------------- PTCLMmkdata version PTCLM2.0_PTCLM2_150826-----------------------------
+---------------- PTCLMmkdata version PTCLM2.0_PTCLM2_160818-----------------------------
 
    ../PTCLMmkdata --verbose --pftgrid --soilgrid --donot_use_tower_yrs --cesm_root ../../../../../.. -s RF-Bra -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/grid_file_creation 
 
@@ -67,7 +67,7 @@ CESM input data directory:				/glade/p/cesmdata/cseg/inputdata
 ----------------------------------------------------------------
 
 Write /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/README.PTCLM with command line
-CLM Physics Version: clm4_5
+CLM Physics Version: clm5_0
 Run command: /bin/chmod +x /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/shell_commands
 Making input files for the point (this may take a while if creating transient datasets)
 Creating map file for a point with no ocean
@@ -84,11 +84,11 @@ Re-create surface dataset:
 
 
 Re-create mapping files for surface dataset:
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapdata/mkmapdata.sh --gridfile /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapgrids/SCRIPgrid_1x1pt_RF-Bra_nomask_c140204.nc --res 1x1pt_RF-Bra --gridtype regional -v --phys clm4_5 > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/mkmapdata.log
+Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapdata/mkmapdata.sh --gridfile /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapgrids/SCRIPgrid_1x1pt_RF-Bra_nomask_c140204.nc --res 1x1pt_RF-Bra --gridtype regional -v --phys clm5_0 > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/mkmapdata.log
 Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/clm4_5/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_RF-Bra -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra -dinlc /glade/p/cesmdata/cseg/inputdata -y 2000 -rcp -999.9  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/mksurfdata_map.log
 surface file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra140204_simyr2000_140204.nc
 surface log file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra140204_simyr2000_140204.log
-Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra140204_simyr2000_140204.nc surfdata_1x1pt_RF-Bra_simyr2000_clm4_5_pftgrd_soigrd_c140204.nc
-Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra140204_simyr2000_140204.log surfdata_1x1pt_RF-Bra_simyr2000_clm4_5_pftgrd_soigrd_c140204.log
+Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra140204_simyr2000_140204.nc surfdata_1x1pt_RF-Bra_simyr2000_clm5_0_pftgrd_soigrd_c140204.nc
+Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra/surfdata_1x1pt_RF-Bra140204_simyr2000_140204.log surfdata_1x1pt_RF-Bra_simyr2000_clm5_0_pftgrd_soigrd_c140204.log
 Data created successfully in /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/grid_file_creation/1x1pt_RF-Bra
 

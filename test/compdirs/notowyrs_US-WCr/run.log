@@ -1,10 +1,10 @@
 /glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin/ncl
 ! user_nl_clm namelist options written by PTCLMmkdata:
 ! ../PTCLMmkdata --verbose --donot_use_tower_yrs --cesm_root ../../../../../.. -s US-WCr -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/notower_file_creation 
- fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr_simyr2000_clm4_5_c140204.nc'
+ fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr_simyr2000_clm5_0_c140204.nc'
  hist_nhtfrq = 0
  hist_mfilt  = 1200
----------------- PTCLMmkdata version PTCLM2.0_PTCLM2_150826-----------------------------
+---------------- PTCLMmkdata version PTCLM2.0_PTCLM2_160818-----------------------------
 
    ../PTCLMmkdata --verbose --donot_use_tower_yrs --cesm_root ../../../../../.. -s US-WCr -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/notower_file_creation 
 
@@ -67,7 +67,7 @@ CESM input data directory:				/glade/p/cesmdata/cseg/inputdata
 ----------------------------------------------------------------
 
 Write /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/README.PTCLM with command line
-CLM Physics Version: clm4_5
+CLM Physics Version: clm5_0
 Run command: /bin/chmod +x /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/shell_commands
 Making input files for the point (this may take a while if creating transient datasets)
 Creating map file for a point with no ocean
@@ -84,7 +84,7 @@ Re-create surface dataset:
 
 
 Re-create mapping files for surface dataset:
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapdata/mkmapdata.sh --gridfile /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapgrids/SCRIPgrid_1x1pt_US-WCr_nomask_c140204.nc --res 1x1pt_US-WCr --gridtype regional -v --phys clm4_5 > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/mkmapdata.log
+Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapdata/mkmapdata.sh --gridfile /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/mkmapgrids/SCRIPgrid_1x1pt_US-WCr_nomask_c140204.nc --res 1x1pt_US-WCr --gridtype regional -v --phys clm5_0 > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/mkmapdata.log
 Replacing PFT information in surface data file
  site = site_code
  site =    US-Blo
@@ -177,7 +177,7 @@ Replacing soil information in surface data file
 Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/clm4_5/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_US-WCr -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr -dinlc /glade/p/cesmdata/cseg/inputdata -y 2000 -rcp -999.9 -soil_cly 20.17 -soil_snd 42.52 -pft_frc "[100.0]" -pft_idx "[7]"  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/mksurfdata_map.log
 surface file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr140204_simyr2000_140204.nc
 surface log file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr140204_simyr2000_140204.log
-Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr140204_simyr2000_140204.nc surfdata_1x1pt_US-WCr_simyr2000_clm4_5_c140204.nc
-Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr140204_simyr2000_140204.log surfdata_1x1pt_US-WCr_simyr2000_clm4_5_c140204.log
+Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr140204_simyr2000_140204.nc surfdata_1x1pt_US-WCr_simyr2000_clm5_0_c140204.nc
+Run command: /bin/mv -f /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr/surfdata_1x1pt_US-WCr140204_simyr2000_140204.log surfdata_1x1pt_US-WCr_simyr2000_clm5_0_c140204.log
 Data created successfully in /glade/p/work/erik/clm_clean_trunk/components/clm/tools/shared/PTCLM/test/testing_dir/notower_file_creation/1x1pt_US-WCr
 

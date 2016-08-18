@@ -65,7 +65,7 @@ cesm_input    = " "
 filen         = " "
 histrcp       = str(-999.9)
 mydatadir     = ptclm_dir+"/mydatafiles"
-clmphysvers   = "clm4_5"
+clmphysvers   = "clm5_0"
 clmnmlusecase = "2000_control"
 stdout        = os.popen( "date +%y%m%d" );
 sdate         = stdout.read().rstrip( );
@@ -620,10 +620,14 @@ else:
     dynpftopts = ""
 
 # Now run mksurfdata_map  ###########################################################
+if ( options.clmphysvers == "clm5_0" ):
+   physdirectory = "clm4_5";
+else:
+   physdirectory = options.clmphysvers
 mksurfopts = "-res usrspec -usr_gname "+clmres+" -usr_gdate "+options.map_gdate+ \
              " -usr_mapdir "+mapdir+" -dinlc "+cesm_input+" -y "+mksrfyears+ \
              " -rcp "+rcp+soilopts+pftopts+dynpftopts+" "+options.mksurfdata_opts
-system(clm_tools+"/"+options.clmphysvers+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+data_dir+"/mksurfdata_map.log")
+system(clm_tools+"/"+physdirectory+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+data_dir+"/mksurfdata_map.log")
 
 surffile  = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.nc",  "surface file"     )
 logfile   = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.log", "surface log file" )
