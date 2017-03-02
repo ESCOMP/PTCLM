@@ -4,6 +4,205 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Mar/02/2017
+Tag: PTCLM2_170302
+One-line: Get PTCLM working again in clm4_5_14_r226 with cime5.2.0-alpha23
+Testing:  Standard PTCLM test script on yellowstone and test_driver.sh in clm4_5_14_r226
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+            34 tests still fail in standard PTCLM test script
+
+Remove shared level directory. Remove options no longer needed phys and rcp option
+sent to mksurfdata_map. Get build of tools working with latest cime. Remove
+tests that don't apply anymore. Update ompare files.
+
+--- Remove tests that aren't options anymore
+D       test/compdirs/rcp26_US-Dk2/user_nl_clm
+D       test/compdirs/rcp26_US-Dk2/run.log
+D       test/compdirs/rcp26_US-Dk2/shell_commands
+D       test/compdirs/rcp26_US-Dk2/README.PTCLM
+D       test/compdirs/rcp26_US-Dk2
+D       test/compdirs/rcp6_US-IB1/user_nl_clm
+D       test/compdirs/rcp6_US-IB1/run.log
+D       test/compdirs/rcp6_US-IB1/shell_commands
+D       test/compdirs/rcp6_US-IB1/README.PTCLM
+D       test/compdirs/rcp6_US-IB1
+D       test/compdirs/rcp45_US-Dk3/run.log
+D       test/compdirs/rcp45_US-Dk3/shell_commands
+D       test/compdirs/rcp45_US-Dk3/README.PTCLM
+D       test/compdirs/rcp45_US-Dk3/user_nl_clm
+D       test/compdirs/rcp45_US-Dk3
+D       test/compdirs/rcp85_US-Me4/user_nl_clm
+D       test/compdirs/rcp85_US-Me4/run.log
+D       test/compdirs/rcp85_US-Me4/shell_commands
+D       test/compdirs/rcp85_US-Me4/README.PTCLM
+D       test/compdirs/rcp85_US-Me4
+
+M       KnownBugs
+M       README
+M       test/PTCLMtestlist.xml
+M       test/PTCLMtesting_prog.py
+M       buildtools
+M       PTCLMmkdata
+M       mydatafiles/1x1pt_US-UMB/user_nl_clm
+M       mydatafiles/1x1pt_US-UMB/README.PTCLM
+M       PTCLMsublist_prog.py
+
+------ Update compare files
+M       test/listings/help
+M       test/listings/list
+M       test/listings/sitelist
+M       test/compdirs/std_BR-Sa3/user_nl_clm
+M       test/compdirs/std_BR-Sa3/run.log
+M       test/compdirs/std_BR-Sa3/shell_commands
+M       test/compdirs/std_BR-Sa3/README.PTCLM
+M       test/compdirs/std_quiet_US-MMS/run.log
+M       test/compdirs/std_quiet_US-MMS/shell_commands
+M       test/compdirs/std_quiet_US-MMS/README.PTCLM
+M       test/compdirs/std_quiet_US-MMS/user_nl_clm
+M       test/compdirs/notowyrs_US-WCr/user_nl_clm
+M       test/compdirs/notowyrs_US-WCr/run.log
+M       test/compdirs/notowyrs_US-WCr/shell_commands
+M       test/compdirs/notowyrs_US-WCr/README.PTCLM
+M       test/compdirs/std_2000_US-MOz/shell_commands
+M       test/compdirs/std_2000_US-MOz/README.PTCLM
+M       test/compdirs/std_2000_US-MOz/user_nl_clm
+M       test/compdirs/std_2000_US-MOz/run.log
+M       test/compdirs/noopt_US-CHATS/README.PTCLM
+M       test/compdirs/noopt_US-CHATS/user_nl_clm
+M       test/compdirs/noopt_US-CHATS/run.log
+M       test/compdirs/noopt_US-CHATS/shell_commands
+M       test/compdirs/std_ES-ES1/README.PTCLM
+M       test/compdirs/std_ES-ES1/user_nl_clm
+M       test/compdirs/std_ES-ES1/run.log
+M       test/compdirs/std_ES-ES1/shell_commands
+M       test/compdirs/trans_clm45_US-Ha1/shell_commands
+M       test/compdirs/trans_clm45_US-Ha1/README.PTCLM
+M       test/compdirs/trans_clm45_US-Ha1/user_nl_clm
+M       test/compdirs/trans_clm45_US-Ha1/run.log
+M       test/compdirs/std_LTER-Sev/shell_commands
+M       test/compdirs/std_LTER-Sev/README.PTCLM
+M       test/compdirs/std_LTER-Sev/user_nl_clm
+M       test/compdirs/std_LTER-Sev/run.log
+M       test/compdirs/std_clm45_US-Ha1/shell_commands
+M       test/compdirs/std_clm45_US-Ha1/README.PTCLM
+M       test/compdirs/std_clm45_US-Ha1/user_nl_clm
+M       test/compdirs/std_clm45_US-Ha1/run.log
+M       test/compdirs/std_DE-Tha/shell_commands
+M       test/compdirs/std_DE-Tha/README.PTCLM
+M       test/compdirs/std_DE-Tha/user_nl_clm
+M       test/compdirs/std_DE-Tha/run.log
+M       test/compdirs/soigrd_CA-Qfo/user_nl_clm
+M       test/compdirs/soigrd_CA-Qfo/run.log
+M       test/compdirs/soigrd_CA-Qfo/shell_commands
+M       test/compdirs/soigrd_CA-Qfo/README.PTCLM
+M       test/compdirs/std_IT-Cpz/user_nl_clm
+M       test/compdirs/std_IT-Cpz/run.log
+M       test/compdirs/std_IT-Cpz/shell_commands
+M       test/compdirs/std_IT-Cpz/README.PTCLM
+M       test/compdirs/soigrd_CA-Ojp/user_nl_clm
+M       test/compdirs/soigrd_CA-Ojp/run.log
+M       test/compdirs/soigrd_CA-Ojp/shell_commands
+M       test/compdirs/soigrd_CA-Ojp/README.PTCLM
+M       test/compdirs/std_FL-Hyy/shell_commands
+M       test/compdirs/std_FL-Hyy/README.PTCLM
+M       test/compdirs/std_FL-Hyy/user_nl_clm
+M       test/compdirs/std_FL-Hyy/run.log
+M       test/compdirs/std_RF-Bra/run.log
+M       test/compdirs/std_RF-Bra/shell_commands
+M       test/compdirs/std_RF-Bra/README.PTCLM
+M       test/compdirs/std_RF-Bra/user_nl_clm
+M       test/compdirs/std_clm45_US-Var/shell_commands
+M       test/compdirs/std_clm45_US-Var/README.PTCLM
+M       test/compdirs/std_clm45_US-Var/user_nl_clm
+M       test/compdirs/std_clm45_US-Var/run.log
+M       test/compdirs/std_1850_US-Me2/run.log
+M       test/compdirs/std_1850_US-Me2/shell_commands
+M       test/compdirs/std_1850_US-Me2/README.PTCLM
+M       test/compdirs/std_1850_US-Me2/user_nl_clm
+M       test/compdirs/stdurbpt_pftgrd_CA-Oas/user_nl_clm
+M       test/compdirs/stdurbpt_pftgrd_CA-Oas/run.log
+M       test/compdirs/stdurbpt_pftgrd_CA-Oas/shell_commands
+M       test/compdirs/stdurbpt_pftgrd_CA-Oas/README.PTCLM
+M       test/compdirs/std_IT-Col/shell_commands
+M       test/compdirs/std_IT-Col/README.PTCLM
+M       test/compdirs/std_IT-Col/user_nl_clm
+M       test/compdirs/std_IT-Col/run.log
+M       test/compdirs/std_FL-Kaa/run.log
+M       test/compdirs/std_FL-Kaa/shell_commands
+M       test/compdirs/std_FL-Kaa/README.PTCLM
+M       test/compdirs/std_FL-Kaa/user_nl_clm
+M       test/compdirs/std_soigrd_BR-Sa1/user_nl_clm
+M       test/compdirs/std_soigrd_BR-Sa1/run.log
+M       test/compdirs/std_soigrd_BR-Sa1/shell_commands
+M       test/compdirs/std_soigrd_BR-Sa1/README.PTCLM
+M       test/compdirs/pftgrd_CA-Obs/user_nl_clm
+M       test/compdirs/pftgrd_CA-Obs/run.log
+M       test/compdirs/pftgrd_CA-Obs/shell_commands
+M       test/compdirs/pftgrd_CA-Obs/README.PTCLM
+M       test/compdirs/trans_20th_US-Ne3/user_nl_clm
+M       test/compdirs/trans_20th_US-Ne3/run.log
+M       test/compdirs/trans_20th_US-Ne3/shell_commands
+M       test/compdirs/trans_20th_US-Ne3/README.PTCLM
+M       test/compdirs/notowyrs_CA-Man/user_nl_clm
+M       test/compdirs/notowyrs_CA-Man/run.log
+M       test/compdirs/notowyrs_CA-Man/shell_commands
+M       test/compdirs/notowyrs_CA-Man/README.PTCLM
+M       test/compdirs/std_BE-Vie/user_nl_clm
+M       test/compdirs/std_BE-Vie/run.log
+M       test/compdirs/std_BE-Vie/shell_commands
+M       test/compdirs/std_BE-Vie/README.PTCLM
+M       test/compdirs/std_LBA-Cax/shell_commands
+M       test/compdirs/std_LBA-Cax/README.PTCLM
+M       test/compdirs/std_LBA-Cax/user_nl_clm
+M       test/compdirs/std_LBA-Cax/run.log
+M       test/compdirs/std_US-UMB/user_nl_clm
+M       test/compdirs/std_US-UMB/run.log
+M       test/compdirs/std_US-UMB/shell_commands
+M       test/compdirs/std_US-UMB/README.PTCLM
+M       test/compdirs/std_clm45_US-ARM/shell_commands
+M       test/compdirs/std_clm45_US-ARM/README.PTCLM
+M       test/compdirs/std_clm45_US-ARM/user_nl_clm
+M       test/compdirs/std_clm45_US-ARM/run.log
+M       test/compdirs/crop_US-IB1/user_nl_clm
+M       test/compdirs/crop_US-IB1/run.log
+M       test/compdirs/crop_US-IB1/shell_commands
+M       test/compdirs/crop_US-IB1/README.PTCLM
+M       test/compdirs/std_quiet_US-Bo1/user_nl_clm
+M       test/compdirs/std_quiet_US-Bo1/run.log
+M       test/compdirs/std_quiet_US-Bo1/shell_commands
+M       test/compdirs/std_quiet_US-Bo1/README.PTCLM
+M       test/compdirs/global_US-UMB/run.log
+M       test/compdirs/global_US-UMB/shell_commands
+M       test/compdirs/global_US-UMB/README.PTCLM
+M       test/compdirs/global_US-UMB/user_nl_clm
+M       test/compdirs/cyc_TS-Ts1/user_nl_clm
+M       test/compdirs/cyc_TS-Ts1/run.log
+M       test/compdirs/cyc_TS-Ts1/shell_commands
+M       test/compdirs/cyc_TS-Ts1/README.PTCLM
+M       test/compdirs/notowyrs_CA-Let/user_nl_clm
+M       test/compdirs/notowyrs_CA-Let/run.log
+M       test/compdirs/notowyrs_CA-Let/shell_commands
+M       test/compdirs/notowyrs_CA-Let/README.PTCLM
+M       test/compdirs/cyc_TS-Ts2/user_nl_clm
+M       test/compdirs/cyc_TS-Ts2/run.log
+M       test/compdirs/cyc_TS-Ts2/shell_commands
+M       test/compdirs/cyc_TS-Ts2/README.PTCLM
+M       test/compdirs/cyc_TS-Ts3/README.PTCLM
+M       test/compdirs/cyc_TS-Ts3/user_nl_clm
+M       test/compdirs/cyc_TS-Ts3/run.log
+M       test/compdirs/cyc_TS-Ts3/shell_commands
+M       test/compdirs/pftgrd_CA-Ca1/user_nl_clm
+M       test/compdirs/pftgrd_CA-Ca1/run.log
+M       test/compdirs/pftgrd_CA-Ca1/shell_commands
+M       test/compdirs/pftgrd_CA-Ca1/README.PTCLM
+M       test/compdirs/std_quiet_US-Ho1/run.log
+M       test/compdirs/std_quiet_US-Ho1/shell_commands
+M       test/compdirs/std_quiet_US-Ho1/README.PTCLM
+M       test/compdirs/std_quiet_US-Ho1/user_nl_clm
+
+================================================================================        
+Originator: erik
 Date: Aug/18/2016
 Tag: PTCLM2_160818
 One-line: Update compare tests, and allow clm5_0 and make it the default

@@ -63,9 +63,7 @@ else:
 wrkdir        = cwd
 cesm_input    = " "
 filen         = " "
-histrcp       = str(-999.9)
 mydatadir     = ptclm_dir+"/mydatafiles"
-clmphysvers   = "clm5_0"
 clmnmlusecase = "2000_control"
 stdout        = os.popen( "date +%y%m%d" );
 sdate         = stdout.read().rstrip( );
@@ -118,8 +116,6 @@ options.add_option("--sdate", dest="sdate", default=sdate, \
                        " (use the given date string in place of the current date:"+sdate+")" )
 options.add_option("--clmnmlusecase", dest="clmnmlusecase", default=clmnmlusecase, \
                   help="CLM namelist use case to use (default:"+clmnmlusecase+")" )
-options.add_option("--phys", dest="clmphysvers", default=clmphysvers, \
-                  help="CLM physics version to use (default:" +clmphysvers+")")
 options.add_option("--list", dest="list", default=False, action="store_true", \
                   help="List all valid: sites")
 options.add_option("--mydatadir", dest="mydatadir", default=mydatadir \
@@ -325,7 +321,7 @@ base_cesm = options.base_cesm
 if base_cesm == " ":
     #assume base directory is five levels up from where PTCLM script
     #  is executed, if not specified
-    stdout    = os.popen("cd "+ptclm_dir+"/../../../../..; pwd")
+    stdout    = os.popen("cd "+ptclm_dir+"/../../../..; pwd")
     base_cesm = os.path.abspath( stdout.read().rstrip( ) )
 
 abs_base_cesm = os.path.abspath( base_cesm )
@@ -381,8 +377,8 @@ myres         = "CLM_USRDAT"  #single-point mode (don't change)
 
 clm_tools   = abs_base_cesm+'/components/clm/tools'
 gen_dom_dir = abs_base_cesm+'/cime/tools/mapping/gen_domain_files'
-mkmapgrd_dir= clm_tools+'/shared/mkmapgrids'
-mkmapdat_dir= clm_tools+'/shared/mkmapdata'
+mkmapgrd_dir= clm_tools+'/mkmapgrids'
+mkmapdat_dir= clm_tools+'/mkmapdata'
 clm_input   = cesm_input+'/lnd/clm2'
 datm_input  = cesm_input+'/atm/datm7'
 
@@ -413,13 +409,9 @@ if (   clmnmlusecase.endswith("_transient") ):
      if ( transient ):
         sim_year_range = transient.group(1)
         sim_year       = re.search( '^([0-9]+)-',    transient.group(1) ).group(1)
-        rcpcase        = re.search( '^rcp([0-9.]+)', transient.group(2) )
-        if ( rcpcase == None ): rcp = histrcp
-        else:                   rcp = rcpcase.group(1)
      elif ( clmnmlusecase.startswith("20thC_") ):
         sim_year_range = "1850-2000"
         sim_year       = "1850"
-        rcp            = histrcp
      else:
         error( "Can not parse use-case name, does not follow conventions: "+clmnmlusecase )
 
@@ -432,20 +424,15 @@ elif ( clmnmlusecase.endswith("_control") ):
      if ( sim_year == None ): error( "Trouble finding sim_year from:"+clmnmlusecase )
      sim_year       = str(sim_year)
      sim_year_range = "constant"
-     rcp            = histrcp
 elif ( clmnmlusecase.endswith("_pd") or clmnmlusecase == "UNSET" ):
      sim_year       = "2000"   
      sim_year_range = "constant"
-     rcp            = histrcp
 else:
      error( "Can not parse use-case name:, does not follow conventions: "+clmnmlusecase )
 
-if ( rcp == histrcp ):
-   landuse_timeseries_type = "hist"
-else:
-   landuse_timeseries_type = "rcp"+rcp
+landuse_timeseries_type = "hist"
 
-qoptionsbase   = " -options mask="+mask+",rcp="+rcp
+qoptionsbase   = " -options mask="+mask
    
 qoptions       = qoptionsbase+",sim_year="+sim_year+",sim_year_range="+sim_year_range;
 queryOpts      = " -onlyfiles -res "+clmres+clmusrdat+qoptions
@@ -474,8 +461,6 @@ if ( options.cycle_forcing ):
 else:
     # When NOT cycling forcing, use start year for the align year
     alignyear = startyear
-
-if plev>0: print "CLM Physics Version: "+options.clmphysvers
 
 ####### ANY OTHER LAST SETTINGS BEFORE CREATING DATASETS ################################
 
@@ -527,7 +512,7 @@ mapdir = data_dir
 if ( options.map_gdate == options.sdate ):
   # mkmapdata.sh remembers where it is (although it starts over for a new date)
   if plev>0: print "\n\nRe-create mapping files for surface dataset:"
-  cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional -v --phys "+options.clmphysvers+" > "+mapdir+"/mkmapdata.log";
+  cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional -v > "+mapdir+"/mkmapdata.log";
   system(cmd);
 else:
   mksrfmapfile  = find_filename_created( mapdir+"/map_*"+"_c"+options.map_gdate+".nc", "mksrfmapfile" )
@@ -620,14 +605,10 @@ else:
     dynpftopts = ""
 
 # Now run mksurfdata_map  ###########################################################
-if ( options.clmphysvers == "clm5_0" ):
-   physdirectory = "clm4_5";
-else:
-   physdirectory = options.clmphysvers
 mksurfopts = "-res usrspec -usr_gname "+clmres+" -usr_gdate "+options.map_gdate+ \
              " -usr_mapdir "+mapdir+" -dinlc "+cesm_input+" -y "+mksrfyears+ \
-             " -rcp "+rcp+soilopts+pftopts+dynpftopts+" "+options.mksurfdata_opts
-system(clm_tools+"/"+physdirectory+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+data_dir+"/mksurfdata_map.log")
+             soilopts+pftopts+dynpftopts+" "+options.mksurfdata_opts
+system(clm_tools+"/mksurfdata_map/mksurfdata.pl "+mksurfopts+" > "+data_dir+"/mksurfdata_map.log")
 
 surffile  = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.nc",  "surface file"     )
 logfile   = find_filename_created( data_dir+"/surfdata_"+clmres+"*_simyr"+sim_year+"_*.log", "surface log file" )
@@ -638,16 +619,6 @@ mkopts = ""
 if (options.pftgrid         == True):  mkopts += "_pftgrd"
 if (options.soilgrid        == True):  mkopts += "_soigrd"
 if (options.mksurfdata_opts != ""  ):  mkopts += "_"+options.mksurfdata_opts.replace(" ","+")
-newsurffile = "surfdata_"+clmres+"_simyr"+sim_year+"_"+options.clmphysvers+mkopts+"_c"+options.sdate+".nc"
-newlogfile  = "surfdata_"+clmres+"_simyr"+sim_year+"_"+options.clmphysvers+mkopts+"_c"+options.sdate+".log"
-system("/bin/mv -f "+surffile+" "+newsurffile )
-system("/bin/mv -f "+logfile+" "+newlogfile   )
-surffile    = data_dir+"/"+newsurffile
-if (sim_year_range != "constant"):
-    new_landuse_timeseries_file = "landuse.timeseries"+clmres+"_"+landuse_timeseries_type+"_simyr"+actual_sim_year_range+"_"+options.clmphysvers+mkopts+"_c"+options.sdate+".nc"
-    system("/bin/mv -f "+landuse_timeseries_file+" "+new_landuse_timeseries_file )
-    landuse_timeseries_file = data_dir+"/"+new_landuse_timeseries_file
-
 
 
    

@@ -17,7 +17,7 @@ class PTCLMtesting_prog:
    name         = "PTCLMtesting"
    cmdline      = ""
    redo_compare = False
-   cesmdir_def  = "../../../../../.."
+   cesmdir_def  = "../../../../.."
    cesmdir      = os.getenv("CESM_ROOT", cesmdir_def )
    parse_args   = False
    setup        = False
