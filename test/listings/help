@@ -21,7 +21,7 @@ Options:
     --debug             Flag to turn on debug mode so won't run, but display
                         what would happen
     --sdate=SDATE       Use entered date string in all files (use the given
-                        date string in place of the current date:170302)
+                        date string in place of the current date:170612)
     --clmnmlusecase=CLMNMLUSECASE
                         CLM namelist use case to use (default:2000_control)
     --list              List all valid: sites
@@ -54,4 +54,4 @@ Options:
     --mksurfdata_opts=MKSURFDATA_OPTS
                         Options to send directly to mksurfdata_map
 
-  Main Script Version Id: $Id: PTCLMmkdata 83622 2017-03-02 18:15:13Z erik $ Scripts URL: $HeadURL: https://svn-ccsm-models.cgd.ucar.edu/PTCLM/trunk/PTCLMmkdata $:
+  Main Script Version Id: $Id: PTCLMmkdata 83622 2017-03-02 18:15:13Z erik $ Scripts URL: $HeadURL: https://svn-ccsm-models.cgd.ucar.edu/PTCLM/trunk_tags/PTCLM2_170302/PTCLMmkdata $:

@@ -46,8 +46,22 @@ if [[  "$host" =~ ys ]] || [[ "$host" =~ caldera ]] || [[ "$host" =~ geyser ]] |
   module load mkl
   module load netcdf
   module load ncl
+elif [[ "$host" =~ cheyenne ]] || [[ "$host" =~ r.i.n. ]]; then
+  echo "Setup for cheyenne"
+  . /glade/u/apps/ch/opt/lmod/7.2.1/lmod/lmod/init/sh
+
+  gmake="gmake"
+  parcmp=36
+  machine="cheyenne"
+  compiler="intel"
+  netcdf=$NETCDF
+  module load $compiler/17.0.1
+  module load mkl
+  module load netcdf
+  module load ncl
 elif [[ "$host" =~ hobart ]]; then
   echo "Setup for hobart"
+  . /usr/share/Modules/init/sh
   gmake="gmake"
   parcmp=2
   machine="hobart"
@@ -59,25 +73,12 @@ elif [[ "$host" =~ yongi ]] || [[ "$host" =~ vpn ]]; then
   echo "Setup for yongi"
   gmake="make"
   parcmp=12
-  machine="userdefined"
-  compiler="intel"
+  machine="yongi"
+  compiler="gnu"
   netcdf="/opt/local"
-  toolsmake="USER_FC=ifort USER_LINKER=ifort USER_CC=icc "
+  toolsmake="USER_FC=gfortran-mp-4.8 USER_LINKER=gfortran-mp-4.8 USER_CC=gcc "
   case='$CASE'
   export NETCDF_PATH=$netcdf
-elif [[  "$host" =~ hopper ]]; then
-  echo "Setup for hopper"
-  .  /opt/modules/default/init/bash
-  module load netcdf
-  module load ncl/6.1.2
-  gmake="gmake"
-  parcmp=32
-  machine="hopper"
-  compiler="pgi"
-  USER_LDFLAGS="-L$NETCDF_DIR/lib -lnetcdff"
-  export USER_LDFLAGS
-  toolsmake="USER_FC=pgf90"
-  netcdf=$NETCDF_DIR
 elif [[  "$host" =~ edison ]]; then
   echo "Setup for edison"
   .  /opt/modules/default/init/bash
@@ -92,7 +93,7 @@ elif [[  "$host" =~ edison ]]; then
   toolsmake="USER_FC=ftn"
   netcdf=$NETCDF_DIR
 else
-  echo "Bad host to run on: know about yellowstone, hobart, hopper, edison or yongi"
+  echo "Bad host to run on: know about cheyenne, yellowstone, hobart, edison or yongi"
   exit -3
 fi
 export INC_NETCDF=${netcdf}/include

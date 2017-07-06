@@ -1,5 +1,5 @@
-/glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin/ncl
----------------- PTCLMmkdata version PTCLM2.0_PTCLM_trunk-----------------------------
+/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin/ncl
+---------------- PTCLMmkdata version PTCLM2.0_PTCLM2_170302-----------------------------
 
    ../PTCLMmkdata --mksurfdata_opts=-no_crop --quiet --cesm_root ../../../../.. -s US-MMS -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/stdquiet_file_creation 
 

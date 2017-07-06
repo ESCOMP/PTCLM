@@ -4,6 +4,31 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Jul/06/2017
+Tag: PTCLM2_170706
+One-line: Get PTCLM working again in clm4_5_14_r244 with cime5.3.0-alpha.21 and on
+          cheyenne and hobart
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+Test for cheyenne compute node hostnames as well
+Remove hopper, make some changes to get closer to working on yongi
+Add module load for hobart
+Update README file, add a README file/script that runs on cheyenne
+Correct path to modules for cheyenne
+Add needed space for three more tests, now all, but one test passes as expected
+Update compare files, and make sure have a space after mksurfdata options
+
+M       test/README -- Add notes about loading ncl module
+M       buildtools --- Remove hopper, get working on hobart, and cheyenne
+
+M       test/compdirs/*/* --------- Update compare directories
+M       test/listings/* ----------- Update compare listings
+A       test/README.run_cheyenne -- Add README/script to run on cheyenne
+
+================================================================================        
+Originator: erik
 Date: Mar/02/2017
 Tag: PTCLM2_170302
 One-line: Get PTCLM working again in clm4_5_14_r226 with cime5.2.0-alpha23

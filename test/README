@@ -33,8 +33,16 @@ run_PTCLM_tests ---------- Main script that runs the tests
 
 III. Running the tests:
 
-To run the tests when PTCLM is part of a CLM or CESM distribution you simply
-execute the script:
+To run the tests when PTCLM is part of a CLM or CESM distribution you first
+need to build the tools, and make sure you have NCL in your path.
+So on cheyenne for example.
+
+cd ..
+./buildtools
+module load ncl
+cd test
+
+And then execute the script:
 
 ./run_PTCLM_tests
 
