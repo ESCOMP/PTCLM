@@ -5,13 +5,14 @@ This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
 Date: Oct/16/2017
-Tag: PTCLM2_171016c
+Tag: PTCLM2_171016d
 One-line: Update default walltime for cheyenne
 Testing:  Standard PTCLM test script on cheyenne
 Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
             check for valid values
 
 M      PTCLMsublist_prog.py --- Update default walltime to cheyenne syntax for an hour and a half
+M      README -- Fix bug 1928 (documentation on compset to use)
 
 ================================================================================        
 Originator: erik

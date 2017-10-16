@@ -42,7 +42,7 @@ General Directory structure:
 Quickstart:
 
 # ASSUMPTIONS:
-# For this example I'm running a I1PTCLM45 case on cheyenne using  
+# For this example I'm running a I1PtClm50SpGs case on cheyenne using  
 # CSMDATA in the standard location
 # Finally we use the 6-digit AmeriFlux site code for the University of Mich. Biological
 # Station US-UMB (data for this station is checked into the inputdata repository).
