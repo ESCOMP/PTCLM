@@ -37,13 +37,12 @@ General Directory structure:
         list script. Handles command line arguments and such.
   components/clm/tools/PTCLM/batchque.py ---------- Python module for batch submital.
   components/clm/tools/PTCLM/buildtools ----------- Script to build the CLM
-        tools needed to run PTCLMmkdata (mksurfdata_map both clm4_0 and clm4_5/clm5_0
-        versions and gen_domain). Works on yellowstone.
+        tools needed to run PTCLMmkdata (mksurfdata_map and gen_domain). Works on yellowstone and cheyenne.
 
 Quickstart:
 
 # ASSUMPTIONS:
-# For this example I'm running a I1PTCLM45 case on yellowstone using  
+# For this example I'm running a I1PTCLM45 case on cheyenne using  
 # CSMDATA in the standard location
 # Finally we use the 6-digit AmeriFlux site code for the University of Mich. Biological
 # Station US-UMB (data for this station is checked into the inputdata repository).
@@ -56,16 +55,21 @@ cd components/clm/tools/PTCLM
 setenv MYDATAFILES `pwd`/mydatafiles
 
 # Next build all of the clm tools you will need
-# The following script assumes yellowstone_intel, for other machines
+# The following script assumes yellowstone, cheyenne, hobart, or edison for other machines
 # you'll need to build each tool by hand
 ./buildtools
-# next run PTCLMmkdata (NOTE -- MAKE SURE python, NCO AND NCL IS IN YOUR PATH)
+# next run PTCLMsublist which will submit PTCLMmkdata to batch queue (NOTE -- MAKE SURE python, NCO AND NCL IS IN YOUR PATH)
+#       PTCLMsublist is only setup for a few batch machines, you'll need to update them to add new machines
+#       or create your own batch submission script.
 # NOTE: Every day you run PTCLMmkdata it will remake the map called
 #       renamemapfiles to rename files with todays creation date.
 #       This makes running PTCLMmkdata a reasonable amount of time.
 #       However, you can use the script in mydatafiles
 #
-./PTCLMmkdata -s $SITE -d $CSMDATA
+./PTCLMsublist -l $SITE -d $CSMDATA --account=XXXXXXXXX --mach=cheyenne
+
+# NOTE: To submit several sites at once, make the "-l" option a comma delimited
+#       list of site names.
 
 # Next copy the towersite meterology datafiles into your $MYDATAFILES space
 # (For the US-UMB station you can skip this step as the .build step will bring the data over) 
@@ -86,11 +90,11 @@ mkdir $MYDATAFILES/1x1pt_$SITE/CLM1PT_data
 # Then create a case using the data you just created
 setenv MYCASE "testPTCLM"
 cd ../../../../cime/scripts
-./create_newcase -user_mods_dir $MYDATAFILES/1x1pt_$SITE -case $MYCASE -res CLM_USRDAT -compset I1PTCLM45 -mach yellowstone_intel
+./create_newcase --user-mods-dir $MYDATAFILES/1x1pt_$SITE --case $MYCASE --res CLM_USRDAT --compset I1PtClm50SpGs --mach cheyenne
 
 # Next setup as normal
 cd $MYCASE
-./cesm_setup
+./case.setup
 
 # If you need to customize your list of fields uncomment and do the following...
 # cp CaseDocs/datm.streams.txt.CLM1PT.CLM_USRDAT user_datm.streams.txt.CLM1PT.CLM_USRDAT
@@ -99,5 +103,5 @@ cd $MYCASE
 # ./preview_namelists
 
 # Finally build, and run the case as normal
-./$MYCASE.build
-./$MYCASE.submit
+./case.build
+./case.submit

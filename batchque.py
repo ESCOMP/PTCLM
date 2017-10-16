@@ -22,28 +22,28 @@ class batchque:
    #
    # Basic options giving queue name, number of processors (1) and walltime
    # yellowstone(LSF):   -n 1=1 task, -R=Number of tasks on node, -q=queue name, -N=, -a=process type, -W=wallclock time
-   # edison/hopper(PBS): -l=tasks, processors per node, and wallclock time, -q=queue name, -V=use ALL env variables, 
+   # cheyenne(PBS):      -l=tasks, processors per node, and wallclock time, -q=queue name, -V=use ALL env variables, 
    #                     -m=mail options (ae send mail on submit and exit)
-   # -j oe on edison/hopper and -oo on yellowstone (without -e/-eo means combine stderr and stdout
-   opts    = { 'yellowstone':"-n 1 -R 'span[ptile=15]' -q caldera -N -a poe ", \
-               'edison'     :"-l nodes=1:ppn=1 -q regular -V -m ae -j oe ", \
-               'hopper'     :"-l nodes=1:ppn=1 -q regular -V -m ae -j oe ", \
-               'janus'      :"-l nodes=1:ppn=1 -q janus-short -V -m ae -j oe " }
+   # edison(PBS):        -l=tasks, processors per node, and wallclock time, -q=queue name, -V=use ALL env variables, 
+   #                     -m=mail options (ae send mail on submit and exit)
+   # -j oe on edison and -oo on yellowstone (without -e/-eo means combine stderr and stdout
+   opts    = { 'yellowstone':"-n 1 -R 'span[ptile=15]' -q geyser -N -a poe ", \
+               'cheyenne'   :"-l select=3:ncpus=1:mpiprocs=1:mem=109GB -q regular -V -m ae -j oe ", \
+               'edison'     :"-l nodes=1:ppn=1 -q regular -V -m ae -j oe " }
    # batch submission command
-   bsub      = { 'yellowstone':"bsub",   'edison':"qsub", 'hopper':"qsub", 'janus':"qsub" }
+   bsub      = { 'yellowstone':"bsub",   'cheyenne':"qsub"         , 'edison':"qsub" }
    # Option to give file for standard output
-   bs_stdout = { 'yellowstone':" -oo ",  'edison':" -o ", 'hopper':" -o ", 'janus':" -o "   }
+   bs_stdout = { 'yellowstone':" -oo ",  'cheyenne':" -o "         , 'edison':" -o "   }
    # Option to give job name to use
-   bs_jobnam = { 'yellowstone':" -J ",   'edison':" -N ", 'hopper':" -N ", 'janus':" -N "   }
+   bs_jobnam = { 'yellowstone':" -J ",   'cheyenne':" -N "         , 'edison':" -N "   }
    # Option to give current directory to use
-   bs_curdir = { 'yellowstone':" -cwd ", 'edison':" -d ", 'hopper':" -d ", 'janus':" -d "   }
+   bs_curdir = { 'yellowstone':" -cwd ", 'cheyenne':""             , 'edison':" -d "   }
    # Option to give account name to use
-   bs_accnt  = { 'yellowstone':" -P ",   'edison':"",     'hopper':"",     'janus':""     }
+   bs_accnt  = { 'yellowstone':" -P ",   'cheyenne':" -A "         , 'edison':""    }
    # If jobcommand needs to be script file
-   bs_script = { 'yellowstone':False,    'edison':True,   'hopper':True,   'janus':True   }
+   bs_script = { 'yellowstone':False,    'cheyenne':True           , 'edison':True   }
    # Option to give wallclock time to use
-   bs_wtime  = { 'yellowstone':" -W ",   'edison':" -l walltime=", \
-                 'hopper':" -l walltime=", 'janus':" -l walltime="     }
+   bs_wtime  = { 'yellowstone':" -W ",   'cheyenne':" -l walltime=", 'edison':" -l walltime=" }
 
    def Initialize( self, prog, mach="yellowstone", account="" ):
       "Initialize the batchque"
@@ -79,20 +79,24 @@ class batchque:
 
        cmd    =  self.bsub[self.mach]
        opts   =  ""
-       stdout = str(jobname)+".stdout.out"
+       pid    = str(os.getpid())
+       stdout = str(jobname)+"."+pid+".stdout.out"
        self.stdout = stdout
        opts += self.bs_stdout[self.mach]+stdout+" "
        opts += self.bs_jobnam[self.mach]+str(jobname)+" "
-       opts += self.bs_curdir[self.mach]+curdir+" "
+       if ( self.bs_curdir[self.mach] != "" ):
+          opts += self.bs_curdir[self.mach]+curdir+" "
        opts += self.bs_wtime[self.mach]+wall+" "
        if ( self.account != ""  and self.bs_accnt[self.mach] != "" ):
           opts += self.bs_accnt[self.mach]+self.account+" "
        opts +=  self.opts[self.mach]+" "
        if ( self.bs_script[self.mach] ):
-          self.jobscript = jobname+".job"
+          self.jobscript = jobname+"."+pid+".job"
           if ( os.path.exists( self.jobscript ) ):
              os.system( "/bin/rm -rf "+self.jobscript )
           js = open(self.jobscript,"w")
+          if ( self.bs_curdir[self.mach] == "" ):
+             js.write( "cd "+curdir+"\n" )
           js.write( jobcommand+"\n" )
           js.close()
           os.chmod(self.jobscript,0555)
@@ -175,7 +179,7 @@ class test_batchque(unittest.TestCase):
           os.system( "touch "+outfile )
           self.que.SubmitCleanup( self.prog, rmout=True )
 
-       mach = "yellowstone"
+       mach = "cheyenne"
        self.que.Initialize( self.prog, mach=mach, account="account" )
        cmd = self.que.Submit( self.prog, "ls", jobname=mach, submit=False )
        print cmd+"\n"
@@ -186,7 +190,7 @@ class test_batchque(unittest.TestCase):
 
    def test_bad_submit( self ):
        "test bad submit"
-       mach = "yellowstone"
+       mach = "cheyenne"
        self.que.Initialize( self.prog, mach=mach, account="account" )
        self.assertRaises(SystemExit, self.que.Submit, self.prog, "ls", curdir="zztop", jobname=mach, submit=False )
        self.assertRaises(SystemExit, self.que.Get_OutFilename, self.prog )
@@ -195,13 +199,15 @@ class test_batchque(unittest.TestCase):
        "test submitting to local machine if on list"
        stdout    = os.popen("hostname")
        host      = stdout.read().rstrip( )
-       startname = { 'ys':'yellowstone', 'edison':'edison', 'hopper':'hopper', 'login':'janus' }
+       startname = { 'ys':'yellowstone', 'cheyenne':'cheyenne', 'edison':'edison' }
        mach      = ""
        for sname in startname:
           if ( host.startswith(sname) ):
              mach = startname[sname]
        if ( mach != "" ):
-          if ( mach == "yellowstone" ):
+          if   ( mach == "yellowstone" ):
+             account = "CESM0008"
+          elif ( mach == "cheyenne" ):
              account = "P93300606"
           else:
              account = ""

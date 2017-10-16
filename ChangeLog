@@ -4,6 +4,34 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Oct/16/2017
+Tag: PTCLM2_171016
+One-line: PTCLM update to clm4_5_16_r259 with cime5.4.0-alpha.03
+          Get batch working on cheyenne, and make cheyenne default add --wall option to PCLMsublist
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+Add --wall option to PTCLMsublist and get setup and working for cheyenne. Remove hopper and janus
+as they are decommissioned. Correct the default CESM root directory for batch submission. Update
+the compare listings for testing
+
+M       PTCLMsublist_prog.py - Add --wall option, make default cheyenne, correct cesmdir default
+M       batchque.py ---------- Add cheyenne settings, remote hopper and janus, cheyenne has
+                               to cd to run directory in job script, rather than set in batch
+M       PTCLMsublist --------- Update list of machines setup for
+M       README --------------- Update to work on cheyenne and demonstrate batch submission
+
+            Update compare listings
+M       test/listings/help
+M       test/compdirs/*/run.log
+M       test/compdirs/*/user_nl_clm
+M       test/compdirs/*/shell_commands
+M       test/compdirs/*/README.PTCLM
+
+
+================================================================================        
+Originator: erik
 Date: Jul/06/2017
 Tag: PTCLM2_170706
 One-line: Get PTCLM working again in clm4_5_14_r244 with cime5.3.0-alpha.21 and on

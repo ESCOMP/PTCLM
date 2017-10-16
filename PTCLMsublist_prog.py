@@ -17,12 +17,13 @@ class PTCLMsublist_prog:
    name         = "PTCLMsublist"
    cmdline      = ""
    account      = "P93300606"
-   cesmdir_def  = "../../../../.."
+   cesmdir_def  = "../../../.."
    cesmdir      = os.getenv("CESM_ROOT", cesmdir_def )
    inputdir_def = "/glade/p/cesmdata/cseg/inputdata"
    inputdir     = os.getenv("DIN_LOC_ROOT", inputdir_def )
    sitelistcsv  = "US-CHATS,US-FPe,CA-Let,US-NR1,CA-Man,BR-Sa1,BR-Sa3"
-   mach         = "yellowstone"
+   mach         = "cheyenne"
+   wall         = "4:00"
    parse_args   = False
    ptclm_opts   = ""
    que          = batchque()
@@ -52,6 +53,8 @@ class PTCLMsublist_prog:
                         help="Comma seperated list of PTCLM sites to submit to batch")
       options.add_option("--account", dest="account", default=self.account, \
                         help="Account number to use for batch queue")
+      options.add_option("--wall", dest="wall", default=self.wall, \
+                        help="Wall clock time to submit in queue for")
       options.add_option("--mach", dest="mach", default=self.mach, \
                         help="Machine name to use for batch submital")
       parser.add_option_group(options)
@@ -113,7 +116,8 @@ class PTCLMsublist_prog:
          self.error( "Initialize was NOT run first" )
 
       jobcommand = "./PTCLMmkdata --cesm_root "+self.cesmdir+" -s "+site+" -d "+self.inputdir+" "+self.options
-      bsub = self.que.Submit( self, jobcommand, jobname="PTCLM_"+site, submit=submit )
+      print( jobcommand );
+      bsub = self.que.Submit( self, jobcommand, jobname="PTCLM_"+site, submit=submit, wall=self.wall )
       return( bsub )
 
 #
@@ -177,9 +181,9 @@ class test_PTCLMsublist_prog(unittest.TestCase):
      self.prog.Initialize( )
      site = "US-UMB"
      bsub = self.prog.Submit( site, submit=False )
-     checkstring = "bsub  -oo PTCLM_US-UMB.stdout.out  -J PTCLM_US-UMB  -cwd " + cwd + "  -W 4:00 " + \
-                   " -P P93300075 -n 1 -R 'span[ptile=15]' -q caldera -N -a poe  ./PTCLMmkdata --cesm_root " + \
-                   self.prog.cesmdir+" -s "+site+" -d "+self.prog.inputdir+" "
+     checkstring = "qsub  -o PTCLM_US-UMB.stdout.out  -N PTCLM_US-UMB  -l walltime=4:00  " + \
+                   "-A P93300606 -l select=3:ncpus=1:mpiprocs=1:mem=109GB -q regular " + \
+                   "-V -m ae -j oe  PTCLM_"+site+".job"
      print "\n"
      print "bsubcm:"+bsub+":end"
      print "expect:"+checkstring+":end"
