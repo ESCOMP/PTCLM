@@ -5,6 +5,17 @@ This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
 Date: Oct/16/2017
+Tag: PTCLM2_171016c
+One-line: Update default walltime for cheyenne
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+M      PTCLMsublist_prog.py --- Update default walltime to cheyenne syntax for an hour and a half
+
+================================================================================        
+Originator: erik
+Date: Oct/16/2017
 Tag: PTCLM2_171016
 One-line: PTCLM update to clm4_5_16_r259 with cime5.4.0-alpha.03
           Get batch working on cheyenne, and make cheyenne default add --wall option to PCLMsublist

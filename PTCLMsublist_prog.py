@@ -23,7 +23,7 @@ class PTCLMsublist_prog:
    inputdir     = os.getenv("DIN_LOC_ROOT", inputdir_def )
    sitelistcsv  = "US-CHATS,US-FPe,CA-Let,US-NR1,CA-Man,BR-Sa1,BR-Sa3"
    mach         = "cheyenne"
-   wall         = "4:00"
+   wall         = "02:00:00"
    parse_args   = False
    ptclm_opts   = ""
    que          = batchque()
