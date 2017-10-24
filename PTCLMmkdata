@@ -106,6 +106,12 @@ required.add_option("-s", "--site", dest="mysite", default="none", \
                   help="Site-code to run, FLUXNET code (-s list to list valid names)")
 parser.add_option_group(required)
 options  = OptionGroup( parser, "Configure and Run Options" )
+options.add_option("--crop", dest="crop", \
+                  action="store_true", help = \
+                  "Create datasets and run with prognostic crop on")
+options.add_option("--no-crop", dest="crop", \
+                  action="store_false", default=False, help = \
+                  "Create datasets and run without prognostic crop on (DEFAULT)")
 options.add_option("--cesm_root", dest="base_cesm", \
                   default=" ", help = \
                   "Root CESM directory (top level directory with components and cime subdirs)")
@@ -237,11 +243,15 @@ def setup_case_files( ):
      output.close
      return( filex, usernlclm )
 
-def xmlchange_env_value( filex, var, value ):
+def xmlchange_env_value( filex, var, value, note="", append=False ):
      'Function to set the value of a variable in one of the env_*.xml files'
      change = "./xmlchange"
+     if ( append ):
+        change = change + " --append"
      cmd = change+" "+var+"="+value
      output = open( filex,'a')
+     if ( note != "" ):
+        output.write("# "+note+"\n")
      output.write(cmd+"\n")
      output.close
 
@@ -462,6 +472,11 @@ else:
     # When NOT cycling forcing, use start year for the align year
     alignyear = startyear
 
+if (options.crop == True):
+   mkcrop = " -crop"
+else:
+   mkcrop = " -no-crop"
+
 ####### ANY OTHER LAST SETTINGS BEFORE CREATING DATASETS ################################
 
 #####  ENV XML CHANGES ##################################################################
@@ -474,9 +489,7 @@ if(options.use_tower_yrs):
     xmlchange_env_value( filex, "DATM_CLMNCEP_YR_START", str(startyear) )
     xmlchange_env_value( filex, "DATM_CLMNCEP_YR_END",   str(endyear) )
 
-xmlchange_env_value( filex, "CLM_BLDNML_OPTS", "'-mask "+mask+"'" )
-
-xmlchange_env_value( filex, "MPILIB", "mpi-serial" )
+xmlchange_env_value( filex, "MPILIB", "mpi-serial", note="Comment this out if NINST_LND is greater than 1 (see: http://bugs.cgd.ucar.edu/show_bug.cgi?id=2521)" )
 
 ############# BEGIN CREATE POINT DATASETS ###############################################
 
@@ -548,7 +561,7 @@ if (options.pftgrid == False):
           nzero = i
           break
     pftopts=" -pft_frc \""+str(pft_frac[0:nzero])+'"' \
-               " -pft_idx \""+str(pft_code[0:nzero])+'"'
+               " -pft_idx \""+str(pft_code[0:nzero]) +'"' + mkcrop
 else: 
     pftopts=""
      
@@ -632,6 +645,7 @@ xmlchange_env_value( filex, "ATM_DOMAIN_PATH", data_dir   )
 xmlchange_env_value( filex, "LND_DOMAIN_PATH", data_dir   )
 xmlchange_env_value( filex, "ATM_DOMAIN_FILE", domainfile )
 xmlchange_env_value( filex, "LND_DOMAIN_FILE", domainfile )
+xmlchange_env_value( filex, "CLM_BLDNML_OPTS", "'-mask "+mask+mkcrop, append=True );
 
 xmlchange_env_value( filex, "CALENDAR",        "GREGORIAN" )
 xmlchange_env_value( filex, "DOUT_S",          "FALSE" )

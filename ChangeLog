@@ -4,6 +4,27 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Oct/24/2017
+Tag: PTCLM2_171024
+One-line:  Add --crop/--no-crop option (--no-crop is default) add US-Ne1 to test crop
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+  M  PTCLMmkdata - Add note to MPILIB, add new option --crop/--no-crop that will be passed
+       to CLM_BLDNML_OPTS and mksurfdata.pl change CLM_BLDNML_OPTS so it uses --append
+  M  test/PTCLMtestlist.xml
+        Add US-Ne1 site to test crop
+  M  PTCLM_sitedata/PTCLMDATA_sitedata.txt
+  M  PTCLM_sitedata/PTCLMDATA_soildata.txt
+  M  PTCLM_sitedata/PTCLMDATA_pftdata.txt
+  M  test/compdirs/crop_file_creation_US-Ne1/README.PTCLM
+  M  test/compdirs/crop_file_creation_US-Ne1/user_nl_clm
+  M  test/compdirs/crop_file_creation_US-Ne1/run.log
+  M  test/compdirs/copyfiles.csh
+
+================================================================================        
+Originator: erik
 Date: Oct/16/2017
 Tag: PTCLM2_171016d
 One-line: Update default walltime for cheyenne

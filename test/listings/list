@@ -1,4 +1,4 @@
----------------- PTCLMmkdata version PTCLM2.0_PTCLM2_170302-----------------------------
+---------------- PTCLMmkdata version PTCLM2.0_PTCLM_trunk-----------------------------
 
    ../PTCLMmkdata --list --cesm_root ../../../../.. -s test -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 
 
@@ -49,6 +49,7 @@ Open Site data file: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTC
  site =    US-Me4 name: Metolius Old Pine                                       Region:           OR Campaign: AmeriFlux
  site =    US-Me2 name: Metolius Intermediate Pine                              Region:           OR Campaign: AmeriFlux
  site =    US-MOz name: Missouri Ozark Site                                     Region:           MO Campaign: AmeriFlux
+ site =    US-Ne1 name: Mead Irrigated Corn                                     Region:           NE Campaign: AmeriFlux
  site =    US-Ne3 name: Mead Rainfed                                            Region:           NE Campaign: AmeriFlux
  site =    US-WCr name: Willow Creek                                            Region:           WI Campaign: AmeriFlux
  site =    TS-Ts1 name: Test short yrs                                          Region:         TEST Campaign: PTCLMTestSite

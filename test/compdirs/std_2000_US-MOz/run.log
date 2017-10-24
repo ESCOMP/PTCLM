@@ -1,12 +1,12 @@
 /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin/ncl
 ! user_nl_clm namelist options written by PTCLMmkdata:
-! ../PTCLMmkdata --mksurfdata_opts=-no_crop  --verbose --clmnmlusecase=2000_control --cesm_root ../../../../.. -s US-MOz -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std2000_file_creation 
+! ../PTCLMmkdata --verbose --clmnmlusecase=2000_control --cesm_root ../../../../.. -s US-MOz -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std2000_file_creation 
  fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/surfdata_1x1pt_US-MOz140204_simyr2000_140204.nc'
  hist_nhtfrq = 0
  hist_mfilt  = 1200
----------------- PTCLMmkdata version PTCLM2.0_PTCLM2_170302-----------------------------
+---------------- PTCLMmkdata version PTCLM2.0_PTCLM_trunk-----------------------------
 
-   ../PTCLMmkdata --mksurfdata_opts=-no_crop  --verbose --clmnmlusecase=2000_control --cesm_root ../../../../.. -s US-MOz -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std2000_file_creation 
+   ../PTCLMmkdata --verbose --clmnmlusecase=2000_control --cesm_root ../../../../.. -s US-MOz -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std2000_file_creation 
 
    OPTIONS:
 
@@ -55,6 +55,7 @@ Open Site data file: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTC
  site =    US-Me4 name: Metolius Old Pine                                       Region:           OR Campaign: AmeriFlux
  site =    US-Me2 name: Metolius Intermediate Pine                              Region:           OR Campaign: AmeriFlux
  site =    US-MOz name: Missouri Ozark Site                                     Region:           MO Campaign: AmeriFlux
+ site =    US-Ne1 name: Mead Irrigated Corn                                     Region:           NE Campaign: AmeriFlux
  site =    US-Ne3 name: Mead Rainfed                                            Region:           NE Campaign: AmeriFlux
  site =    US-WCr name: Willow Creek                                            Region:           WI Campaign: AmeriFlux
  site =    TS-Ts1 name: Test short yrs                                          Region:         TEST Campaign: PTCLMTestSite
@@ -121,6 +122,7 @@ Replacing PFT information in surface data file
  site =    US-Dk3
  site =    US-Dk2
  site =    US-IB1
+ site =    US-Ne1
  site =    US-Ne3
  site =    TS-Ts1
  site =    TS-Ts2
@@ -164,6 +166,7 @@ Replacing soil information in surface data file
  site =    US-Me4
  site =    US-Me2
  site =    US-MOz
+ site =    US-Ne1
  site =    US-Ne3
  site =    US-WCr
  site =    TS-Ts1
@@ -173,7 +176,7 @@ Replacing soil information in surface data file
  site =    RF-Bra
  site =   LBA-Cax
  sandpct=46.38 claypct=24.68
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_US-MOz -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz -dinlc /glade/p/cesmdata/cseg/inputdata -y 2000 -soil_cly 24.68 -soil_snd 46.38 -pft_frc "[100.0]" -pft_idx "[7]" -no_crop  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/mksurfdata_map.log
+Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_US-MOz -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz -dinlc /glade/p/cesmdata/cseg/inputdata -y 2000 -soil_cly 24.68 -soil_snd 46.38 -pft_frc "[100.0]" -pft_idx "[7]" -no-crop  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/mksurfdata_map.log
 surface file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/surfdata_1x1pt_US-MOz140204_simyr2000_140204.nc
 surface log file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz/surfdata_1x1pt_US-MOz140204_simyr2000_140204.log
 Data created successfully in /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std2000_file_creation/1x1pt_US-MOz
