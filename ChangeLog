@@ -5,6 +5,20 @@ This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
 Date: Oct/24/2017
+Tag: PTCLM2_171024b
+One-line: Add needed ending single quote for CLM_BLDNML_OPTS setting in shell_commands
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+  A    test/compdirs/crop_file_creation_US-Ne1/shell_commands - Add in missing file
+
+  M    PTCLMmkdata --- Add needed ending single quote in CLM_BLDNML_OPTS setting
+  M    test/compdirs/*/shell_commands - Update with above fix
+
+================================================================================        
+Originator: erik
+Date: Oct/24/2017
 Tag: PTCLM2_171024
 One-line:  Add --crop/--no-crop option (--no-crop is default) add US-Ne1 to test crop
 Testing:  Standard PTCLM test script on cheyenne
@@ -18,9 +32,9 @@ Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
   M  PTCLM_sitedata/PTCLMDATA_sitedata.txt
   M  PTCLM_sitedata/PTCLMDATA_soildata.txt
   M  PTCLM_sitedata/PTCLMDATA_pftdata.txt
-  M  test/compdirs/crop_file_creation_US-Ne1/README.PTCLM
-  M  test/compdirs/crop_file_creation_US-Ne1/user_nl_clm
-  M  test/compdirs/crop_file_creation_US-Ne1/run.log
+  A  test/compdirs/crop_file_creation_US-Ne1/README.PTCLM
+  A  test/compdirs/crop_file_creation_US-Ne1/user_nl_clm
+  A  test/compdirs/crop_file_creation_US-Ne1/run.log
   M  test/compdirs/copyfiles.csh
 
 ================================================================================        

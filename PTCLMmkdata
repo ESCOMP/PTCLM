@@ -645,7 +645,7 @@ xmlchange_env_value( filex, "ATM_DOMAIN_PATH", data_dir   )
 xmlchange_env_value( filex, "LND_DOMAIN_PATH", data_dir   )
 xmlchange_env_value( filex, "ATM_DOMAIN_FILE", domainfile )
 xmlchange_env_value( filex, "LND_DOMAIN_FILE", domainfile )
-xmlchange_env_value( filex, "CLM_BLDNML_OPTS", "'-mask "+mask+mkcrop, append=True );
+xmlchange_env_value( filex, "CLM_BLDNML_OPTS", "'-mask "+mask+mkcrop+"'", append=True );
 
 xmlchange_env_value( filex, "CALENDAR",        "GREGORIAN" )
 xmlchange_env_value( filex, "DOUT_S",          "FALSE" )

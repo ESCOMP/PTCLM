@@ -9,7 +9,7 @@
 ./xmlchange LND_DOMAIN_PATH=/glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/noopt_file_creation/1x1pt_US-CHATS
 ./xmlchange ATM_DOMAIN_FILE=domain.lnd.1x1pt_US-CHATS_navy.140204.nc
 ./xmlchange LND_DOMAIN_FILE=domain.lnd.1x1pt_US-CHATS_navy.140204.nc
-./xmlchange --append CLM_BLDNML_OPTS='-mask navy -no-crop
+./xmlchange --append CLM_BLDNML_OPTS='-mask navy -no-crop'
 ./xmlchange CALENDAR=GREGORIAN
 ./xmlchange DOUT_S=FALSE
 ./xmlchange ATM_NCPL=48
