@@ -74,21 +74,16 @@ if sys.version_info < (2, 4):
     error( "The version of Python being used is too old for PTCLMmkdata" )
 
 
-svnurl="$HeadURL$"
-if   ( svnurl.split('/')[4] == "trunk"       ):
-   svnvers="PTCLM_trunk"
-elif ( svnurl.split('/')[4] == "trunk_tags"  ):
-   svnvers=svnurl.split('/')[5]
-elif ( svnurl.split('/')[4] == "branches"    ):
-   svnvers="PTCLM_branch_"+svnurl.split('/')[5]
-elif ( svnurl.split('/')[4] == "branch_tags" ):
-   svnvers="PTCLM_brnchtag_"+svnurl.split('/')[6]
-elif ( svnurl.split('/')[4] == "release_tags" ):
-   svnvers="PTCLM_releasetag_"+svnurl.split('/')[6]
-else:
-   print( "Error getting version from: "+svnurl)
-   os.abort()
-version="PTCLM"+str(2.0)+"_"+svnvers
+tagvers = ""
+clog = open( ptclm_dir+"/ChangeLog", "r" );
+for line in clog:
+   if ( line.find("Tag: ",0) == 0 ): 
+      n = line.count("")
+      tagvers = line[5:n-2]
+      break
+
+clog.close
+version=tagvers
 
 ### PARSE THE COMMAND LINE INPUT ########################################################
 
@@ -157,7 +152,7 @@ indatgengroup.add_option("--map_gdate", dest="map_gdate", default=sdate, \
 indatgengroup.add_option("--mksurfdata_opts", dest="mksurfdata_opts", help = \
                   "Options to send directly to mksurfdata_map",\
                    default="")
-versiongroup  = OptionGroup( parser, "Main Script Version Id: $Id$ Scripts URL: "+svnurl )
+versiongroup  = OptionGroup( parser, tagvers )
 parser.add_option_group(versiongroup)
 
 (options, args) = parser.parse_args()
