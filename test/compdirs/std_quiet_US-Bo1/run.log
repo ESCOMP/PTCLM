@@ -1,4 +1,4 @@
-/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin/ncl
+/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin/ncl
 lat=40.0061
 mapfile = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/map_1x1pt_US-Bo1_noocean_to_1x1pt_US-Bo1_nomask_aave_da_140204.nc
 scripgridfile = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_US-Bo1_nomask_c140204.nc

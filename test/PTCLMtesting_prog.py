@@ -43,8 +43,16 @@ class PTCLMtesting_prog:
       options.add_option("--redo_compare_files", dest="redo_compare", action="store_true", default=self.redo_compare, \
                         help="Redo the compare files")
       parser.add_option_group(options)
-      svnurl          = '$HeadURL$'
-      versiongroup    = OptionGroup( parser, "Version Id: $Id$ URL: "+svnurl )
+      tagvers = ""
+      clog = open( "../ChangeLog", "r" );
+      for line in clog:
+         if ( line.find("Tag: ",0) == 0 ): 
+            n = line.count("")
+            tagvers = line[5:n-2]
+            break
+
+      clog.close
+      versiongroup    = OptionGroup( parser, tagvers )
       parser.add_option_group(versiongroup)
       (options, args) = parser.parse_args()
       if len(args) != 0:

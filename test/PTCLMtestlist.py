@@ -64,6 +64,30 @@ class PTCLMtestlist:
      print "Open file: "+self.testlist
      self.testXML.parse( self.testlist )
 
+   # Replace specific identifyable information with generic
+   def ReplaceIDInfoInFile( self, filename, curdates=False ):
+     if ( not os.path.exists( filename ) ): self.error("File does NOT exist to do replace operation in:"+filename)
+     outfilename = filename+".tmp"
+     infile  = open( filename,    "r" );
+     outfile = open( outfilename, "w" );
+     stdout  = os.popen( "date +%y%m%d" );
+     sdate   = stdout.read().rstrip( );
+     stdout  = os.popen( "../PTCLMmkdata --version" )
+     version = stdout.read().rstrip()
+     for line in infile:
+         line = line.replace( self.cesmdir,      "$CESMROOTDIR" );
+         line = line.replace( self.inputdatadir, "$DIN_LOC_ROOT" );
+         line = line.replace( version,           "$PTCLMVERSION" );
+         if ( curdates ):
+            line = line.replace( sdate,     "$YYMMDD" );
+         outfile.write( line )
+
+     infile.close()
+     outfile.close()
+     os.system( "mv "+outfilename+" "+filename )
+     
+      
+
    # --  Error function ---------------------------------
    def error( self, desc ):
        "error function"
@@ -134,6 +158,7 @@ class PTCLMtestlist:
      print teststatus+" "+tid
 
      overallcompstatus = "NO-COMPS-DONE"
+     if ( os.path.exists(tlog) ): self.ReplaceIDInfoInFile( tlog, curdates=True )   # Replace identifing info in the log file
      if ( test['resultfile'] != "" ):
         dstat = os.system( "diff "+tlog+" "+test['resultfile']  )
         if ( dstat == 0 ):
@@ -170,6 +195,7 @@ class PTCLMtestlist:
                  compstatus = "BFAIL"
                  desc       = "compare file does NOT exist: "+cmpfile
            else:
+              self.ReplaceIDInfoInFile( srcfile )   # Replace identifing info in the log file
               dstat = os.system( "diff "+srcfile+" "+cmpfile )
 
               if ( dstat == 0 ):
@@ -204,7 +230,7 @@ class test_PTCLMtestlist(unittest.TestCase):
 
    def setUp( self ):
      self.test = PTCLMtestlist()
-     cesmdir = os.getenv("CESM_ROOT", "../../../../../..")
+     cesmdir = os.getenv("CESM_ROOT", "../../../../..")
      if ( not os.path.exists( cesmdir+"/ChangeLog" ) ):
          print "CESM_ROOT NOT input\n"
          sys.exit( 200 )
@@ -245,6 +271,49 @@ class test_PTCLMtestlist(unittest.TestCase):
      self.test.run_PTCLMtest( testlist[0],     False )
      self.test.run_PTCLMtest( testlist[5],     False )
      self.test.run_PTCLMtest( failtestlist[0], False )
+
+   def test_ReplaceIDInfoInFile( self ):
+     self.assertRaises(SystemExit, self.test.ReplaceIDInfoInFile, "non-existant-file" )
+     filename = "testreplace.tmp"
+     tfile = open( filename, "w" )
+     tfile.write( "file = '"+self.test.cesmdir+"/myfile'\n" )
+     tfile.write( "inpfile = '"+self.test.inputdatadir+"/myfile'\n" )
+     tfile.write( "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
+     stdout        = os.popen( "date +%y%m%d" );
+     sdate         = stdout.read().rstrip( );
+     tfile.write( self.test.cesmdir+"/surfdata_"+sdate+".namelist\n" )
+     stdout  = os.popen( "../PTCLMmkdata --version" )
+     version = stdout.read().rstrip()
+     tfile.write( "++++ "+version+" +++++\n" )
+     tfile.close()
+     self.test.ReplaceIDInfoInFile( filename )
+     tfile = open( filename, "r" )
+     line = tfile.readline()
+     self.assertEqual( line, "file = '$CESMROOTDIR/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "inpfile = '$DIN_LOC_ROOT/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "$CESMROOTDIR/surfdata_"+sdate+".namelist\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "++++ $PTCLMVERSION +++++\n" )
+     tfile.close()
+     self.test.ReplaceIDInfoInFile( filename, curdates=True )
+     tfile = open( filename, "r" )
+     line = tfile.readline()
+     self.assertEqual( line, "file = '$CESMROOTDIR/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "inpfile = '$DIN_LOC_ROOT/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "$CESMROOTDIR/surfdata_$YYMMDD.namelist\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "++++ $PTCLMVERSION +++++\n" )
+     tfile.close()
+     os.system( "/bin/rm "+filename )
+
 
 if __name__ == '__main__':
      unittest.main()

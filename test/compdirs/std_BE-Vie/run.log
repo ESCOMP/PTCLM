@@ -1,12 +1,12 @@
-/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin/ncl
+/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin/ncl
 ! user_nl_clm namelist options written by PTCLMmkdata:
-! ../PTCLMmkdata --verbose --cesm_root ../../../../.. -s BE-Vie -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std_file_creation 
+! ../PTCLMmkdata --verbose --cesm_root $CESMROOTDIR -s BE-Vie -d $DIN_LOC_ROOT --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std_file_creation 
  fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie/surfdata_1x1pt_BE-Vie140204_simyr2000_140204.nc'
  hist_nhtfrq = 0
  hist_mfilt  = 1200
----------------- PTCLMmkdata version PTCLM2.0_PTCLM_trunk-----------------------------
+---------------- PTCLMmkdata version $PTCLMVERSION-----------------------------
 
-   ../PTCLMmkdata --verbose --cesm_root ../../../../.. -s BE-Vie -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std_file_creation 
+   ../PTCLMmkdata --verbose --cesm_root $CESMROOTDIR -s BE-Vie -d $DIN_LOC_ROOT --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std_file_creation 
 
    OPTIONS:
 
@@ -64,7 +64,7 @@ Open Site data file: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTC
  site =  LTER-Sev name: Sevilleta Long Term Ecological Research (LTER) project (Meteorology from LTER Cerro Montoso #42) Region:           NM Campaign: LTER
  site =    RF-Bra name: Brasillia arbitrary site, no met-data                   Region:           BR Campaign: RFisher
  site =   LBA-Cax name: Caxiauna Rainforest 'throughfall exclusion’ (TFE) experiment Region:           BR Campaign: LBA
-CESM input data directory:				/glade/p/cesmdata/cseg/inputdata
+CESM input data directory:				$DIN_LOC_ROOT
 ----------------------------------------------------------------
 
 Write /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie/README.PTCLM with command line
@@ -176,7 +176,7 @@ Replacing soil information in surface data file
  site =    RF-Bra
  site =   LBA-Cax
  sandpct=42.0 claypct=18.0
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_BE-Vie -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie -dinlc /glade/p/cesmdata/cseg/inputdata -y 2000 -soil_cly 18.0 -soil_snd 42.0 -pft_frc "[100.0]" -pft_idx "[7]" -no-crop  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie/mksurfdata_map.log
+Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_BE-Vie -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie -dinlc $DIN_LOC_ROOT -y 2000 -soil_cly 18.0 -soil_snd 42.0 -pft_frc "[100.0]" -pft_idx "[7]" -no-crop  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie/mksurfdata_map.log
 surface file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie/surfdata_1x1pt_BE-Vie140204_simyr2000_140204.nc
 surface log file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie/surfdata_1x1pt_BE-Vie140204_simyr2000_140204.log
 Data created successfully in /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_BE-Vie

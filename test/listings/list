@@ -1,6 +1,6 @@
----------------- PTCLMmkdata version PTCLM2.0_PTCLM_trunk-----------------------------
+---------------- PTCLMmkdata version $PTCLMVERSION-----------------------------
 
-   ../PTCLMmkdata --list --cesm_root ../../../../.. -s test -d /glade/p/cesmdata/cseg/inputdata --debug --sdate 140204 --map_gdate 140204 
+   ../PTCLMmkdata --list --cesm_root $CESMROOTDIR -s test -d $DIN_LOC_ROOT --debug --sdate 140204 --map_gdate 140204 
 
    OPTIONS:
 
