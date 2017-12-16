@@ -4,6 +4,15 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Dec/15/2017
+Tag: PTCLM2_171215
+One-line: 
+Testing:  
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+================================================================================        
+Originator: erik
 Date: Oct/24/2017
 Tag: PTCLM2_171024b
 One-line: Add needed ending single quote for CLM_BLDNML_OPTS setting in shell_commands
