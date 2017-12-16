@@ -6,10 +6,33 @@ This file describes changes made to the PTCLM tool
 Originator: erik
 Date: Dec/15/2017
 Tag: PTCLM2_171215
-One-line: 
-Testing:  
+One-line: Remove subversion keywords and make comparisons generic
+Testing:  Standard PTCLM test script on yellowstone
 Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
             check for valid values
+
+Remove use of Subversion keywords, and substitute referring to the latest tagnmae
+in the ChangeLog file. Also for testing replace strings that are very user or machine
+specific with generic strings, so that comparisons can be done correctly. These
+are for the: CESMDIR, version, inputdata directory, or current date.
+
+  M  PTCLMmkdata --- Remove svn keyword expansion for --version with latest tagname
+        in ChangeLog file
+  M  PTCLMsublist_prog.py - Remove svn keyword expansion for --version with latest tagname
+        in ChangeLog file
+
+  M  test/PTCLMtesting_prog.py - Remove svn keyword expansion for --version with latest 
+        tagname in ChangeLog file
+  M  test/PTCLMtestlist.py ----- Add method ReplaceIDInfoInFile to replace specific
+        identifying information in a file with generic strings. Call it when appropriate
+        for comparisons. Add test for it. And correct default cesmdir.
+
+        Update the compare files so they have generic strings for
+        user/machine/version/date identifying information.
+  M  test/compdirs/*/*
+  M  test/listings/help
+  M  test/listings/list
+  M  test/listings/sitelist
 
 ================================================================================        
 Originator: erik
