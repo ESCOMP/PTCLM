@@ -1,7 +1,7 @@
-/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin/ncl
+$NCLPATH
 ! user_nl_clm namelist options written by PTCLMmkdata:
 ! ../PTCLMmkdata --verbose --cycle_forcing --cesm_root $CESMROOTDIR -s TS-Ts2 -d $DIN_LOC_ROOT --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/cycling_file_creation 
- fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/surfdata_1x1pt_TS-Ts2140204_simyr2000_140204.nc'
+ fsurdat = '$CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/surfdata_1x1pt_TS-Ts2140204_simyr2000_140204.nc'
  hist_nhtfrq = 0
  hist_mfilt  = 1200
 ---------------- PTCLMmkdata version $PTCLMVERSION-----------------------------
@@ -12,13 +12,13 @@
 
 Site name:						TS-Ts2
 
-Root CLM directory:					/glade/p/work/erik/clm_clean_trunk
+Root CLM directory:					$CESMROOTDIR
 ** Surface data file will be built using site-level data when available unless otherwise specified ** 
 
 	Extract PFT data from gridded files:		False
 	Extract soil data from gridded files:		False
 
-Open Site data file: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
+Open Site data file: $CESMROOTDIR/components/clm/tools/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
 
  site = site_code name: name                                                    Region:        state Campaign: campaign
  site =    US-Blo name: Blodgett Forest                                         Region:           CA Campaign: AmeriFlux
@@ -67,16 +67,16 @@ Open Site data file: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTC
 CESM input data directory:				$DIN_LOC_ROOT
 ----------------------------------------------------------------
 
-Write /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/README.PTCLM with command line
-Run command: /bin/chmod +x /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/shell_commands
+Write $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/README.PTCLM with command line
+Run command: /bin/chmod +x $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/shell_commands
 Making input files for the point (this may take a while if creating transient datasets)
 Creating map file for a point with no ocean
 lat=40.0329
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/mknoocnmap.pl -p 40.0329,254.4536 -name 1x1pt_TS-Ts2 > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/mknoocnmap.log
-mapfile = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/map_1x1pt_TS-Ts2_noocean_to_1x1pt_TS-Ts2_nomask_aave_da_140204.nc
-scripgridfile = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_TS-Ts2_nomask_c140204.nc
+Run command: $CESMROOTDIR/components/clm/tools/mkmapdata/mknoocnmap.pl -p 40.0329,254.4536 -name 1x1pt_TS-Ts2 > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/mknoocnmap.log
+mapfile = $CESMROOTDIR/components/clm/tools/mkmapdata/map_1x1pt_TS-Ts2_noocean_to_1x1pt_TS-Ts2_nomask_aave_da_140204.nc
+scripgridfile = $CESMROOTDIR/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_TS-Ts2_nomask_c140204.nc
 Creating data domain
-Run command: /glade/p/work/erik/clm_clean_trunk/cime/tools/mapping/gen_domain_files/gen_domain -m /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/map_1x1pt_TS-Ts2_noocean_to_1x1pt_TS-Ts2_nomask_aave_da_140204.nc -o navy -l 1x1pt_TS-Ts2 -c 'Running gen_domain from PTCLMmkdata' > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/gen_domain.log
+Run command: $CESMROOTDIR/cime/tools/mapping/gen_domain_files/gen_domain -m $CESMROOTDIR/components/clm/tools/mkmapdata/map_1x1pt_TS-Ts2_noocean_to_1x1pt_TS-Ts2_nomask_aave_da_140204.nc -o navy -l 1x1pt_TS-Ts2 -c 'Running gen_domain from PTCLMmkdata' > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/gen_domain.log
 domainfile = domain.lnd.1x1pt_TS-Ts2_navy.140204.nc
 
 
@@ -84,7 +84,7 @@ Re-create surface dataset:
 
 
 Re-create mapping files for surface dataset:
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/mkmapdata.sh --gridfile /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_TS-Ts2_nomask_c140204.nc --res 1x1pt_TS-Ts2 --gridtype regional -v > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/mkmapdata.log
+Run command: $CESMROOTDIR/components/clm/tools/mkmapdata/mkmapdata.sh --gridfile $CESMROOTDIR/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_TS-Ts2_nomask_c140204.nc --res 1x1pt_TS-Ts2 --gridtype regional -v > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/mkmapdata.log
 Replacing PFT information in surface data file
  site = site_code
  site =    US-Blo
@@ -176,8 +176,8 @@ Replacing soil information in surface data file
  site =    RF-Bra
  site =   LBA-Cax
  sandpct=43.13 claypct=21.43
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_TS-Ts2 -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2 -dinlc $DIN_LOC_ROOT -y 2000 -soil_cly 21.43 -soil_snd 43.13 -pft_frc "[100.0]" -pft_idx "[1]" -no-crop  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/mksurfdata_map.log
-surface file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/surfdata_1x1pt_TS-Ts2140204_simyr2000_140204.nc
-surface log file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/surfdata_1x1pt_TS-Ts2140204_simyr2000_140204.log
-Data created successfully in /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2
+Run command: $CESMROOTDIR/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_TS-Ts2 -usr_gdate 140204 -usr_mapdir $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2 -dinlc $DIN_LOC_ROOT -y 2000 -soil_cly 21.43 -soil_snd 43.13 -pft_frc "[100.0]" -pft_idx "[1]" -no-crop  > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/mksurfdata_map.log
+surface file = $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/surfdata_1x1pt_TS-Ts2140204_simyr2000_140204.nc
+surface log file = $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2/surfdata_1x1pt_TS-Ts2140204_simyr2000_140204.log
+Data created successfully in $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/cycling_file_creation/1x1pt_TS-Ts2
 

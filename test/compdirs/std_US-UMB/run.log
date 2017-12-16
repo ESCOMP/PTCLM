@@ -1,7 +1,7 @@
-/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin/ncl
+$NCLPATH
 ! user_nl_clm namelist options written by PTCLMmkdata:
 ! ../PTCLMmkdata --verbose --cesm_root $CESMROOTDIR -s US-UMB -d $DIN_LOC_ROOT --debug --sdate 140204 --map_gdate 140204 --mydatadir testing_dir/std_file_creation 
- fsurdat = '/glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/surfdata_1x1pt_US-UMB140204_simyr2000_140204.nc'
+ fsurdat = '$CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/surfdata_1x1pt_US-UMB140204_simyr2000_140204.nc'
  hist_nhtfrq = 0
  hist_mfilt  = 1200
 ---------------- PTCLMmkdata version $PTCLMVERSION-----------------------------
@@ -12,13 +12,13 @@
 
 Site name:						US-UMB
 
-Root CLM directory:					/glade/p/work/erik/clm_clean_trunk
+Root CLM directory:					$CESMROOTDIR
 ** Surface data file will be built using site-level data when available unless otherwise specified ** 
 
 	Extract PFT data from gridded files:		False
 	Extract soil data from gridded files:		False
 
-Open Site data file: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
+Open Site data file: $CESMROOTDIR/components/clm/tools/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
 
  site = site_code name: name                                                    Region:        state Campaign: campaign
  site =    US-Blo name: Blodgett Forest                                         Region:           CA Campaign: AmeriFlux
@@ -67,16 +67,16 @@ Open Site data file: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTC
 CESM input data directory:				$DIN_LOC_ROOT
 ----------------------------------------------------------------
 
-Write /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/README.PTCLM with command line
-Run command: /bin/chmod +x /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/shell_commands
+Write $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/README.PTCLM with command line
+Run command: /bin/chmod +x $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/shell_commands
 Making input files for the point (this may take a while if creating transient datasets)
 Creating map file for a point with no ocean
 lat=45.5598
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/mknoocnmap.pl -p 45.5598,275.2862 -name 1x1pt_US-UMB > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/mknoocnmap.log
-mapfile = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/map_1x1pt_US-UMB_noocean_to_1x1pt_US-UMB_nomask_aave_da_140204.nc
-scripgridfile = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_US-UMB_nomask_c140204.nc
+Run command: $CESMROOTDIR/components/clm/tools/mkmapdata/mknoocnmap.pl -p 45.5598,275.2862 -name 1x1pt_US-UMB > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/mknoocnmap.log
+mapfile = $CESMROOTDIR/components/clm/tools/mkmapdata/map_1x1pt_US-UMB_noocean_to_1x1pt_US-UMB_nomask_aave_da_140204.nc
+scripgridfile = $CESMROOTDIR/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_US-UMB_nomask_c140204.nc
 Creating data domain
-Run command: /glade/p/work/erik/clm_clean_trunk/cime/tools/mapping/gen_domain_files/gen_domain -m /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/map_1x1pt_US-UMB_noocean_to_1x1pt_US-UMB_nomask_aave_da_140204.nc -o navy -l 1x1pt_US-UMB -c 'Running gen_domain from PTCLMmkdata' > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/gen_domain.log
+Run command: $CESMROOTDIR/cime/tools/mapping/gen_domain_files/gen_domain -m $CESMROOTDIR/components/clm/tools/mkmapdata/map_1x1pt_US-UMB_noocean_to_1x1pt_US-UMB_nomask_aave_da_140204.nc -o navy -l 1x1pt_US-UMB -c 'Running gen_domain from PTCLMmkdata' > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/gen_domain.log
 domainfile = domain.lnd.1x1pt_US-UMB_navy.140204.nc
 
 
@@ -84,7 +84,7 @@ Re-create surface dataset:
 
 
 Re-create mapping files for surface dataset:
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapdata/mkmapdata.sh --gridfile /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_US-UMB_nomask_c140204.nc --res 1x1pt_US-UMB --gridtype regional -v > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/mkmapdata.log
+Run command: $CESMROOTDIR/components/clm/tools/mkmapdata/mkmapdata.sh --gridfile $CESMROOTDIR/components/clm/tools/mkmapgrids/SCRIPgrid_1x1pt_US-UMB_nomask_c140204.nc --res 1x1pt_US-UMB --gridtype regional -v > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/mkmapdata.log
 Replacing PFT information in surface data file
  site = site_code
  site =    US-Blo
@@ -176,8 +176,8 @@ Replacing soil information in surface data file
  site =    RF-Bra
  site =   LBA-Cax
  sandpct=92.6 claypct=0.6
-Run command: /glade/p/work/erik/clm_clean_trunk/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_US-UMB -usr_gdate 140204 -usr_mapdir /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB -dinlc $DIN_LOC_ROOT -y 2000 -soil_cly 0.6 -soil_snd 92.6 -pft_frc "[100.0]" -pft_idx "[7]" -no-crop  > /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/mksurfdata_map.log
-surface file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/surfdata_1x1pt_US-UMB140204_simyr2000_140204.nc
-surface log file = /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/surfdata_1x1pt_US-UMB140204_simyr2000_140204.log
-Data created successfully in /glade/p/work/erik/clm_clean_trunk/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB
+Run command: $CESMROOTDIR/components/clm/tools/mksurfdata_map/mksurfdata.pl -res usrspec -usr_gname 1x1pt_US-UMB -usr_gdate 140204 -usr_mapdir $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB -dinlc $DIN_LOC_ROOT -y 2000 -soil_cly 0.6 -soil_snd 92.6 -pft_frc "[100.0]" -pft_idx "[7]" -no-crop  > $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/mksurfdata_map.log
+surface file = $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/surfdata_1x1pt_US-UMB140204_simyr2000_140204.nc
+surface log file = $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB/surfdata_1x1pt_US-UMB140204_simyr2000_140204.log
+Data created successfully in $CESMROOTDIR/components/clm/tools/PTCLM/test/testing_dir/std_file_creation/1x1pt_US-UMB
 
