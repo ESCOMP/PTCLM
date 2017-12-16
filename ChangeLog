@@ -4,6 +4,23 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Dec/16/2017
+Tag: PTCLM2_171216
+One-line: Update compare files one more time to make generic
+Testing:  Standard PTCLM test script on yellowstone
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+  M  test/PTCLMtestlist.py ----- Add replacement of absolute path of CESMDIR
+        and also ncl path. This should make it generic for different machines.
+
+        Update the compare files
+  M  test/compdirs/*/*
+  M  test/listings/help
+  M  test/listings/list
+  M  test/listings/sitelist
+================================================================================        
+Originator: erik
 Date: Dec/15/2017
 Tag: PTCLM2_171215
 One-line: Remove subversion keywords and make comparisons generic
