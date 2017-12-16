@@ -70,12 +70,18 @@ class PTCLMtestlist:
      outfilename = filename+".tmp"
      infile  = open( filename,    "r" );
      outfile = open( outfilename, "w" );
+     stdout  = os.popen( "cd "+self.cesmdir+"; pwd" )
+     abscesmdir = stdout.read().rstrip( );
      stdout  = os.popen( "date +%y%m%d" );
      sdate   = stdout.read().rstrip( );
      stdout  = os.popen( "../PTCLMmkdata --version" )
      version = stdout.read().rstrip()
+     stdout  = os.popen( "which ncl" )
+     nclpath = stdout.read().rstrip( );
      for line in infile:
          line = line.replace( self.cesmdir,      "$CESMROOTDIR" );
+         line = line.replace( abscesmdir,        "$CESMROOTDIR" );
+         line = line.replace( nclpath,           "$NCLPATH"     );
          line = line.replace( self.inputdatadir, "$DIN_LOC_ROOT" );
          line = line.replace( version,           "$PTCLMVERSION" );
          if ( curdates ):
@@ -277,8 +283,13 @@ class test_PTCLMtestlist(unittest.TestCase):
      filename = "testreplace.tmp"
      tfile = open( filename, "w" )
      tfile.write( "file = '"+self.test.cesmdir+"/myfile'\n" )
+     stdout     = os.popen( "cd "+self.test.cesmdir+" ; pwd" )
+     abscesmdir = stdout.read().rstrip()
+     tfile.write( "file2 = '"+abscesmdir+"/myfile'\n" )
      tfile.write( "inpfile = '"+self.test.inputdatadir+"/myfile'\n" )
      tfile.write( "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
+     nclpath    = "/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin/ncl"
+     tfile.write( nclpath+"\n" )
      stdout        = os.popen( "date +%y%m%d" );
      sdate         = stdout.read().rstrip( );
      tfile.write( self.test.cesmdir+"/surfdata_"+sdate+".namelist\n" )
@@ -291,9 +302,13 @@ class test_PTCLMtestlist(unittest.TestCase):
      line = tfile.readline()
      self.assertEqual( line, "file = '$CESMROOTDIR/myfile'\n" )
      line = tfile.readline()
+     self.assertEqual( line, "file2 = '$CESMROOTDIR/myfile'\n" )
+     line = tfile.readline()
      self.assertEqual( line, "inpfile = '$DIN_LOC_ROOT/myfile'\n" )
      line = tfile.readline()
      self.assertEqual( line, "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "$NCLPATH\n" )
      line = tfile.readline()
      self.assertEqual( line, "$CESMROOTDIR/surfdata_"+sdate+".namelist\n" )
      line = tfile.readline()
@@ -304,9 +319,13 @@ class test_PTCLMtestlist(unittest.TestCase):
      line = tfile.readline()
      self.assertEqual( line, "file = '$CESMROOTDIR/myfile'\n" )
      line = tfile.readline()
+     self.assertEqual( line, "file2 = '$CESMROOTDIR/myfile'\n" )
+     line = tfile.readline()
      self.assertEqual( line, "inpfile = '$DIN_LOC_ROOT/myfile'\n" )
      line = tfile.readline()
      self.assertEqual( line, "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
+     line = tfile.readline()
+     self.assertEqual( line, "$NCLPATH\n" )
      line = tfile.readline()
      self.assertEqual( line, "$CESMROOTDIR/surfdata_$YYMMDD.namelist\n" )
      line = tfile.readline()
