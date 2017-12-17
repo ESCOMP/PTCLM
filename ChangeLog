@@ -5,6 +5,19 @@ This file describes changes made to the PTCLM tool
 ================================================================================        
 Originator: erik
 Date: Dec/16/2017
+Tag: PTCLM2_171216c
+One-line: Add back in missing compare directories: std_US-Ha1 std_US-Var std_Us-Ne1 trans_US-Ha1
+Testing:  Standard PTCLM test script on yellowstone/hobart/cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+Missing compare directories: std_US-Ha1 std_US-Var std_Us-Ne1 trans_US-Ha1
+
+A test/compdirs/*
+
+================================================================================        
+Originator: erik
+Date: Dec/16/2017
 Tag: PTCLM2_171216b
 One-line: Add back in missing compare directory US-ARM
 Testing:  Standard PTCLM test script on yellowstone/hobart/cheyenne
