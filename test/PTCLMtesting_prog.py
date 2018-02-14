@@ -17,8 +17,10 @@ class PTCLMtesting_prog:
    name         = "PTCLMtesting"
    cmdline      = ""
    redo_compare = False
-   cesmdir_def  = "../../../../.."
-   cesmdir      = os.getenv("CESM_ROOT", cesmdir_def )
+   ctsmdir_def  = "../../../"
+   ctsmdir      = os.getenv("CTSM_ROOT", ctsmdir_def )
+   cimedir_def  = ctsmdir_def + "/cime"
+   cimedir      = os.getenv("CIME_ROOT", cimedir_def )
    parse_args   = False
    setup        = False
    n_tests      = {}
@@ -38,8 +40,10 @@ class PTCLMtesting_prog:
           self.cmdline = self.cmdline+arg+" "
       parser   = OptionParser( usage="%prog [options]" )
       options = OptionGroup( parser, "Options" )
-      options.add_option("-r", "--cesm_root", dest="cesm_root", default=self.cesmdir, \
-                        help="Location of CESM root directory (also set with CESM_ROOT env variable)")
+      options.add_option("-r", "--ctsm_root", dest="ctsm_root", default=self.ctsmdir, \
+                        help="Location of CTSM root directory (also set with CTSM_ROOT env variable)")
+      options.add_option("--cime_root", dest="cime_root", default=self.cimedir, \
+                        help="Location of CIME root directory (also set with CIME_ROOT env variable)")
       options.add_option("--redo_compare_files", dest="redo_compare", action="store_true", default=self.redo_compare, \
                         help="Redo the compare files")
       parser.add_option_group(options)
@@ -59,7 +63,8 @@ class PTCLMtesting_prog:
           parser.error("incorrect number of arguments")
    
       self.redo_compare = options.redo_compare
-      self.cesmdir      = options.cesm_root
+      self.ctsmdir      = options.ctsm_root
+      self.cimedir      = options.cime_root
       self.parse_args   = True
 
    def redo_compare_files( self ):
@@ -69,17 +74,23 @@ class PTCLMtesting_prog:
          self.error( "parse_cmdline_args was NOT run first" )
       return( self.redo_compare )
 
-   def cesm_root( self ):
-      "Return the CESM_ROOT directory"
+   def ctsm_root( self ):
+      "Return the CTSM_ROOT directory"
       if ( not self.parse_args ):
          self.error( "parse_cmdline_args was NOT run first" )
-      return( self.cesmdir )
+      return( self.ctsmdir )
+
+   def cime_root( self ):
+      "Return the CIME_ROOT directory"
+      if ( not self.parse_args ):
+         self.error( "parse_cmdline_args was NOT run first" )
+      return( self.cimedir )
 
    def Initialize( self ):
       "Initialize the PTCLM tests"
       if ( not self.parse_args ):
          self.error( "parse_cmdline_args was NOT run first" )
-      self.testlist.Setup(self.cesm_root())
+      self.testlist.Setup(self.ctsm_root())
       self.testlist.Read()
 
 
@@ -142,7 +153,8 @@ class test_PTCLMtesting_prog(unittest.TestCase):
      # Test that doing stuff before parse_args fails
      self.prog = PTCLMtesting_prog()
      self.assertRaises(SystemExit, self.prog.redo_compare_files )
-     self.assertRaises(SystemExit, self.prog.cesm_root )
+     self.assertRaises(SystemExit, self.prog.ctsm_root )
+     self.assertRaises(SystemExit, self.prog.cime_root )
      self.assertRaises(SystemExit, self.prog.Initialize )
      self.assertRaises(SystemExit, self.prog.Run )
      self.assertRaises(SystemExit, self.prog.Finalize )
@@ -160,15 +172,24 @@ class test_PTCLMtesting_prog(unittest.TestCase):
      sys.argv[1:] = [ "--redo_compare_files" ]
      self.prog.parse_cmdline_args( )
      self.assertTrue( self.prog.redo_compare_files( ) )
-     # check that setting cesm_root works
+     # check that setting ctsm_root works
      sys.argv[1:] = [ ]
      self.prog.parse_cmdline_args( )
-     cesmdir_def = os.getenv("CESM_ROOT", self.prog.cesmdir_def )
-     self.assertTrue( self.prog.cesm_root( ) == cesmdir_def )
+     ctsmdir_def = os.getenv("CTSM_ROOT", self.prog.ctsmdir_def )
+     self.assertTrue( self.prog.ctsm_root( ) == ctsmdir_def )
      checkstring  = "A_string_to_check_to_make_sure_this_works"
-     sys.argv[1:] = [ "--cesm_root", checkstring ]
+     sys.argv[1:] = [ "--ctsm_root", checkstring ]
      self.prog.parse_cmdline_args( )
-     self.assertTrue( self.prog.cesm_root( ) == checkstring )
+     self.assertTrue( self.prog.ctsm_root( ) == checkstring )
+     # check that setting cime_root works
+     sys.argv[1:] = [ ]
+     self.prog.parse_cmdline_args( )
+     cimedir_def = os.getenv("CIME_ROOT", self.prog.cimedir_def )
+     self.assertTrue( self.prog.cime_root( ) == cimedir_def )
+     checkstring  = "A_string_to_check_to_make_sure_setting_cimeroot_works"
+     sys.argv[1:] = [ "--cime_root", checkstring ]
+     self.prog.parse_cmdline_args( )
+     self.assertTrue( self.prog.cime_root( ) == checkstring )
 
 if __name__ == '__main__':
      unittest.main()

@@ -42,14 +42,14 @@ class PTCLMtestlist:
    inputdatadir = "/glade/p/cesmdata/cseg/inputdata"
     
    # Construct the class
-   def Setup( self, cesmdir ):
+   def Setup( self, ctsmdir ):
      self.testXML = make_parser()
      self.xml     = PTCLMtestlistXML()
      self.testXML.setContentHandler(self.xml)
      # Get the CLM root directory
-     self.cesmdir = cesmdir
-     if ( not os.path.exists(self.cesmdir) or not os.path.isdir(self.cesmdir) or not os.path.exists(self.cesmdir+"/ChangeLog") ):
-         self.error("CESM_ROOT does NOT exist or NOT a directory (set with CESM_ROOT env variable):"+self.cesmdir)
+     self.ctsmdir = ctsmdir
+     if ( not os.path.exists(self.ctsmdir) or not os.path.isdir(self.ctsmdir) or not os.path.exists(self.ctsmdir+"/doc/ChangeLog") ):
+         self.error("CTSM_ROOT does NOT exist or NOT a directory (set with CTSM_ROOT env variable):"+self.ctsmdir)
 
    # Set the input-dir
    def SetDataDir( self, inputdatadir ):
@@ -70,8 +70,8 @@ class PTCLMtestlist:
      outfilename = filename+".tmp"
      infile  = open( filename,    "r" );
      outfile = open( outfilename, "w" );
-     stdout  = os.popen( "cd "+self.cesmdir+"; pwd" )
-     abscesmdir = stdout.read().rstrip( );
+     stdout  = os.popen( "cd "+self.ctsmdir+"; pwd" )
+     absctsmdir = stdout.read().rstrip( );
      stdout  = os.popen( "date +%y%m%d" );
      sdate   = stdout.read().rstrip( );
      stdout  = os.popen( "../PTCLMmkdata --version" )
@@ -79,8 +79,8 @@ class PTCLMtestlist:
      stdout  = os.popen( "which ncl" )
      nclpath = stdout.read().rstrip( );
      for line in infile:
-         line = line.replace( self.cesmdir,      "$CESMROOTDIR" );
-         line = line.replace( abscesmdir,        "$CESMROOTDIR" );
+         line = line.replace( self.ctsmdir,      "$CTSMROOTDIR" );
+         line = line.replace( absctsmdir,        "$CTSMROOTDIR" );
          line = line.replace( nclpath,           "$NCLPATH"     );
          line = line.replace( self.inputdatadir, "$DIN_LOC_ROOT" );
          line = line.replace( version,           "$PTCLMVERSION" );
@@ -128,7 +128,7 @@ class PTCLMtestlist:
    # Get the PTCLM command line options to use
    def get_PTCLMoptions( self, test ):
      opts = test['opts']
-     opts = opts + " --cesm_root "+self.cesmdir
+     opts = opts + " --ctsm_root "+self.ctsmdir
      if ( self.IsNOTFailTest( test ) ):
         opts = opts + " -s " + test['site']
         opts = opts + " -d "+self.inputdatadir
@@ -236,12 +236,12 @@ class test_PTCLMtestlist(unittest.TestCase):
 
    def setUp( self ):
      self.test = PTCLMtestlist()
-     cesmdir = os.getenv("CESM_ROOT", "../../../../..")
-     if ( not os.path.exists( cesmdir+"/ChangeLog" ) ):
-         print "CESM_ROOT NOT input\n"
+     ctsmdir = os.getenv("CTSM_ROOT", "../../../")
+     if ( not os.path.exists( ctsmdir+"/doc/ChangeLog" ) ):
+         print "CTSM_ROOT NOT input\n"
          sys.exit( 200 )
 
-     self.test.Setup(cesmdir)
+     self.test.Setup(ctsmdir)
 
    def test_read( self ):
      inpd_orig = self.test.inputdatadir
@@ -282,17 +282,17 @@ class test_PTCLMtestlist(unittest.TestCase):
      self.assertRaises(SystemExit, self.test.ReplaceIDInfoInFile, "non-existant-file" )
      filename = "testreplace.tmp"
      tfile = open( filename, "w" )
-     tfile.write( "file = '"+self.test.cesmdir+"/myfile'\n" )
-     stdout     = os.popen( "cd "+self.test.cesmdir+" ; pwd" )
-     abscesmdir = stdout.read().rstrip()
-     tfile.write( "file2 = '"+abscesmdir+"/myfile'\n" )
+     tfile.write( "file = '"+self.test.ctsmdir+"/myfile'\n" )
+     stdout     = os.popen( "cd "+self.test.ctsmdir+" ; pwd" )
+     absctsmdir = stdout.read().rstrip()
+     tfile.write( "file2 = '"+absctsmdir+"/myfile'\n" )
      tfile.write( "inpfile = '"+self.test.inputdatadir+"/myfile'\n" )
      tfile.write( "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
      nclpath    = "/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin/ncl"
      tfile.write( nclpath+"\n" )
      stdout        = os.popen( "date +%y%m%d" );
      sdate         = stdout.read().rstrip( );
-     tfile.write( self.test.cesmdir+"/surfdata_"+sdate+".namelist\n" )
+     tfile.write( self.test.ctsmdir+"/surfdata_"+sdate+".namelist\n" )
      stdout  = os.popen( "../PTCLMmkdata --version" )
      version = stdout.read().rstrip()
      tfile.write( "++++ "+version+" +++++\n" )
@@ -300,9 +300,9 @@ class test_PTCLMtestlist(unittest.TestCase):
      self.test.ReplaceIDInfoInFile( filename )
      tfile = open( filename, "r" )
      line = tfile.readline()
-     self.assertEqual( line, "file = '$CESMROOTDIR/myfile'\n" )
+     self.assertEqual( line, "file = '$CTSMROOTDIR/myfile'\n" )
      line = tfile.readline()
-     self.assertEqual( line, "file2 = '$CESMROOTDIR/myfile'\n" )
+     self.assertEqual( line, "file2 = '$CTSMROOTDIR/myfile'\n" )
      line = tfile.readline()
      self.assertEqual( line, "inpfile = '$DIN_LOC_ROOT/myfile'\n" )
      line = tfile.readline()
@@ -310,16 +310,16 @@ class test_PTCLMtestlist(unittest.TestCase):
      line = tfile.readline()
      self.assertEqual( line, "$NCLPATH\n" )
      line = tfile.readline()
-     self.assertEqual( line, "$CESMROOTDIR/surfdata_"+sdate+".namelist\n" )
+     self.assertEqual( line, "$CTSMROOTDIR/surfdata_"+sdate+".namelist\n" )
      line = tfile.readline()
      self.assertEqual( line, "++++ $PTCLMVERSION +++++\n" )
      tfile.close()
      self.test.ReplaceIDInfoInFile( filename, curdates=True )
      tfile = open( filename, "r" )
      line = tfile.readline()
-     self.assertEqual( line, "file = '$CESMROOTDIR/myfile'\n" )
+     self.assertEqual( line, "file = '$CTSMROOTDIR/myfile'\n" )
      line = tfile.readline()
-     self.assertEqual( line, "file2 = '$CESMROOTDIR/myfile'\n" )
+     self.assertEqual( line, "file2 = '$CTSMROOTDIR/myfile'\n" )
      line = tfile.readline()
      self.assertEqual( line, "inpfile = '$DIN_LOC_ROOT/myfile'\n" )
      line = tfile.readline()
@@ -327,7 +327,7 @@ class test_PTCLMtestlist(unittest.TestCase):
      line = tfile.readline()
      self.assertEqual( line, "$NCLPATH\n" )
      line = tfile.readline()
-     self.assertEqual( line, "$CESMROOTDIR/surfdata_$YYMMDD.namelist\n" )
+     self.assertEqual( line, "$CTSMROOTDIR/surfdata_$YYMMDD.namelist\n" )
      line = tfile.readline()
      self.assertEqual( line, "++++ $PTCLMVERSION +++++\n" )
      tfile.close()

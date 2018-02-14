@@ -1,18 +1,19 @@
 ---------------- PTCLMmkdata version $PTCLMVERSION-----------------------------
 
-   ../PTCLMmkdata --cesm_root $CESMROOTDIR -s list -d $DIN_LOC_ROOT --debug --sdate 140204 --map_gdate 140204 
+   ../PTCLMmkdata --ctsm_root $CTSMROOTDIR -s list -d $DIN_LOC_ROOT --debug --sdate 140204 --map_gdate 140204 
 
    OPTIONS:
 
 Site name:						list
 
-Root CLM directory:					$CESMROOTDIR
+Root CTSM directory:					$CTSMROOTDIR
+Root CIME directory:					$CTSMROOTDIR/cime
 ** Surface data file will be built using site-level data when available unless otherwise specified ** 
 
 	Extract PFT data from gridded files:		False
 	Extract soil data from gridded files:		False
 
-Open Site data file: $CESMROOTDIR/components/clm/tools/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
+Open Site data file: $CTSMROOTDIR/tools/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
 
  site = site_code name: name                                                    Region:        state Campaign: campaign
  site =    US-Blo name: Blodgett Forest                                         Region:           CA Campaign: AmeriFlux
