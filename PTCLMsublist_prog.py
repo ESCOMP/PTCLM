@@ -17,8 +17,8 @@ class PTCLMsublist_prog:
    name         = "PTCLMsublist"
    cmdline      = ""
    account      = "P93300606"
-   cesmdir_def  = "../../../.."
-   cesmdir      = os.getenv("CESM_ROOT", cesmdir_def )
+   ctsmdir_def  = "../../"
+   ctsmdir      = os.getenv("CTSM_ROOT", ctsmdir_def )
    inputdir_def = "/glade/p/cesmdata/cseg/inputdata"
    inputdir     = os.getenv("DIN_LOC_ROOT", inputdir_def )
    sitelistcsv  = "US-CHATS,US-FPe,CA-Let,US-NR1,CA-Man,BR-Sa1,BR-Sa3"
@@ -43,8 +43,8 @@ class PTCLMsublist_prog:
           self.cmdline = self.cmdline+arg+" "
       parser   = OptionParser( usage="%prog [options]" )
       options = OptionGroup( parser, "Options" )
-      options.add_option("-r", "--cesm_root", dest="cesm_root", default=self.cesmdir, \
-                        help="Location of CESM root directory (also set with CESM_ROOT env variable)")
+      options.add_option("-r", "--ctsm_root", dest="ctsm_root", default=self.ctsmdir, \
+                        help="Location of CTSM root directory (also set with CTSM_ROOT env variable)")
       options.add_option("-d", "--inputdir", dest="inputdir", default=self.inputdir, \
                         help="Location of CESM inputdata directory (also set with CSMDATA env variable)")
       options.add_option("-o", "--PTCLM_options", dest="options", default=self.ptclm_opts, \
@@ -79,13 +79,13 @@ class PTCLMsublist_prog:
       self.sitelistcsv  = options.sitelist
       self.account      = options.account
       self.options      = options.options
-      self.cesmdir      = options.cesm_root
+      self.ctsmdir      = options.ctsm_root
       self.inputdir     = options.inputdir
       # Initialize batch que object, will abort if bad machine
       self.que.Initialize( self, mach=self.mach, account=self.account )
       # Error checking
-      if ( not os.path.isdir(self.cesmdir) ):
-         self.error( "CESM_root directory does NOT exist: "+self.cesmdir )
+      if ( not os.path.isdir(self.ctsmdir) ):
+         self.error( "CTSM_root directory does NOT exist: "+self.ctsmdir )
       if ( not os.path.isdir(self.inputdir) ):
          self.error( "CESM inputdata directory does NOT exist: "+self.inputdir )
 
@@ -99,11 +99,11 @@ class PTCLMsublist_prog:
       # Flag that parsing was accomplished
       self.parse_args   = True
 
-   def cesm_root( self ):
-      "Return the CESM_ROOT directory"
+   def ctsm_root( self ):
+      "Return the CTSM_ROOT directory"
       if ( not self.parse_args ):
          self.error( "parse_cmdline_args was NOT run first" )
-      return( self.cesmdir )
+      return( self.ctsmdir )
 
    def get_SiteList( self ):
       "Return the Site list"
@@ -125,7 +125,7 @@ class PTCLMsublist_prog:
       if ( not self.setup ):
          self.error( "Initialize was NOT run first" )
 
-      jobcommand = "./PTCLMmkdata --cesm_root "+self.cesmdir+" -s "+site+" -d "+self.inputdir+" "+self.options
+      jobcommand = "./PTCLMmkdata --ctsm_root "+self.ctsmdir+" -s "+site+" -d "+self.inputdir+" "+self.options
       print( jobcommand );
       bsub = self.que.Submit( self, jobcommand, jobname="PTCLM_"+site, submit=submit, wall=self.wall )
       return( bsub )
@@ -147,7 +147,7 @@ class test_PTCLMsublist_prog(unittest.TestCase):
      self.assertRaises(SystemExit, self.prog.parse_cmdline_args )
      # Test that doing stuff before parse_args fails
      self.prog = PTCLMsublist_prog()
-     self.assertRaises(SystemExit, self.prog.cesm_root )
+     self.assertRaises(SystemExit, self.prog.ctsm_root )
      self.assertRaises(SystemExit, self.prog.Initialize )
      self.assertRaises(SystemExit, self.prog.Submit, "US-UMB" )
      # Test that doing stuff after parse_args before Initialize fails
@@ -155,9 +155,9 @@ class test_PTCLMsublist_prog(unittest.TestCase):
      sys.argv[1:] = [ ]
      self.prog.parse_cmdline_args( )
      self.assertRaises(SystemExit, self.prog.Submit, "US-UMB" )
-     # Test that a non existant directory for cesm_root fails
+     # Test that a non existant directory for ctsm_root fails
      self.prog = PTCLMsublist_prog()
-     sys.argv[1:] = [ "--cesm_root", "zztop" ]
+     sys.argv[1:] = [ "--ctsm_root", "zztop" ]
      self.assertRaises(SystemExit, self.prog.parse_cmdline_args )
      # Test that a non existant directory for inputdata fails
      self.prog = PTCLMsublist_prog()
@@ -178,22 +178,23 @@ class test_PTCLMsublist_prog(unittest.TestCase):
      self.assertRaises(SystemExit, self.prog.parse_cmdline_args )
 
    def test_init( self ):
-     # check that setting cesm_root works
+     # check that setting ctsm_root works
      sys.argv[1:] = [ ]
      self.prog.parse_cmdline_args( )
-     cesmdir_def = os.getenv("CESM_ROOT", self.prog.cesmdir_def )
-     self.assertTrue( self.prog.cesm_root( ) == cesmdir_def )
+     ctsmdir_def = os.getenv("CTSM_ROOT", self.prog.ctsmdir_def )
+     self.assertTrue( self.prog.ctsm_root( ) == ctsmdir_def )
      cwd = os.getcwd()
-     sys.argv[1:] = [ "--cesm_root", cwd ]
+     sys.argv[1:] = [ "--ctsm_root", cwd ]
      self.prog.parse_cmdline_args( )
-     self.assertTrue( self.prog.cesm_root( ) == cwd )
+     self.assertTrue( self.prog.ctsm_root( ) == cwd )
      # Initialize and submit
      self.prog.Initialize( )
      site = "US-UMB"
      bsub = self.prog.Submit( site, submit=False )
-     checkstring = "qsub  -o PTCLM_US-UMB.stdout.out  -N PTCLM_US-UMB  -l walltime=4:00  " + \
+     jobid = str(os.getpid())
+     checkstring = "qsub  -o PTCLM_US-UMB."+jobid+".stdout.out  -N PTCLM_US-UMB  -l walltime=02:00:00  " + \
                    "-A P93300606 -l select=3:ncpus=1:mpiprocs=1:mem=109GB -q regular " + \
-                   "-V -m ae -j oe  PTCLM_"+site+".job"
+                   "-V -m ae -j oe  PTCLM_"+site+"."+jobid+".job"
      print "\n"
      print "bsubcm:"+bsub+":end"
      print "expect:"+checkstring+":end"

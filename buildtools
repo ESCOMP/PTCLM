@@ -6,8 +6,11 @@
 #
 # Environment variables to set:
 #
-# CESM_ROOT:        To build with a separate root to CLM/CESM code set the
-#                   env variable CESM_ROOT to the root directory to use.
+# CTSM_ROOT:        To build with a separate root to CTSM component set the
+#                   env variable CTSM_ROOT to the root directory to use.
+#
+# CIME_ROOT:        To build with a separate root to CIME scripts set the
+#                   env variable CIME_ROOT to the root directory to use.
 #
 
 pwd=`pwd`
@@ -17,14 +20,24 @@ echo "Build clm tools for PTCLM on "$host""
 #
 # Get path to root
 #
-if [ -z "$CESM_ROOT" ]; then
-   cd "../../../.."
-   CESM_ROOT=`pwd`
+if [ -z "$CTSM_ROOT" ]; then
+   cd "../.."
+   CTSM_ROOT=`pwd`
    cd -
 fi
-if [ ! -d "$CESM_ROOT" ];then
-   echo "Directory $CESM_ROOT does not exist"
-   echo "Set env variable CESM_ROOT"
+if [ ! -d "$CTSM_ROOT" ];then
+   echo "Directory $CTSM_ROOT does not exist"
+   echo "Set env variable CTSM_ROOT"
+   exit -1
+fi
+if [ -z "$CIME_ROOT" ]; then
+   cd "$CTSM_ROOT/cime"
+   CIME_ROOT=`pwd`
+   cd -
+fi
+if [ ! -d "$CIME_ROOT" ];then
+   echo "Directory $CIME_ROOT does not exist"
+   echo "Set env variable CIME_ROOT"
    exit -1
 fi
 #
@@ -103,16 +116,15 @@ export LIB_NETCDF=${netcdf}/lib
 #
 echo "Build the tools"
 dirs=( \
-       $CESM_ROOT/components/clm/tools/mksurfdata_map/src \
-       $CESM_ROOT/cime/tools/mapping/gen_domain_files/src \
+       $CTSM_ROOT/tools/mksurfdata_map/src \
+       $CIME_ROOT/tools/mapping/gen_domain_files/src \
      )
 for dir in ${dirs[*]}; do
    echo "Build in $dir"
    cd $dir
    if [[ "$dir" =~ gen_domain ]]; then
-      export CIMEROOT=$CESM_ROOT/cime
       rm env_mach_specific.xml
-      cmd="$CIMEROOT/tools/configure --machine $machine --macros-format Makefile"
+      cmd="$CIME_ROOT/tools/configure --machine $machine --macros-format Makefile"
       echo "$cmd"
       $cmd
       if [ $? != 0 ]; then

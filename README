@@ -89,7 +89,9 @@ mkdir $MYDATAFILES/1x1pt_$SITE/CLM1PT_data
 
 # Then create a case using the data you just created
 setenv MYCASE "testPTCLM"
-cd $CTSMROOT/cime/scripts
+cd $CTSMROOT/cime
+setenv CIMEROOT `pwd`
+cd $CIMEROOT/scripts
 ./create_newcase --user-mods-dir $MYDATAFILES/1x1pt_$SITE --case $MYCASE --res CLM_USRDAT --compset I1PtClm50SpGs --mach cheyenne
 
 # Next setup as normal

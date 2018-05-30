@@ -3,8 +3,8 @@
 #
 # PTCLMmkdata
 #
-# Python script to create datasets to run point simulations of CLM4
-# using Tower Datasets for Ameriflux tower sites, using the CESM1
+# Python script to create datasets to run point simulations of CLM5
+# using Tower Datasets for Ameriflux tower sites, using the CESM2
 # framework.
 #
 # Python script originally created by: 
@@ -15,7 +15,7 @@
 #  Quinn Thomas
 #  of Cornell University
 #
-#  Modified by Erik Kluzek (NCAR) to be incorporated as a standard part of CLM4.
+#  Modified by Erik Kluzek (NCAR) to be incorporated as a standard part of CLM5.
 #
 #  For help on PTCLMmkdata type:
 #
@@ -107,16 +107,20 @@ options.add_option("--crop", dest="crop", \
 options.add_option("--no-crop", dest="crop", \
                   action="store_false", default=False, help = \
                   "Create datasets and run without prognostic crop on (DEFAULT)")
-options.add_option("--cesm_root", dest="base_cesm", \
+options.add_option("--ctsm_root", dest="base_ctsm", \
                   default=" ", help = \
-                  "Root CESM directory (top level directory with components and cime subdirs)")
+                  "Root CTSM directory (top level directory CTSM src bld doc cime_config subdirs)")
+options.add_option("--cime_root", dest="base_cime", \
+                  default=" ", help = \
+                  "Root CIME directory (top level directory of CIME infrastructure with " \
+                  + " scripts, doc, utils, tools, src, config subdirs)")
 options.add_option("--debug", dest="debug", action="store_true", default=False, \
                   help="Flag to turn on debug mode so won't run, but display what would happen")
 options.add_option("--sdate", dest="sdate", default=sdate, \
                   help="Use entered date string in all files"+\
                        " (use the given date string in place of the current date:"+sdate+")" )
 options.add_option("--clmnmlusecase", dest="clmnmlusecase", default=clmnmlusecase, \
-                  help="CLM namelist use case to use (default:"+clmnmlusecase+")" )
+                  help="CTSM namelist use case to use (default:"+clmnmlusecase+")" )
 options.add_option("--list", dest="list", default=False, action="store_true", \
                   help="List all valid: sites")
 options.add_option("--mydatadir", dest="mydatadir", default=mydatadir \
@@ -207,7 +211,7 @@ def system( cmd ):
 
 def queryFilename( queryopts, filetype ):
     "query the XML database to get a filename"
-    query = abs_base_cesm+"/components/clm/bld/queryDefaultNamelist.pl -silent " \
+    query = abs_base_ctsm+"/bld/queryDefaultNamelist.pl -silent " \
              +"-justvalue "
     if ( cesm_input != " " ): 
        query = query + " -csmdata "+cesm_input
@@ -322,15 +326,25 @@ if plev>0: print "   "+cmdline+"\n"
 if plev>0: print "   OPTIONS:\n" 
 if plev>0: print "Site name:\t\t\t\t\t\t"+mysite+"\n"
 
-base_cesm = options.base_cesm
-if base_cesm == " ":
-    #assume base directory is five levels up from where PTCLM script
+base_ctsm = options.base_ctsm
+if base_ctsm == " ":
+    #assume base directory is three levels up from where PTCLM script
     #  is executed, if not specified
-    stdout    = os.popen("cd "+ptclm_dir+"/../../../..; pwd")
-    base_cesm = os.path.abspath( stdout.read().rstrip( ) )
+    stdout    = os.popen("cd "+ptclm_dir+"/../../..; pwd")
+    base_ctsm = os.path.abspath( stdout.read().rstrip( ) )
 
-abs_base_cesm = os.path.abspath( base_cesm )
-if plev>0: print "Root CLM directory:\t\t\t\t\t"+abs_base_cesm
+abs_base_ctsm = os.path.abspath( base_ctsm )
+if plev>0: print "Root CTSM directory:\t\t\t\t\t"+abs_base_ctsm
+
+base_cime = options.base_cime
+if base_cime == " ":
+    #assume base directory is tunder the CTSM directory
+    #  is executed, if not specified
+    stdout    = os.popen("cd "+abs_base_ctsm+"/cime; pwd")
+    base_cime = os.path.abspath( stdout.read().rstrip( ) )
+
+abs_base_cime = os.path.abspath( base_cime )
+if plev>0: print "Root CIME directory:\t\t\t\t\t"+abs_base_cime
 
 if plev>0: print "** Surface data file will be built using site-level data " + \
           "when available unless otherwise specified ** \n"
@@ -380,8 +394,8 @@ clmres        = clmusrdatname
 clmmask       = "navy"
 myres         = "CLM_USRDAT"  #single-point mode (don't change)
 
-clm_tools   = abs_base_cesm+'/components/clm/tools'
-gen_dom_dir = abs_base_cesm+'/cime/tools/mapping/gen_domain_files'
+clm_tools   = abs_base_ctsm+'/tools'
+gen_dom_dir = abs_base_cime+'/tools/mapping/gen_domain_files'
 mkmapgrd_dir= clm_tools+'/mkmapgrids'
 mkmapdat_dir= clm_tools+'/mkmapdata'
 clm_input   = cesm_input+'/lnd/clm2'

@@ -23,12 +23,16 @@ CMakeFiles/
 *.o
 *.mod
 core.*
+core-*
 *.gz
 *.log !run.log
+*.pyc
+
+# batch output
+*.*.job
 
 # test and case directories
-tests/
+test/
 scripts/testreporter.pl
 
-
-
+mydatafiles/*
