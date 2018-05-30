@@ -4,6 +4,19 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Feb/14/2019
+Tag: PTCLM2_180214
+One-line: Get working with the new CTSM checkout on the move to git
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+CESM_DIR env variable gets turned into CTSM_DIR and CIME_DIR. Set defaults according
+to a the new CTSM checkout in git. Update the testing files, and make sure everything
+is working in a CTSM checkout with the standard testing.
+
+================================================================================        
+Originator: erik
 Date: Dec/16/2017
 Tag: PTCLM2_171216c
 One-line: Add back in missing compare directories: std_US-Ha1 std_US-Var std_Us-Ne1 trans_US-Ha1
