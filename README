@@ -1,4 +1,4 @@
-components/clm/tools/PTCLM/README                04/10/2015
+PTCLM/README                04/10/2015
 
 PTCLMmkdata is a python tool built on top of CLM tools and CESM scripts
 for building datasets to run CLM "I" cases for data from Ameriflux Tower-sites,
@@ -20,23 +20,23 @@ Erik Kluzek (NCAR)
 
 General Directory structure:
 
-  components/clm/tools/PTCLM/PTCLMmkdata ----- Main script
-  components/clm/tools/PTCLM/PTCLM_sitedata  - Site data files of 
+  PTCLM/PTCLMmkdata ----- Main script
+  PTCLM/PTCLM_sitedata  - Site data files of 
         static information latitude, longitude, soil info., and PFT information 
         for each site Also different "groups" of site-data lists, and the script to
         convert the transient years landuse_timeseries files into landuse_timeseries text files that
         mksurfdata can use.
-  components/clm/tools/PTCLM/mydatafiles ----- Default location of
+  PTCLM/mydatafiles ----- Default location of
         data files that will be created by PTCLMmkdata. Sites will be built
         in their own subdirectories under here. Optionally you can give your
         own location you'd like to use for your data.
 
-  components/clm/tools/PTCLM/PTCLMsublist --------- Script to submit a list of PTCLM
+  PTCLM/PTCLMsublist --------- Script to submit a list of PTCLM
         sites to the batch que (only setup for a few machines).
-  components/clm/tools/PTCLM/PTCLMsublist_prog.py - Python module to support submit
+  PTCLM/PTCLMsublist_prog.py - Python module to support submit
         list script. Handles command line arguments and such.
-  components/clm/tools/PTCLM/batchque.py ---------- Python module for batch submital.
-  components/clm/tools/PTCLM/buildtools ----------- Script to build the CLM
+  PTCLM/batchque.py ---------- Python module for batch submital.
+  PTCLM/buildtools ----------- Script to build the CLM
         tools needed to run PTCLMmkdata (mksurfdata_map and gen_domain). Works on yellowstone and cheyenne.
 
 Quickstart:
@@ -51,7 +51,7 @@ setenv CSMDATA   /glade/p/cesm/cseg/inputdata
 setenv SITE      US-UMB
 
 
-cd components/clm/tools/PTCLM
+cd PTCLM
 setenv MYDATAFILES `pwd`/mydatafiles
 
 # Next build all of the clm tools you will need
@@ -89,7 +89,9 @@ mkdir $MYDATAFILES/1x1pt_$SITE/CLM1PT_data
 
 # Then create a case using the data you just created
 setenv MYCASE "testPTCLM"
-cd ../../../../cime/scripts
+cd $CTSMROOT/cime
+setenv CIMEROOT `pwd`
+cd $CIMEROOT/scripts
 ./create_newcase --user-mods-dir $MYDATAFILES/1x1pt_$SITE --case $MYCASE --res CLM_USRDAT --compset I1PtClm50SpGs --mach cheyenne
 
 # Next setup as normal

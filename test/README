@@ -33,7 +33,7 @@ run_PTCLM_tests ---------- Main script that runs the tests
 
 III. Running the tests:
 
-To run the tests when PTCLM is part of a CLM or CESM distribution you first
+To run the tests when PTCLM is part of a CTSM or CESM distribution you first
 need to build the tools, and make sure you have NCL in your path.
 So on cheyenne for example.
 
@@ -46,13 +46,14 @@ And then execute the script:
 
 ./run_PTCLM_tests
 
-To run whenen PTCLM is checked out seperately you need to tell it where your "CESM_ROOT"
-directory is. You can do this by either setting the CESM_ROOT environment variable or use
-the "--cesm_root" option to run_PTCLM_tests.
+To run whenen PTCLM is checked out seperately you need to tell it where your "CTSM_ROOT"
+directory is. You might also need to specify your CIME_ROOT directory. You can do this 
+by either setting the CTSM_ROOT and/or CIME_ROOT environment variables or use
+the "--ctsm_root" and/or "--cime_root" option to run_PTCLM_tests.
 
 So for example...
 
-./run_PTCLM_tests --cesm_root $HOME/clm4_5_99
+./run_PTCLM_tests --ctsm_root $HOME/clm5.0.dev099
 
 IV. Test results:
 
