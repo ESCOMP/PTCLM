@@ -434,7 +434,7 @@ if (   clmnmlusecase.endswith("_transient") ):
      else:
         error( "Can not parse use-case name, does not follow conventions: "+clmnmlusecase )
 
-     if ( sim_year_range == "1850-2000" ): actual_sim_year_range = "1850-2005"
+     if ( sim_year_range == "1850-2000" ): actual_sim_year_range = "1850-2015"
      else:                                 actual_sim_year_range = sim_year_range
 elif ( clmnmlusecase.endswith("_control") ):
      control        = re.search( '^([0-9]+)_', clmnmlusecase )
