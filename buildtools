@@ -30,10 +30,21 @@ if [ ! -d "$CTSM_ROOT" ];then
    echo "Set env variable CTSM_ROOT"
    exit -1
 fi
+if [ ! -d "$CTSM_ROOT/src/biogeophys" ];then
+   echo "Directory $CTSM_ROOT/src/biogeophys does not exist as expected"
+   echo "Set env variable CTSM_ROOT to directory at head of CTSM code"
+   exit -1
+fi
 if [ -z "$CIME_ROOT" ]; then
-   cd "$CTSM_ROOT/cime"
-   CIME_ROOT=`pwd`
-   cd -
+   if [ ! -d "$CTSM_ROOT/cime" ]; then
+      cd "$CTSM_ROOT/../../cime"
+      CIME_ROOT=`pwd`
+      cd -
+   else
+      cd "$CTSM_ROOT/cime"
+      CIME_ROOT=`pwd`
+      cd -
+   fi
 fi
 if [ ! -d "$CIME_ROOT" ];then
    echo "Directory $CIME_ROOT does not exist"
@@ -46,20 +57,7 @@ fi
 CIME_MODEL="cesm"
 export CIME_MODEL
 toolsmake=""
-if [[  "$host" =~ ys ]] || [[ "$host" =~ caldera ]] || [[ "$host" =~ geyser ]] || [[ "$host" =~ pronghorn ]]; then
-  echo "Setup for yellowstone"
-  . /glade/apps/opt/lmod/lmod/init/sh
-
-  gmake="gmake"
-  parcmp=32
-  machine="yellowstone"
-  compiler="intel"
-  netcdf=$NETCDF
-  module load $compiler/15.0.3
-  module load mkl
-  module load netcdf
-  module load ncl
-elif [[ "$host" =~ cheyenne ]] || [[ "$host" =~ r.i.n. ]]; then
+if [[ "$host" =~ cheyenne ]] || [[ "$host" =~ r.i.n. ]]|| [[ "$host" =~ caldera ]] || [[ "$host" =~ geyser ]] || [[ "$host" =~ pronghorn ]]; then
   echo "Setup for cheyenne"
   . /glade/u/apps/ch/opt/lmod/7.2.1/lmod/lmod/init/sh
 
@@ -72,7 +70,7 @@ elif [[ "$host" =~ cheyenne ]] || [[ "$host" =~ r.i.n. ]]; then
   module load mkl
   module load netcdf
   module load ncl
-elif [[ "$host" =~ hobart ]]; then
+elif [[ "$host" =~ hobart ]] || [[ "$host" =~ h[0-9]+.cgd.ucar.edu ]]; then
   echo "Setup for hobart"
   . /usr/share/Modules/init/sh
   gmake="gmake"
@@ -82,11 +80,11 @@ elif [[ "$host" =~ hobart ]]; then
   module load compiler/intel
   netcdf=$NETCDF_PATH
   export PATH="${PATH}:/usr/bin"
-elif [[ "$host" =~ yongi ]] || [[ "$host" =~ vpn ]]; then
-  echo "Setup for yongi"
+elif [[ "$host" =~ eureka ]] || [[ "$host" =~ vpn ]]; then
+  echo "Setup for eureka"
   gmake="make"
   parcmp=12
-  machine="yongi"
+  machine="homebrew"
   compiler="gnu"
   netcdf="/opt/local"
   toolsmake="USER_FC=gfortran-mp-4.8 USER_LINKER=gfortran-mp-4.8 USER_CC=gcc "
@@ -106,7 +104,7 @@ elif [[  "$host" =~ edison ]]; then
   toolsmake="USER_FC=ftn"
   netcdf=$NETCDF_DIR
 else
-  echo "Bad host to run on: know about cheyenne, yellowstone, hobart, edison or yongi"
+  echo "Bad host to run on: know about cheyenne, hobart, edison or yongi"
   exit -3
 fi
 export INC_NETCDF=${netcdf}/include
