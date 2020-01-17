@@ -34,8 +34,9 @@ Options:
     --list              List all valid: sites
     --mydatadir=MYDATADIR
                         Directory of where to put your data files (files will
-                        be under subdirectories for each site) (default:
-                        $CTSMROOTDIR/tools/PTCLM/mydatafiles)
+                        be under subdirectories for each site) (default: /glad
+                        e/work/erik/ctsm_relanswerchangesfor5029/tools/PTCLM/m
+                        ydatafiles)
     --donot_use_tower_yrs
                         Do NOT use the data years that correspond to the tower
                         years (when you plan on using global forcing)
