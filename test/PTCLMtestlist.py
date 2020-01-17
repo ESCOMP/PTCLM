@@ -288,7 +288,7 @@ class test_PTCLMtestlist(unittest.TestCase):
      tfile.write( "file2 = '"+absctsmdir+"/myfile'\n" )
      tfile.write( "inpfile = '"+self.test.inputdatadir+"/myfile'\n" )
      tfile.write( "inpfile2 = '$DIN_LOC_ROOT/myfile'\n" )
-     nclpath    = "/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin/ncl"
+     nclpath    = "/glade/u/apps/ch/opt/ncl/6.6.2/intel/18.0.5/bin/ncl"
      tfile.write( nclpath+"\n" )
      stdout        = os.popen( "date +%y%m%d" );
      sdate         = stdout.read().rstrip( );
