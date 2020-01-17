@@ -43,7 +43,7 @@ from   xml.sax         import make_parser
 
 def error( desc ):
      "error function"
-     print "ERROR("+sys.argv[0]+"):: "+desc
+     print( "ERROR("+sys.argv[0]+"):: "+desc )
      os.abort()
 
 ######  SET SOME VARIABLES ##############################################################
@@ -170,7 +170,7 @@ if len(args) != 0:
 def system( cmd ):
      "system function with error checking and debug prining"
 
-     if plev>0: print "Run command: "+cmd
+     if plev>0: print( "Run command: "+cmd )
 
      # Check if this is a command to always do regardless of debug
      cmdsallow = [ "create_newcase", "mkdir", "mv", "cat", "which", "chmod", "touch", "mksurfdata.pl" ]
@@ -219,11 +219,11 @@ def queryFilename( queryopts, filetype ):
     file = os.popen( cmd )
     filename = file.read() 
     if ( file.close() != None ):
-       print "Query = "+cmd
+       print( "Query = "+cmd )
        error( "Error getting file from XML database" )
     # Remove the trailing new line from the filename
     if ( (filename == None) or (filename == "") ): 
-       print "Query = "+cmd
+       print( "Query = "+cmd )
        error( "Trouble finding file from XML database: "+filetype )
     return( filename.replace( "\n", "" ) )
 
@@ -290,7 +290,7 @@ def find_filename_created( wildcard, desc ):
         filename = wildcard.replace( "*", options.sdate )
         os.system( "touch "+filename )
 
-     print desc+" = "+filename
+     print( desc+" = "+filename )
      return( filename )
 
 
@@ -321,10 +321,10 @@ soildata=SitesGroup+"_soildata.txt"
 pftdata=SitesGroup+"_pftdata.txt"
 
 
-if plev>0: print "---------------- PTCLMmkdata version "+str(version)+"-----------------------------\n"
-if plev>0: print "   "+cmdline+"\n"
-if plev>0: print "   OPTIONS:\n" 
-if plev>0: print "Site name:\t\t\t\t\t\t"+mysite+"\n"
+if plev>0: print( "---------------- PTCLMmkdata version "+str(version)+"-----------------------------\n" )
+if plev>0: print( "   "+cmdline+"\n" )
+if plev>0: print( "   OPTIONS:\n" )
+if plev>0: print( "Site name:\t\t\t\t\t\t"+mysite+"\n" )
 
 base_ctsm = options.base_ctsm
 if base_ctsm == " ":
@@ -334,7 +334,7 @@ if base_ctsm == " ":
     base_ctsm = os.path.abspath( stdout.read().rstrip( ) )
 
 abs_base_ctsm = os.path.abspath( base_ctsm )
-if plev>0: print "Root CTSM directory:\t\t\t\t\t"+abs_base_ctsm
+if plev>0: print( "Root CTSM directory:\t\t\t\t\t"+abs_base_ctsm )
 
 base_cime = options.base_cime
 if base_cime == " ":
@@ -344,12 +344,12 @@ if base_cime == " ":
     base_cime = os.path.abspath( stdout.read().rstrip( ) )
 
 abs_base_cime = os.path.abspath( base_cime )
-if plev>0: print "Root CIME directory:\t\t\t\t\t"+abs_base_cime
+if plev>0: print( "Root CIME directory:\t\t\t\t\t"+abs_base_cime )
 
-if plev>0: print "** Surface data file will be built using site-level data " + \
-          "when available unless otherwise specified ** \n"
-if plev>0: print "\tExtract PFT data from gridded files:\t\t"+str(options.pftgrid)
-if plev>0: print "\tExtract soil data from gridded files:\t\t"+str(options.soilgrid)
+if plev>0: print( "** Surface data file will be built using site-level data " + 
+          "when available unless otherwise specified ** \n" )
+if plev>0: print( "\tExtract PFT data from gridded files:\t\t"+str(options.pftgrid) )
+if plev>0: print( "\tExtract soil data from gridded files:\t\t"+str(options.soilgrid) )
 
 ###### END SET OPTIONS BASED ON INPUT FROM PARSER  ######################################
 
@@ -357,13 +357,13 @@ if plev>0: print "\tExtract soil data from gridded files:\t\t"+str(options.soilg
 
 siteDir = ptclm_dir+"/"+"PTCLM_sitedata"
 #get lat/lon, start/end years from sitedata file
-if plev>0: print "\nOpen Site data file: "+siteDir+"/"+sitedata+"\n"
+if plev>0: print( "\nOpen Site data file: "+siteDir+"/"+sitedata+"\n" )
 sitepath = siteDir+"/"+sitedata
 AFdatareader = csv.reader(open(sitepath, "rb"))
 if ( mysite == "list" ):  plev = 2
 found=False
 for row in AFdatareader:
-    if plev>1: print " site = %9s name: %-55s Region: %12s Campaign: %s" % ( row[0], row[1], row[2], row[10] )
+    if plev>1: print( " site = %9s name: %-55s Region: %12s Campaign: %s" % ( row[0], row[1], row[2], row[10] ) )
     if row[0] == mysite:
         found=True
         lon=float(row[3])
@@ -385,7 +385,7 @@ if ( not found ):
 cesm_input=options.cesm_input
 if cesm_input == " ":
    parser.error( "inputdatadir is a required argument, set it to the directory where you have your inputdata"+infohelp )
-if plev>0: print "CESM input data directory:\t\t\t\t"+cesm_input
+if plev>0: print( "CESM input data directory:\t\t\t\t"+cesm_input )
 #define data and utility directories
 mask          = "navy"
 clmusrdatname = "1x1pt_"+mysite
@@ -405,7 +405,7 @@ mydata_dir  = os.path.abspath( options.mydatadir )
 data_dir    = mydata_dir+"/"+clmusrdatname
 if ( not os.path.exists( data_dir ) ): os.system( "/bin/mkdir -p "+data_dir )
 
-if plev>0: print "----------------------------------------------------------------\n"
+if plev>0: print( "----------------------------------------------------------------\n" )
 
 ############# WRITE OUT README FILE ON DATA ##############################################
 
@@ -414,7 +414,7 @@ opt = " "
 clmnmlusecase    = options.clmnmlusecase
 
 filen = data_dir+"/README.PTCLM"
-if plev>0: print "Write "+filen+" with command line"
+if plev>0: print( "Write "+filen+" with command line" )
 output = open( filen,'w')
 output.write(cmdline+"\n")
 output.close
@@ -507,8 +507,8 @@ if plev>0: print("Making input files for the point (this may take a while if cre
 
 os.chdir(data_dir)
 #make map grid file and atm to ocean map ############################################
-if plev>0: print "Creating map file for a point with no ocean"
-print "lat="+str(lat)
+if plev>0: print( "Creating map file for a point with no ocean" )
+print( "lat="+str(lat) )
 ptstr = str(lat)+","+str(lon)
 if ( os.system( "which ncl" ) != 0 ): error( "ncl is NOT in path" )  # check for ncl
 system(mkmapdat_dir+"/mknoocnmap.pl -p "+ptstr+" -name "+clmres+" > "+data_dir+"/mknoocnmap.log")
@@ -516,13 +516,13 @@ mapfile = find_filename_created( mkmapdat_dir+"/map_"+clmres+"_noocean_to_"+clmr
 scripgridfile  = find_filename_created( mkmapgrd_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc", "scripgridfile" )
 
 #make domain file needed by datm ####################################################
-if plev>0: print "Creating data domain"
+if plev>0: print( "Creating data domain" )
 cmd = gen_dom_dir+"/gen_domain -m "+mapfile+" -o "+clmmask+" -l "+clmres+" -c 'Running gen_domain from PTCLMmkdata' > "+data_dir+"/gen_domain.log"
 system(cmd);
 domainfile  = find_filename_created( "domain.lnd."+clmres+"_"+clmmask+".*.nc", "domainfile" )
 
 #make surface data and dynpft #######################################################
-if plev>0: print "\n\nRe-create surface dataset:\t"
+if plev>0: print( "\n\nRe-create surface dataset:\t" )
 if ( sim_year_range == "constant" ):
    mksrfyears = sim_year
 else:
@@ -533,7 +533,7 @@ else:
 mapdir = data_dir
 if ( options.map_gdate == options.sdate ):
   # mkmapdata.sh remembers where it is (although it starts over for a new date)
-  if plev>0: print "\n\nRe-create mapping files for surface dataset:"
+  if plev>0: print( "\n\nRe-create mapping files for surface dataset:" )
   cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional -v > "+mapdir+"/mkmapdata.log";
   system(cmd);
 else:
@@ -544,7 +544,7 @@ else:
 # --- use site-level data for mksurfdata_map when available ----
 #PFT information for the site
 if (options.pftgrid == False):
-    if plev>0: print "Replacing PFT information in surface data file"
+    if plev>0: print( "Replacing PFT information in surface data file" )
     os.chdir(siteDir)
     AFdatareader = csv.reader(open(pftdata, "rb"))
     os.chdir(data_dir)
@@ -552,7 +552,7 @@ if (options.pftgrid == False):
     pft_code=[0,0,0,0,0]
     found=0
     for row in AFdatareader:
-        if plev>1: print " site = %9s" % row[0]
+        if plev>1: print( " site = %9s" % row[0] )
         if row[0] == mysite:
             found=1
             output=open("./tempsitePFT.txt","w")      
@@ -579,12 +579,12 @@ if (options.soilgrid == False):
 
     #soil information
     os.chdir(siteDir)
-    if plev>0: print "Replacing soil information in surface data file"
+    if plev>0: print( "Replacing soil information in surface data file" )
     AFdatareader = csv.reader(open(soildata, "rb"))
     os.chdir(data_dir)
     found=0
     for row in AFdatareader:
-        if plev>1: print " site = %9s" % row[0]
+        if plev>1: print( " site = %9s" % row[0] )
         if row[0] == mysite:
             found=1
             output=open("./tempsitesoil.txt","w")
@@ -599,20 +599,20 @@ if (options.soilgrid == False):
     if ( found == 0 ):
        error( "Did NOT find input sitename:"+mysite+" in soildata:"+soildata+ \
               " run with soilgrid instead")
-    if plev>0: print " sandpct="+str(sandpct)+" claypct="+str(claypct)
+    if plev>0: print( " sandpct="+str(sandpct)+" claypct="+str(claypct) )
     soilopts=" -soil_cly "+str(claypct)+" -soil_snd "+str(sandpct)
 else: soilopts=""
 #----- create dynamic pft input file --------------- ############################
 if (options.pftgrid == False) and (sim_year_range != "constant"):
 
-    if plev>0: print "Creating site-specific dynamics PFTs and harvesting"
+    if plev>0: print( "Creating site-specific dynamics PFTs and harvesting" )
 
     landuse_timeseries_site_filename = siteDir + \
                            mysite + "_dynpftdata.txt"
 
     # only set dynpft file if the file exists
     if ( os.path.exists( landuse_timeseries_site_filename ) ):
-       if plev>0: print "Transition PFT file exists, so using it for changes in PFT"
+       if plev>0: print( "Transition PFT file exists, so using it for changes in PFT" )
            # Convert the file from transition years format to mksurfdata_map landuse_timeseries_ format
        cnv = siteDir + \
              "/cnvrt_trnsyrs2_landuse_timeseries_txtfile.pl " + \
@@ -687,7 +687,7 @@ if plev>1: os.system( "/bin/cat user_nl_clm" )
 
 ###### END SET Spinup and ENV_RUN.XML VALUES ############################################
 
-if plev>0: print "Data created successfully in "+data_dir+"\n"
+if plev>0: print( "Data created successfully in "+data_dir+"\n" )
 
 ###   END PTCLM SCRIPT ####################################################################
 

@@ -45,10 +45,10 @@ class batchque:
    # Option to give wallclock time to use
    bs_wtime  = { 'yellowstone':" -W ",   'cheyenne':" -l walltime=", 'edison':" -l walltime=" }
 
-   def Initialize( self, prog, mach="yellowstone", account="" ):
+   def Initialize( self, prog, mach="cheyenne", account="" ):
       "Initialize the batchque"
-      if ( not self.bsub.has_key(mach) ):
-         print "List of valid machines: "+str(self.bsub.keys())
+      if ( self.bsub.get(mach) == None ):
+         print( "List of valid machines: "+str(self.bsub.keys()) )
          prog.error( "Machine NOT in list of valid machines for batch queue: "+mach )
 
       self.mach    = mach
@@ -99,7 +99,7 @@ class batchque:
              js.write( "cd "+curdir+"\n" )
           js.write( jobcommand+"\n" )
           js.close()
-          os.chmod(self.jobscript,0555)
+          os.chmod(self.jobscript,0o555)
           cmd  += " "+opts+self.jobscript
        else:
           cmd  += " "+opts+jobcommand
@@ -139,7 +139,7 @@ import unittest
 
 class error_prog:
      def error( self, desc ):
-         print desc
+         print( desc )
          sys.exit( 100 )
 
 class test_batchque(unittest.TestCase):
@@ -171,10 +171,10 @@ class test_batchque(unittest.TestCase):
 
        machlist = self.que.opts.keys()
        for mach in machlist:
-          print "Test initialization for: "+mach
+          print( "Test initialization for: "+mach )
           self.que.Initialize( self.prog, mach=mach )
           cmd = self.que.Submit( self.prog, "ls", jobname=mach, submit=False )
-          print cmd+"\n"
+          print( cmd+"\n" )
           outfile = self.que.Get_OutFilename( self.prog )
           os.system( "touch "+outfile )
           self.que.SubmitCleanup( self.prog, rmout=True )
@@ -182,10 +182,10 @@ class test_batchque(unittest.TestCase):
        mach = "cheyenne"
        self.que.Initialize( self.prog, mach=mach, account="account" )
        cmd = self.que.Submit( self.prog, "ls", jobname=mach, submit=False )
-       print cmd+"\n"
+       print( cmd+"\n" )
        outfile = self.que.Get_OutFilename( self.prog )
        os.system( "touch "+outfile )
-       print "outfile: "+outfile
+       print( "outfile: "+outfile )
        self.que.SubmitCleanup( self.prog, rmout=True )
 
    def test_bad_submit( self ):
@@ -213,15 +213,15 @@ class test_batchque(unittest.TestCase):
              account = ""
           self.que.Initialize( self.prog, mach=mach, account=account )
        else:
-          print "Machine not known, so NOT trying a test submit"
+          print( "Machine not known, so NOT trying a test submit" )
           return
 
-       print "Submit ls to batch queue"
+       print( "Submit ls to batch queue" )
        # Submit and get the output filename
        scmd = "ls PTCLMmkdata"
        wall = "0:01"
        cmd = self.que.Submit( self.prog, scmd, jobname=mach, wall=wall, submit=False )
-       print "submit: "+cmd
+       print( "submit: "+cmd )
        outfile = self.que.Get_OutFilename( self.prog )
        # make sure SubmitCleanup will fail since it wasn't submitted yet and output not returned
        self.assertRaises(SystemExit, self.que.SubmitCleanup, self.prog )
@@ -233,10 +233,10 @@ class test_batchque(unittest.TestCase):
           iter += 1
           exists = os.path.exists(outfile)
           if ( not exists ):
-             print "Sleep for a bit to check if outfile was created yet"
+             print( "Sleep for a bit to check if outfile was created yet" )
              os.system( "sleep 20" )
           else:
-             print "Out file created cat it... should be ls of PTCLMmkdata"
+             print( "Out file created cat it... should be ls of PTCLMmkdata" )
              self.assertTrue( os.path.exists(outfile) )
              os.system( "cat "+outfile )
 

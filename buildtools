@@ -66,7 +66,7 @@ if [[ "$host" =~ cheyenne ]] || [[ "$host" =~ r.i.n. ]]|| [[ "$host" =~ caldera 
   machine="cheyenne"
   compiler="intel"
   netcdf=$NETCDF
-  module load $compiler/17.0.1
+  module load $compiler
   module load mkl
   module load netcdf
   module load ncl
@@ -76,6 +76,16 @@ elif [[ "$host" =~ hobart ]] || [[ "$host" =~ h[0-9]+.cgd.ucar.edu ]]; then
   gmake="gmake"
   parcmp=2
   machine="hobart"
+  compiler="intel"
+  module load compiler/intel
+  netcdf=$NETCDF_PATH
+  export PATH="${PATH}:/usr/bin"
+elif [[ "$host" =~ izumi ]] || [[ "$host" =~ i[0-9]+.unified ]]; then
+  echo "Setup for izumi"
+  . /usr/share/Modules/init/sh
+  gmake="gmake"
+  parcmp=2
+  machine="izumi"
   compiler="intel"
   module load compiler/intel
   netcdf=$NETCDF_PATH
@@ -90,21 +100,8 @@ elif [[ "$host" =~ eureka ]] || [[ "$host" =~ vpn ]]; then
   toolsmake="USER_FC=gfortran-mp-4.8 USER_LINKER=gfortran-mp-4.8 USER_CC=gcc "
   case='$CASE'
   export NETCDF_PATH=$netcdf
-elif [[  "$host" =~ edison ]]; then
-  echo "Setup for edison"
-  .  /opt/modules/default/init/bash
-  module load netcdf
-  module load ncl
-  gmake="gmake"
-  parcmp=32
-  machine="edison"
-  compiler="intel"
-  USER_LDFLAGS="-L$LIB_NETCDF -lnetcdff"
-  export USER_LDFLAGS
-  toolsmake="USER_FC=ftn"
-  netcdf=$NETCDF_DIR
 else
-  echo "Bad host to run on: know about cheyenne, hobart, edison or yongi"
+  echo "Bad host to run on: know about cheyenne, hobart, izumi or eureka"
   exit -3
 fi
 export INC_NETCDF=${netcdf}/include

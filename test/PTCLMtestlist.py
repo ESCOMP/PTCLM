@@ -18,10 +18,10 @@ class PTCLMtestlistXML( ContentHandler ):
      if name == 'test':
        for test in self.testlist:
           if ( testmap['compdir'] != "" and testmap['compdir'] == test['compdir'] ):
-             print "compdir is repeated: "+test['compdir']
+             print( "compdir is repeated: "+test['compdir'] )
              sys.exit(100)
           if ( testmap['id'] == test['id'] and testmap['site'] == test['site']):
-             print "id and site is duplicated: "+test['id']+" "+test['site']
+             print( "id and site is duplicated: "+test['id']+" "+test['site'] )
              sys.exit(100)
 
        self.testlist.append( testmap )
@@ -61,7 +61,7 @@ class PTCLMtestlist:
    # Read in the testlist file
    def Read( self ):
      if ( not os.path.exists( self.testlist) ): self.error("File does NOT exist:"+self.testlist)
-     print "Open file: "+self.testlist
+     print( "Open file: "+self.testlist )
      self.testXML.parse( self.testlist )
 
    # Replace specific identifyable information with generic
@@ -97,7 +97,7 @@ class PTCLMtestlist:
    # --  Error function ---------------------------------
    def error( self, desc ):
        "error function"
-       print "ERROR(PTCLMtestlist):: "+desc
+       print( "ERROR(PTCLMtestlist):: "+desc )
        sys.exit(100)
 
    # Get the list of tests to do
@@ -161,7 +161,7 @@ class PTCLMtestlist:
      else:
         teststatus = "FAIL"
 
-     print teststatus+" "+tid
+     print( teststatus+" "+tid )
 
      overallcompstatus = "NO-COMPS-DONE"
      if ( os.path.exists(tlog) ): self.ReplaceIDInfoInFile( tlog, curdates=True )   # Replace identifing info in the log file
@@ -177,13 +177,13 @@ class PTCLMtestlist:
         if ( redo_comp_files ):
            if ( not os.path.exists( test['resultfile'] ) ):
               cmd = "mkdir "+os.path.dirname(test['resultfile'])
-              print "Create new file directory that does NOT exist\n"
-              print cmd+"\n";
+              print( "Create new file directory that does NOT exist\n" )
+              print( cmd+"\n" )
               os.system( cmd )
            os.system( "cp "+tlog+" "+test['resultfile']  )
         overallcompstatus = compstatus
 
-        print compstatus+" "+tid+" "+desc
+        print( compstatus+" "+tid+" "+desc )
 
      if ( test['compdir'] != "" ):
         testdir  = os.path.abspath(self.testing_dir)+"/"+test['id']
@@ -214,14 +214,14 @@ class PTCLMtestlist:
            if ( redo_comp_files ):
               if ( not os.path.exists( cmpfile ) ):
                  cmd = "mkdir "+os.path.dirname(cmpfile)
-                 print "Create new file directory that does NOT exist\n"
-                 print cmd+"\n";
+                 print( "Create new file directory that does NOT exist\n" )
+                 print( cmd+"\n" )
                  os.system( cmd )
               os.system( "cp "+srcfile+" "+cmpfile )
                  
            if ( overallcompstatus == "PASS" or overallcompstatus == "NO-COMPS-DONE" ): overallcompstatus = compstatus
 
-           print compstatus+" "+tid+" "+desc+" "+file
+           print( compstatus+" "+tid+" "+desc+" "+file )
 
      if ( teststatus == "PASS" and overallcompstatus == "PASS" and os.path.exists( tlog ) ): 
         os.system( "/bin/rm "+tlog )
@@ -238,7 +238,7 @@ class test_PTCLMtestlist(unittest.TestCase):
      self.test = PTCLMtestlist()
      ctsmdir = os.getenv("CTSM_ROOT", "../../../")
      if ( not os.path.exists( ctsmdir+"/doc/ChangeLog" ) ):
-         print "CTSM_ROOT NOT input\n"
+         print( "CTSM_ROOT NOT input\n" )
          sys.exit( 200 )
 
      self.test.Setup(ctsmdir)
@@ -250,24 +250,24 @@ class test_PTCLMtestlist(unittest.TestCase):
      self.test.Read()
      self.test.SetDataDir( inpd_orig )
      self.test.Read()
-     print "\nValid Tests: "
+     print( "\nValid Tests: " )
      for test in self.test.get_testlist():
-        print str(test)
+        print( str(test) )
         self.assertTrue( self.test.IsNOTFailTest( test ) )
-     print "\n\n";
-     print "\nValid Fail Tests: "
+     print( "\n\n" )
+     print( "\nValid Fail Tests: " )
      for test in self.test.get_failtestlist():
-        print str(test)
+        print( str(test) )
         self.assertTrue( not self.test.IsNOTFailTest( test ) )
-     print "\n\n";
+     print( "\n\n" )
 
    def test_getopts( self ):
      self.test.Read()
      for test in self.test.get_testlist():
-       print self.test.get_testID( test )+" = "+ self.test.get_PTCLMoptions( test )
+       print( self.test.get_testID( test )+" = "+ self.test.get_PTCLMoptions( test ) )
 
      for test in self.test.get_failtestlist():
-       print self.test.get_testID( test )+" = "+ self.test.get_PTCLMoptions( test )
+       print( self.test.get_testID( test )+" = "+ self.test.get_PTCLMoptions( test ) )
 
    def test_run( self ):
      self.test.Read()

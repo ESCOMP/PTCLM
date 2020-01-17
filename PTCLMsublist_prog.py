@@ -32,7 +32,7 @@ class PTCLMsublist_prog:
    # --  Error function ---------------------------------
    def error( self, desc ):
        "error function to abort with a message"
-       print "ERROR("+self.name+"):: "+desc
+       print( "ERROR("+self.name+"):: "+desc )
        sys.exit(100)
 
    def parse_cmdline_args( self ):
@@ -195,9 +195,9 @@ class test_PTCLMsublist_prog(unittest.TestCase):
      checkstring = "qsub  -o PTCLM_US-UMB."+jobid+".stdout.out  -N PTCLM_US-UMB  -l walltime=02:00:00  " + \
                    "-A P93300606 -l select=3:ncpus=1:mpiprocs=1:mem=109GB -q regular " + \
                    "-V -m ae -j oe  PTCLM_"+site+"."+jobid+".job"
-     print "\n"
-     print "bsubcm:"+bsub+":end"
-     print "expect:"+checkstring+":end"
+     print( "\n" )
+     print( "bsubcm:"+bsub+":end" )
+     print( "expect:"+checkstring+":end" )
      self.assertTrue( bsub == checkstring )
 
    def test_sitelist( self ):

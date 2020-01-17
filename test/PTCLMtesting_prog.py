@@ -29,7 +29,7 @@ class PTCLMtesting_prog:
    # --  Error function ---------------------------------
    def error( self, desc ):
        "error function to abort with a message"
-       print "ERROR("+self.name+"):: "+desc
+       print( "ERROR("+self.name+"):: "+desc )
        sys.exit(100)
 
    def parse_cmdline_args( self ):
@@ -128,12 +128,12 @@ class PTCLMtesting_prog:
       "Finalize and print out results"
       if ( not self.setup ):
          self.error( "Initialize was NOT run first" )
-      print "Total number of tests             = "+str(self.itest)
-      print "Number of tests that PASS         = "+str(self.n_tests['PASS'])
-      print "Number of tests that Fail         = "+str(self.n_tests['FAIL'])
-      print "Number of compare tests that PASS = "+str(self.n_tests['PASS-COMP'])
-      print "Number of compare tests that Fail = "+str(self.n_tests['FAIL-COMP'])
-      print "Number of tests without compare   = "+str(self.n_tests['NO-COMPS-DONE'])
+      print( "Total number of tests             = "+str(self.itest) )
+      print( "Number of tests that PASS         = "+str(self.n_tests['PASS']) )
+      print( "Number of tests that Fail         = "+str(self.n_tests['FAIL']) )
+      print( "Number of compare tests that PASS = "+str(self.n_tests['PASS-COMP']) )
+      print( "Number of compare tests that Fail = "+str(self.n_tests['FAIL-COMP']) )
+      print( "Number of tests without compare   = "+str(self.n_tests['NO-COMPS-DONE']) )
 
 
 #
