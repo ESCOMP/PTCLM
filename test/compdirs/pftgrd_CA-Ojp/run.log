@@ -60,7 +60,7 @@ CESM input data directory:				/glade/p/cesmdata/cseg/inputdata
 
 Write /Users/erik/PTCLM_trunk/test/testing_dir/soigrid_file_creation/1x1pt_CA-Ojp/README.PTCLM with command line
 CLM Physics Version: clm4_5
-Run command: /bin/chmod +x /Users/erik/PTCLM_trunk/test/testing_dir/soigrid_file_creation/1x1pt_CA-Ojp/xmlchange_cmnds
+Run command: /bin/chmod +x /Users/erik/PTCLM_trunk/test/testing_dir/soigrid_file_creation/1x1pt_CA-Ojp/shell_commands
 Making input files for the point (this may take a while if creating transient datasets)
 Creating map file for a point with no ocean
 lat=53.9163

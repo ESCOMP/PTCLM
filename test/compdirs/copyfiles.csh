@@ -13,5 +13,5 @@ foreach site( $sites )
    \cp $copydir/*.log           $dir
    rm $copydir/surf*.log
    \cp $copydir/user_nl_clm     $dir
-   \cp $copydir/xmlchange_cmnds $dir
+   \cp $copydir/shell_commands  $dir
 end
