@@ -57,7 +57,7 @@ fi
 CIME_MODEL="cesm"
 export CIME_MODEL
 toolsmake=""
-if [[ "$host" =~ cheyenne ]] || [[ "$host" =~ r.i.n. ]]|| [[ "$host" =~ caldera ]] || [[ "$host" =~ geyser ]] || [[ "$host" =~ pronghorn ]]; then
+if [[ "$host" =~ cheyenne ]] || [[ "$host" =~ r[0-9]+i[0-9]+n[0-9]+ ]]|| [[ "$host" =~ caldera ]] || [[ "$host" =~ geyser ]] || [[ "$host" =~ pronghorn ]]; then
   echo "Setup for cheyenne"
   . /glade/u/apps/ch/opt/lmod/8.1.7/lmod/lmod/init/sh
 

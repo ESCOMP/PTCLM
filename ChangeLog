@@ -4,6 +4,23 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Jan/20/2020
+Tag: PTCLM2_20200118
+One-line: Update to python3 add izumi support
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+Update to python3 and add support for izumi for testing. Add code of conduct file.
+Allow hostname check in buildtoools for cheyenne to have 2-digit numbers.
+
+Fixes #10 - Add izumi
+Fixes #9 -- Update to python3
+Fixes #8 -- compiler versions on cheyenne
+Fixes #7 -- change last xmlchange_cmnds files to shell_commands
+
+================================================================================        
+Originator: erik
 Date: Jun/11/2018
 Tag: PTCLM2_180611
 One-line: Fix a few bugs in latest PTCLMmkdata 
