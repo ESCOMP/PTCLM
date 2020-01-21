@@ -52,6 +52,7 @@ def error( desc ):
 #run time defaults
 defSitesGroup = "PTCLMDATA" #default site group name
 
+global ptclm_dir
 stdout    = os.popen("pwd")
 cwd       = os.path.abspath( stdout.read().rstrip( ) )
 dirname   = os.path.dirname(sys.argv[0])
@@ -60,6 +61,7 @@ if ( dirname == "" ):
 else:
    ptclm_dir = os.path.abspath(dirname)
 
+base_ctsm     = os.path.abspath(ptclm_dir+"/../.." )
 wrkdir        = cwd
 cesm_input    = " "
 filen         = " "
@@ -108,7 +110,7 @@ options.add_option("--no-crop", dest="crop", \
                   action="store_false", default=False, help = \
                   "Create datasets and run without prognostic crop on (DEFAULT)")
 options.add_option("--ctsm_root", dest="base_ctsm", \
-                  default=" ", help = \
+                  default=base_ctsm, help = \
                   "Root CTSM directory (top level directory CTSM src bld doc cime_config subdirs)")
 options.add_option("--cime_root", dest="base_cime", \
                   default=" ", help = \
@@ -169,9 +171,10 @@ if len(args) != 0:
 
 def system( cmd ):
      "system function with error checking and debug prining"
+     global plev
 
      if plev>0: print( "Run command: "+cmd )
-
+ 
      # Check if this is a command to always do regardless of debug
      cmdsallow = [ "create_newcase", "mkdir", "mv", "cat", "which", "chmod", "touch", "mksurfdata.pl" ]
      allowed_cmd = False
@@ -211,6 +214,7 @@ def system( cmd ):
 
 def queryFilename( queryopts, filetype ):
     "query the XML database to get a filename"
+    global abs_base_ctsm
     query = abs_base_ctsm+"/bld/queryDefaultNamelist.pl -silent " \
              +"-justvalue "
     if ( cesm_input != " " ): 
@@ -229,6 +233,9 @@ def queryFilename( queryopts, filetype ):
 
 def setup_case_files( ):
      "Setup the user_nl_clm and shell_commands files"
+
+     global data_dir
+     global cmdline
      filex = data_dir+"/shell_commands"
      output = open( filex,'w')
      output.write("# shell commands to execute xmlchange commands written by PTCLMmkdata:\n")
@@ -256,6 +263,7 @@ def xmlchange_env_value( filex, var, value, note="", append=False ):
 
 def write_datm_namelistdefaults_file( dir ):
      "Write namelist_defaults_datm.xml file"
+     global data_dir
      datm_src_dir = data_dir+"/SourceMods/src.datm";
      os.system( "/bin/mkdir -p "+datm_src_dir )
      file = datm_src_dir+"/namelist_defaults_datm.xml"
@@ -280,6 +288,8 @@ def write_datm_namelistdefaults_file( dir ):
 
 def find_filename_created( wildcard, desc ):
      "Find the filename of the file that was just created"
+
+     global options
      if ( not options.debug ):
         # If NOT debug mode, get the filename from a directory listing
         stdout   = os.popen( "ls -1t1 "+wildcard+" | head -1" );
@@ -395,9 +405,17 @@ clmmask       = "navy"
 myres         = "CLM_USRDAT"  #single-point mode (don't change)
 
 clm_tools   = abs_base_ctsm+'/tools'
+if ( not os.path.exists( clm_tools ) ): 
+   error( "clm tools directory does NOT exist: "+clm_tools )
 gen_dom_dir = abs_base_cime+'/tools/mapping/gen_domain_files'
+if ( not os.path.exists( gen_dom_dir ) ): 
+   error( "generate domain directory does NOT exist: "+gen_dom_dir )
 mkmapgrd_dir= clm_tools+'/mkmapgrids'
+if ( not os.path.exists( mkmapgrd_dir ) ): 
+   error( "make map grid directory does NOT exist: "+mkmapgrd_dir )
 mkmapdat_dir= clm_tools+'/mkmapdata'
+if ( not os.path.exists( mkmapdat_dir ) ): 
+   error( "make map data directory does NOT exist: "+mkmapdat_dir )
 clm_input   = cesm_input+'/lnd/clm2'
 datm_input  = cesm_input+'/atm/datm7'
 
@@ -512,8 +530,8 @@ print( "lat="+str(lat) )
 ptstr = str(lat)+","+str(lon)
 if ( os.system( "which ncl" ) != 0 ): error( "ncl is NOT in path" )  # check for ncl
 system(mkmapdat_dir+"/mknoocnmap.pl -p "+ptstr+" -name "+clmres+" > "+data_dir+"/mknoocnmap.log")
-mapfile = find_filename_created( mkmapdat_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_*.nc", "mapfile" )
-scripgridfile  = find_filename_created( mkmapgrd_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc", "scripgridfile" )
+mapfile = find_filename_created( data_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_*.nc", "mapfile" )
+scripgridfile  = find_filename_created( data_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc", "scripgridfile" )
 
 #make domain file needed by datm ####################################################
 if plev>0: print( "Creating data domain" )
@@ -534,7 +552,7 @@ mapdir = data_dir
 if ( options.map_gdate == options.sdate ):
   # mkmapdata.sh remembers where it is (although it starts over for a new date)
   if plev>0: print( "\n\nRe-create mapping files for surface dataset:" )
-  cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional -v > "+mapdir+"/mkmapdata.log";
+  cmd = "export REGRID_PROC=1; "+mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional -v > "+mapdir+"/mkmapdata.log";
   system(cmd);
 else:
   mksrfmapfile  = find_filename_created( mapdir+"/map_*"+"_c"+options.map_gdate+".nc", "mksrfmapfile" )
