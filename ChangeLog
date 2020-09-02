@@ -4,6 +4,20 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Sep/02/2020
+Tag: PTCLM2_20200902
+One-line: Fix problem 
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+PTCLMmkdata was failing on running the mapping files with the export statement.
+This fixes that, by removing that setting.
+
+Fixes #11 -- trouble running on cheyenne
+
+================================================================================        
+Originator: erik
 Date: Jan/20/2020
 Tag: PTCLM2_20200118
 One-line: Update to python3 add izumi support
