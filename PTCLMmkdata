@@ -531,7 +531,9 @@ ptstr = str(lat)+","+str(lon)
 if ( os.system( "which ncl" ) != 0 ): error( "ncl is NOT in path" )  # check for ncl
 system(mkmapdat_dir+"/mknoocnmap.pl -p "+ptstr+" -name "+clmres+" > "+data_dir+"/mknoocnmap.log")
 mapfile = find_filename_created( data_dir+"/map_"+clmres+"_noocean_to_"+clmres+"_"+"nomask_aave_da_*.nc", "mapfile" )
+if plev>0: print( "mapfile = ", mapfile )
 scripgridfile  = find_filename_created( data_dir+"/SCRIPgrid_"+clmres+"_nomask_c*.nc", "scripgridfile" )
+if plev>0: print( "scripgridfile = ", scripgridfile )
 
 #make domain file needed by datm ####################################################
 if plev>0: print( "Creating data domain" )
@@ -552,7 +554,7 @@ mapdir = data_dir
 if ( options.map_gdate == options.sdate ):
   # mkmapdata.sh remembers where it is (although it starts over for a new date)
   if plev>0: print( "\n\nRe-create mapping files for surface dataset:" )
-  cmd = "export REGRID_PROC=1; "+mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional -v > "+mapdir+"/mkmapdata.log";
+  cmd = mkmapdat_dir+"/mkmapdata.sh --gridfile "+scripgridfile+" --res "+clmres+" --gridtype regional -v > "+mapdir+"/mkmapdata.log";
   system(cmd);
 else:
   mksrfmapfile  = find_filename_created( mapdir+"/map_*"+"_c"+options.map_gdate+".nc", "mksrfmapfile" )
