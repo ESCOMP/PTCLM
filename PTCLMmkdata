@@ -61,7 +61,7 @@ if ( dirname == "" ):
 else:
    ptclm_dir = os.path.abspath(dirname)
 
-base_ctsm     = os.path.abspath(ptclm_dir+"/../.." )
+base_ctsm     = os.path.abspath(ptclm_dir+"/../../.." )
 wrkdir        = cwd
 cesm_input    = " "
 filen         = " "

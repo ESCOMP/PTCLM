@@ -1,5 +1,14 @@
 PTCLM/README                04/10/2015
 
+NOTE PTCLM is DEPRECATED!
+
+NOTE, PTCLM is being deprecated to make way for new faster tools that will create datasets
+based on existing global datasets rather than use the same process for global datasets. Those
+scripts are under tools/site_and_regional in a CTSM checkout. There is a high memory requirement
+for the process with PTCLM because of the need to make mapping files from global grids. The simpler
+process of extracting just the data needed from existing global files is much faster and easier
+to do on even simple systems such as a laptop.
+
 PTCLMmkdata is a python tool built on top of CLM tools and CESM scripts
 for building datasets to run CLM "I" cases for data from Ameriflux Tower-sites,
 or other user-supplied single-point datasets.
