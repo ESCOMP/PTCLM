@@ -17,7 +17,7 @@ class PTCLMtesting_prog:
    name         = "PTCLMtesting"
    cmdline      = ""
    redo_compare = False
-   ctsmdir_def  = "../../../"
+   ctsmdir_def  = "../../../../"
    ctsmdir      = os.getenv("CTSM_ROOT", ctsmdir_def )
    cimedir_def  = ctsmdir_def + "/cime"
    cimedir      = os.getenv("CIME_ROOT", cimedir_def )
