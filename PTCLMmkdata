@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #########################################################################################
 #
 # PTCLMmkdata
@@ -61,7 +61,7 @@ if ( dirname == "" ):
 else:
    ptclm_dir = os.path.abspath(dirname)
 
-base_ctsm     = os.path.abspath(ptclm_dir+"/../.." )
+base_ctsm     = os.path.abspath(ptclm_dir+"/../../.." )
 wrkdir        = cwd
 cesm_input    = " "
 filen         = " "
@@ -369,7 +369,7 @@ siteDir = ptclm_dir+"/"+"PTCLM_sitedata"
 #get lat/lon, start/end years from sitedata file
 if plev>0: print( "\nOpen Site data file: "+siteDir+"/"+sitedata+"\n" )
 sitepath = siteDir+"/"+sitedata
-AFdatareader = csv.reader(open(sitepath, "rb"))
+AFdatareader = csv.reader(open(sitepath), dialect="unix")
 if ( mysite == "list" ):  plev = 2
 found=False
 for row in AFdatareader:
@@ -566,7 +566,7 @@ else:
 if (options.pftgrid == False):
     if plev>0: print( "Replacing PFT information in surface data file" )
     os.chdir(siteDir)
-    AFdatareader = csv.reader(open(pftdata, "rb"))
+    AFdatareader = csv.reader(open(pftdata), dialect="unix")
     os.chdir(data_dir)
     pft_frac=[0,0,0,0,0]
     pft_code=[0,0,0,0,0]
@@ -600,7 +600,7 @@ if (options.soilgrid == False):
     #soil information
     os.chdir(siteDir)
     if plev>0: print( "Replacing soil information in surface data file" )
-    AFdatareader = csv.reader(open(soildata, "rb"))
+    AFdatareader = csv.reader(open(soildata), dialect="unix")
     os.chdir(data_dir)
     found=0
     for row in AFdatareader:

@@ -4,6 +4,23 @@ This file describes changes made to the PTCLM tool
 
 ================================================================================        
 Originator: erik
+Date: Aug/10/2021
+Tag: PTCLM2_20210810
+One-line: Move PTCLM to underneath tools/site_and_regional directory in CTSM
+Testing:  Standard PTCLM test script on cheyenne
+Known Bugs: RF-Bra will work even without --donot_use_tower_yrs since it doesn't
+            check for valid values
+
+Change the expected directory for PTCLM in a CTSM checkout to be under the
+tools/site_and_regional subdirectory rather than under tools.
+
+Change python shebang lines to python3. Fix a couple python3 issues one with csv
+and print statements.
+
+Add note about PTCLM being deprecated. This may be the last tag for PTCLM.
+
+================================================================================        
+Originator: erik
 Date: Sep/02/2020
 Tag: PTCLM2_20200902
 One-line: Fix problem 

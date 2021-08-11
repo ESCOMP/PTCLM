@@ -17,7 +17,7 @@ class PTCLMsublist_prog:
    name         = "PTCLMsublist"
    cmdline      = ""
    account      = "P93300606"
-   ctsmdir_def  = "../../"
+   ctsmdir_def  = "../../../"
    ctsmdir      = os.getenv("CTSM_ROOT", ctsmdir_def )
    inputdir_def = "/glade/p/cesmdata/cseg/inputdata"
    inputdir     = os.getenv("DIN_LOC_ROOT", inputdir_def )

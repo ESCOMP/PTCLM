@@ -35,8 +35,8 @@ Options:
     --mydatadir=MYDATADIR
                         Directory of where to put your data files (files will
                         be under subdirectories for each site) (default: /glad
-                        e/work/erik/ctsm_relanswerchangesfor5029/tools/PTCLM/m
-                        ydatafiles)
+                        e/work/erik/ctsm_neon/tools/site_and_regional/PTCLM/my
+                        datafiles)
     --donot_use_tower_yrs
                         Do NOT use the data years that correspond to the tower
                         years (when you plan on using global forcing)

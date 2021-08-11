@@ -21,7 +21,7 @@ echo "Build clm tools for PTCLM on "$host""
 # Get path to root
 #
 if [ -z "$CTSM_ROOT" ]; then
-   cd "../.."
+   cd "../../.."
    CTSM_ROOT=`pwd`
    cd -
 fi
