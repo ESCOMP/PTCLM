@@ -13,7 +13,7 @@ Root CIME directory:					$CTSMROOTDIR/cime
 	Extract PFT data from gridded files:		False
 	Extract soil data from gridded files:		False
 
-Open Site data file: $CTSMROOTDIR/tools/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
+Open Site data file: $CTSMROOTDIR/tools/site_and_regional/PTCLM/PTCLM_sitedata/PTCLMDATA_sitedata.txt
 
  site = site_code name: name                                                    Region:        state Campaign: campaign
  site =    US-Blo name: Blodgett Forest                                         Region:           CA Campaign: AmeriFlux

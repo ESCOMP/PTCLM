@@ -5,8 +5,8 @@
 ./xmlchange DATM_CLMNCEP_YR_END=2004
 # Comment this out if NINST_LND is greater than 1 (see: http://bugs.cgd.ucar.edu/show_bug.cgi?id=2521)
 ./xmlchange MPILIB=mpi-serial
-./xmlchange ATM_DOMAIN_PATH=$CTSMROOTDIR/tools/PTCLM/test/testing_dir/stdquiet_file_creation/1x1pt_US-Ho1
-./xmlchange LND_DOMAIN_PATH=$CTSMROOTDIR/tools/PTCLM/test/testing_dir/stdquiet_file_creation/1x1pt_US-Ho1
+./xmlchange ATM_DOMAIN_PATH=$CTSMROOTDIR/tools/site_and_regional/PTCLM/test/testing_dir/stdquiet_file_creation/1x1pt_US-Ho1
+./xmlchange LND_DOMAIN_PATH=$CTSMROOTDIR/tools/site_and_regional/PTCLM/test/testing_dir/stdquiet_file_creation/1x1pt_US-Ho1
 ./xmlchange ATM_DOMAIN_FILE=domain.lnd.1x1pt_US-Ho1_navy.140204.nc
 ./xmlchange LND_DOMAIN_FILE=domain.lnd.1x1pt_US-Ho1_navy.140204.nc
 ./xmlchange --append CLM_BLDNML_OPTS='-mask navy -no-crop'
@@ -16,4 +16,4 @@
 ./xmlchange RUN_STARTDATE=1996-01-01
 ./xmlchange DATM_CLMNCEP_YR_ALIGN=1996
 ./xmlchange DIN_LOC_ROOT=$DIN_LOC_ROOT
-./xmlchange DIN_LOC_ROOT_CLMFORC=$CTSMROOTDIR/tools/PTCLM/test/testing_dir/stdquiet_file_creation
+./xmlchange DIN_LOC_ROOT_CLMFORC=$CTSMROOTDIR/tools/site_and_regional/PTCLM/test/testing_dir/stdquiet_file_creation
